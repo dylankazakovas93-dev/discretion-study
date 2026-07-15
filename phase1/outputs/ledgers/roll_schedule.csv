@@ -1,0 +1,10 @@
+expiry_year,expiry_month,contract,third_friday,roll_out_cutoff_et,roll_out_cutoff_utc,rolls_into,instrument,param_version,rule,ref_vol_from_before,ref_vol_into_before
+2024,9,NQU4,2024-09-20,2024-09-16 18:00:00-04:00,2024-09-16 22:00:00+00:00,NQZ4,NQ,phase1-v1.0.0,Globex open (18:00 ET) on the Monday of the third-Friday expiry week,0,0
+2024,12,NQZ4,2024-12-20,2024-12-16 18:00:00-05:00,2024-12-16 23:00:00+00:00,NQH5,NQ,phase1-v1.0.0,Globex open (18:00 ET) on the Monday of the third-Friday expiry week,0,0
+2025,3,NQH5,2025-03-21,2025-03-17 18:00:00-04:00,2025-03-17 22:00:00+00:00,NQM5,NQ,phase1-v1.0.0,Globex open (18:00 ET) on the Monday of the third-Friday expiry week,0,0
+2025,6,NQM5,2025-06-20,2025-06-16 18:00:00-04:00,2025-06-16 22:00:00+00:00,NQU5,NQ,phase1-v1.0.0,Globex open (18:00 ET) on the Monday of the third-Friday expiry week,0,0
+2025,9,NQU5,2025-09-19,2025-09-15 18:00:00-04:00,2025-09-15 22:00:00+00:00,NQZ5,NQ,phase1-v1.0.0,Globex open (18:00 ET) on the Monday of the third-Friday expiry week,0,0
+2025,12,NQZ5,2025-12-19,2025-12-15 18:00:00-05:00,2025-12-15 23:00:00+00:00,NQH6,NQ,phase1-v1.0.0,Globex open (18:00 ET) on the Monday of the third-Friday expiry week,0,0
+2026,3,NQH6,2026-03-20,2026-03-16 18:00:00-04:00,2026-03-16 22:00:00+00:00,NQM6,NQ,phase1-v1.0.0,Globex open (18:00 ET) on the Monday of the third-Friday expiry week,0,0
+2026,6,NQM6,2026-06-19,2026-06-15 18:00:00-04:00,2026-06-15 22:00:00+00:00,NQU6,NQ,phase1-v1.0.0,Globex open (18:00 ET) on the Monday of the third-Friday expiry week,0,0
+2026,9,NQU6,2026-09-18,2026-09-14 18:00:00-04:00,2026-09-14 22:00:00+00:00,NQZ6,NQ,phase1-v1.0.0,Globex open (18:00 ET) on the Monday of the third-Friday expiry week,0,0

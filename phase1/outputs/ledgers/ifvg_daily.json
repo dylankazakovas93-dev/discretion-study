@@ -1,5 +1,19 @@
 [
  {
+  "ifvg_id":"FVG-daily-bear-20260702T1800-iFVG",
+  "source_fvg_id":"FVG-daily-bear-20260702T1800",
+  "instrument":"NQ",
+  "tf":"daily",
+  "param_version":"phase1-v1.0.0",
+  "original_direction":"bear",
+  "ifvg_direction":"bull",
+  "source_lower":29955.25,
+  "source_upper":30008.5,
+  "conversion_close":30068.5,
+  "conversion_et":"2026-07-10T21:00:00.000Z",
+  "source_availability_et":"2026-07-03T21:00:00.000Z"
+ },
+ {
   "ifvg_id":"FVG-daily-bear-20260707T1800-iFVG",
   "source_fvg_id":"FVG-daily-bear-20260707T1800",
   "instrument":"NQ",

@@ -53,63 +53,96 @@ def _globex_day_series(et_ts: pd.Series) -> pd.Series:
     return pd.Series(gday.astype(str), index=et_ts.index)
 
 
-def causal_contract_selection(raw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Select the front-month contract per Globex session WITHOUT intra-session
-    look-ahead.
+_MONTH_CODE = {3: "H", 6: "M", 9: "U", 12: "Z"}  # NQ quarterly cycle
 
-    The contract used for session S is decided from the PREVIOUS completed
-    session S-1's outright volume (frozen at S-1's close, 17:00 ET). The current
-    session never participates in its own decision. If the previous session's
-    winner is not traded in S (expired across a gap/seam), the decision is a
-    disclosed BOOTSTRAP that falls back to S's own dominant outright (this
-    happens only at the data start and immediately after the seam).
 
-    Returns (continuous_1m_rows, roll_decision_ledger).
-    """
+def _third_friday(year: int, month: int):
+    import datetime as _dt
+    d = _dt.date(year, month, 1)
+    offset = (4 - d.weekday()) % 7          # weekday: Mon=0 .. Fri=4
+    return d + _dt.timedelta(days=offset + 14)
+
+
+def roll_cutoff(year: int, month: int) -> pd.Timestamp:
+    """FROZEN, predetermined quarterly roll cutoff: the Globex session open
+    (18:00 ET) on the MONDAY of the week containing the third-Friday expiry of
+    the given quarter. Independent of volume. This is the instant we roll OUT of
+    that quarter's contract into the next quarter's contract."""
+    import datetime as _dt
+    tf = _third_friday(year, month)
+    monday = tf - _dt.timedelta(days=4)     # Friday - 4 = Monday of that week
+    return pd.Timestamp(monday.year, monday.month, monday.day, 18, 0, tz=TZ)
+
+
+def _quarter_cycle(start_year=2024, end_year=2027):
+    q = []
+    for y in range(start_year, end_year + 1):
+        for m in (3, 6, 9, 12):
+            q.append((y, m, f"NQ{_MONTH_CODE[m]}{str(y)[-1]}"))
+    return q
+
+
+def roll_schedule(min_ts: pd.Timestamp, max_ts: pd.Timestamp) -> pd.DataFrame:
+    """Frozen roll schedule covering [min_ts, max_ts]: for each quarter, the
+    contract that is front and the exact cutoff at which it rolls out."""
+    cyc = _quarter_cycle(min_ts.year - 1, max_ts.year + 1)
+    rows = []
+    for (y, m, contract) in cyc:
+        cutoff = roll_cutoff(y, m)          # roll OUT of `contract` here
+        rows.append({"expiry_year": y, "expiry_month": m, "contract": contract,
+                     "third_friday": str(_third_friday(y, m)),
+                     "roll_out_cutoff_et": cutoff,
+                     "roll_out_cutoff_utc": cutoff.tz_convert("UTC")})
+    df = pd.DataFrame(rows).sort_values("roll_out_cutoff_et").reset_index(drop=True)
+    df["rolls_into"] = df["contract"].shift(-1)
+    df["instrument"] = "NQ"
+    df["param_version"] = PARAM_VERSION
+    df["rule"] = "Globex open (18:00 ET) on the Monday of the third-Friday expiry week"
+    return df[(df["roll_out_cutoff_et"] >= min_ts - pd.Timedelta(days=120)) &
+              (df["roll_out_cutoff_et"] <= max_ts + pd.Timedelta(days=120))].reset_index(drop=True)
+
+
+def frozen_front_contract(et_ts: pd.Series, sched: pd.DataFrame) -> pd.Series:
+    """Front contract per bar by FROZEN cutoffs: the contract of the earliest
+    quarter whose roll-out cutoff is strictly after the bar's open time."""
+    cuts = sched["roll_out_cutoff_et"].to_numpy()
+    contracts = sched["contract"].to_numpy()
+    tvals = et_ts.to_numpy()
+    # for each t, first index with cutoff > t
+    idx = np.array([np.searchsorted(cuts, t, side="right") for t in tvals])
+    idx = np.clip(idx, 0, len(contracts) - 1)
+    return pd.Series(contracts[idx], index=et_ts.index)
+
+
+def frozen_roll_selection(raw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Select the front-month contract per bar by the FROZEN quarterly roll
+    cutoffs (not volume). Returns (continuous_1m_rows, roll_schedule_ledger).
+    Volumes around each cutoff are recorded for transparency only; they do NOT
+    drive the decision."""
     r = raw.copy()
     ts = pd.to_datetime(r["ts_event"], utc=True, format="ISO8601")
     r["ts_utc"] = ts
     r["_et"] = ts.dt.tz_convert(TZ)
     out = r[~r["symbol"].str.contains("-", na=False)].copy()  # outrights only
     out["gday"] = _globex_day_series(out["_et"])
-    vol = out.groupby(["gday", "symbol"])["volume"].sum().reset_index()
-    days = sorted(vol["gday"].unique())
-
-    selmap, ledger = {}, []
-    for i, day in enumerate(days):
-        cur = vol[vol.gday == day]
-        cur_comp = {s: int(v) for s, v in zip(cur.symbol, cur.volume)}
-        if i == 0:
-            sel = cur.loc[cur.volume.idxmax(), "symbol"]
-            ev, boot = None, True
-            ev_comp, sel_vol, dec_ts = {}, None, None
-        else:
-            prev_day = days[i - 1]
-            pv = vol[vol.gday == prev_day]
-            ev_comp = {s: int(v) for s, v in zip(pv.symbol, pv.volume)}
-            cand = pv.loc[pv.volume.idxmax(), "symbol"]
-            dec_ts = (pd.Timestamp(day, tz=TZ) - pd.Timedelta(days=1)
-                      + pd.Timedelta(hours=17))  # S-1 close = 17:00 ET, 1h pre-open
-            if cur_comp.get(cand, 0) > 0:
-                sel, boot = cand, False
-                sel_vol = int(pv[pv.symbol == cand].volume.iloc[0])
-            else:  # winner expired / not trading now -> disclosed bootstrap
-                sel, boot = cur.loc[cur.volume.idxmax(), "symbol"], True
-                sel_vol = None
-            ev = prev_day
-        selmap[day] = sel
-        ledger.append({
-            "instrument": "NQ", "param_version": PARAM_VERSION,
-            "session_globex_day": day, "selected_contract": sel,
-            "evidence_session": ev, "is_bootstrap": boot,
-            "decision_timestamp_et": dec_ts,
-            "selected_evidence_volume": sel_vol,
-            "evidence_session_volumes": ev_comp,
-            "current_session_volumes": cur_comp,
-        })
-    out["selected"] = out["gday"].map(selmap)
+    sched = roll_schedule(out["_et"].min(), out["_et"].max())
+    out["selected"] = frozen_front_contract(out["_et"], sched)
     sel_df = out[out["symbol"] == out["selected"]].copy()
-    return sel_df, pd.DataFrame(ledger)
+
+    # annotate the schedule with the observed pre/post-cutoff session volumes
+    vol = out.groupby(["gday", "symbol"])["volume"].sum()
+    def vnear(cut, contract):
+        d = (cut - pd.Timedelta(days=1)).date().isoformat()
+        try:
+            return int(vol.get((d, contract), 0))
+        except Exception:
+            return 0
+    sched = sched.copy()
+    sched["ref_vol_from_before"] = [vnear(c, fr) for c, fr in
+                                    zip(sched["roll_out_cutoff_et"], sched["contract"])]
+    sched["ref_vol_into_before"] = [vnear(c, to) if isinstance(to, str) else 0 for c, to in
+                                    zip(sched["roll_out_cutoff_et"], sched["rolls_into"])]
+    return sel_df, sched
 
 
 def _gap_is_calendar(a: pd.Timestamp, b: pd.Timestamp) -> bool:
@@ -126,60 +159,61 @@ def _gap_is_calendar(a: pd.Timestamp, b: pd.Timestamp) -> bool:
     return bool((maint | weekend).all())
 
 
-SEGMENT_GAP_MIN_MINUTES = 60.0  # non-calendar gaps <= this are illiquidity, not
-                                # a continuity break (single no-trade minutes etc.)
+DATA_GAP_MAX_DAYS = 4.0  # a gap longer than this is a genuine data outage (a
+                         # real discontinuity). Weekends, daily maintenance, and
+                         # US market holidays / early closes are all shorter, so
+                         # they are scheduled closures -- NOT breaks. This makes
+                         # scale-invariant normalization continuous through
+                         # scheduled closures without needing a holiday calendar.
 
 
 def assign_segments(sel_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Assign continuity-segment ids to the continuous 1m series.
+    """Assign TWO segment ids per bar:
 
-    A new segment begins after (a) a contract roll, (b) the seam, or (c) a
-    substantial unexplained (non-calendar) data gap exceeding
-    SEGMENT_GAP_MIN_MINUTES. Sub-threshold non-calendar gaps are counted as
-    minor illiquidity gaps but do NOT break continuity (OHLCV omits no-trade
-    minutes; treating each as a boundary would shatter normalization).
-    Returns (frame_with_segment_id, segments_ledger).
+    * segment_id (ABSOLUTE): resets at every FROZEN contract roll and at every
+      genuine data outage (> DATA_GAP_MAX_DAYS). Absolute structures (FVGs,
+      liquidity levels, rejection zones, displacement legs) are confined to one
+      absolute segment -- NO absolute structure survives a roll.
+    * norm_segment_id (SCALE-INVARIANT): resets ONLY at a genuine data outage,
+      NOT at a contract roll. Trailing size percentiles (scale-invariant)
+      continue ACROSS contracts, breaking only at real discontinuities.
+
+    Every absolute segment lies within exactly one normalization segment.
+    Returns (frame_with_both_ids, absolute_segments_ledger).
     """
     s = sel_df.sort_values("_et").reset_index(drop=True)
     et = s["_et"]
     sel = s["selected"].to_numpy()
-    seg = np.zeros(len(s), dtype=int)
-    minor = np.zeros(len(s), dtype=bool)
+    abs_seg = np.zeros(len(s), dtype=int)
+    norm_seg = np.zeros(len(s), dtype=int)
     boundaries = []
-    cur = 0
+    a = n = 0
+    gap_days_thresh = DATA_GAP_MAX_DAYS * 24 * 60
     for i in range(1, len(s)):
-        reason = None
         gap = (et[i] - et[i - 1]).total_seconds() / 60.0
         roll = sel[i] != sel[i - 1]
-        noncal = gap > 1.5 and not _gap_is_calendar(et[i - 1], et[i])
-        biggap = noncal and gap > SEGMENT_GAP_MIN_MINUTES
-        if roll and biggap:
-            reason = "contract_roll+data_gap(seam)"
-        elif roll:
-            reason = "contract_roll"
-        elif biggap:
-            reason = "data_gap"
-        elif noncal:
-            minor[i] = True
-        if reason is not None:
-            cur += 1
-            boundaries.append({"start_index": i, "reason": reason,
-                               "boundary_et": et[i],
+        outage = gap > gap_days_thresh
+        if outage:
+            n += 1        # genuine outage breaks BOTH
+        if roll or outage:
+            a += 1        # roll or outage breaks ABSOLUTE
+            reason = ("contract_roll+data_outage" if (roll and outage)
+                      else "contract_roll" if roll else "data_outage")
+            boundaries.append({"start_index": i, "reason": reason, "boundary_et": et[i],
                                "prev_contract": sel[i - 1], "new_contract": sel[i],
                                "gap_minutes": gap})
-        seg[i] = cur
-    s["minor_gap_before"] = minor
-    s["segment_id"] = seg
-    # segments ledger
+        abs_seg[i] = a
+        norm_seg[i] = n
+    s["segment_id"] = abs_seg
+    s["norm_segment_id"] = norm_seg
     rows = []
     for sid, g in s.groupby("segment_id"):
         reason = "data_start" if sid == 0 else boundaries[sid - 1]["reason"]
         rows.append({
             "segment_id": int(sid), "instrument": "NQ", "param_version": PARAM_VERSION,
-            "contract": g["selected"].iloc[0],
+            "contract": g["selected"].iloc[0], "norm_segment_id": int(g["norm_segment_id"].iloc[0]),
             "start_et": g["_et"].iloc[0], "end_et": g["_et"].iloc[-1],
             "n_bars": int(len(g)), "n_globex_sessions": int(g["gday"].nunique()),
-            "n_minor_illiquidity_gaps": int(g["minor_gap_before"].sum()),
             "boundary_reason": reason,
         })
     return s, pd.DataFrame(rows)
@@ -403,10 +437,12 @@ def aggregate_tf(min_bars: pd.DataFrame, tf: TF) -> pd.DataFrame:
     b = min_bars.copy()
     if "segment_id" not in b.columns:
         b["segment_id"] = 0
+    if "norm_segment_id" not in b.columns:
+        b["norm_segment_id"] = 0
 
     if tf.name == "1m":
         out = b[["ts_open_et", "ts_close_et", "open", "high", "low",
-                 "close", "volume", "segment_id"]].copy()
+                 "close", "volume", "segment_id", "norm_segment_id"]].copy()
         out = out.rename(columns={"ts_open_et": "bucket_open_et",
                                   "ts_close_et": "bucket_close_et"})
         out.insert(0, "tf", tf.name)
@@ -429,6 +465,7 @@ def aggregate_tf(min_bars: pd.DataFrame, tf: TF) -> pd.DataFrame:
                  .agg(open=("open", "first"), high=("high", "max"),
                       low=("low", "min"), close=("close", "last"),
                       volume=("volume", "sum"), n_source_minutes=("open", "size"),
+                      norm_segment_id=("norm_segment_id", "first"),
                       source_first_ts=("ts_open_et", "first"),
                       source_last_ts=("ts_open_et", "last"))
                  .reset_index())
@@ -456,6 +493,7 @@ def aggregate_tf(min_bars: pd.DataFrame, tf: TF) -> pd.DataFrame:
              .agg(open=("open", "first"), high=("high", "max"),
                   low=("low", "min"), close=("close", "last"),
                   volume=("volume", "sum"), n_source_minutes=("open", "size"),
+                  norm_segment_id=("norm_segment_id", "first"),
                   source_first_ts=("ts_open_et", "first"),
                   source_last_ts=("ts_open_et", "last"))
              .reset_index())
@@ -484,25 +522,22 @@ BASE_COLS = ["ts_event", "rtype", "publisher_id", "instrument_id",
              "open", "high", "low", "close", "volume", "symbol"]
 
 
-def build_combined(discovery_csv: str, warmup_csv: str,
-                   discovery_hash_path: str, warmup_hash_path: str):
-    """Discovery + warm-up combined with CAUSAL contract selection and explicit
-    continuity segments.
+def build_combined(discovery_csv: str, extra_csvs: list[str],
+                   discovery_hash_path: str, extra_hash_paths: list[str]):
+    """Discovery + all context files combined with a FROZEN quarterly roll and a
+    DUAL segment model (absolute vs. scale-invariant normalization).
 
-    Returns (et_frame, audit, tf_ledgers, roll_ledger, segments_ledger). The
-    et_frame carries segment_id per bar. HTF construction and trailing
-    normalization respect segment boundaries; the warm-up never serves as an
-    immediate predecessor across the seam.
+    Returns (et_frame, audit, tf_ledgers, roll_schedule, segments_ledger). The
+    et_frame carries segment_id (absolute) and norm_segment_id per bar.
     """
     raw_d = load_raw(discovery_csv)
-    raw_w = load_raw(warmup_csv)
-    raw = pd.concat([raw_w, raw_d], ignore_index=True)
+    raws = [load_raw(p) for p in extra_csvs]
+    raw = pd.concat(raws + [raw_d], ignore_index=True)
 
-    # causal contract decision (no intra-session look-ahead) + segments
-    sel_df, roll_ledger = causal_contract_selection(raw)
+    # FROZEN roll contract selection + dual (abs / norm) segments
+    sel_df, roll_sched = frozen_roll_selection(raw)
     seg_df, seg_ledger = assign_segments(sel_df)
 
-    # build the ET minute frame directly from the segmented continuous series
     et = seg_df.rename(columns={"_et": "ts_open_et"}).copy()
     et["ts_close_et"] = et["ts_open_et"] + pd.Timedelta(minutes=1)
     et = et.sort_values("ts_open_et").reset_index(drop=True)
@@ -517,39 +552,39 @@ def build_combined(discovery_csv: str, warmup_csv: str,
     audit = data_audit(raw_d, et_d, discovery_hash_path)
     audit["instrument_selection"] = sel_info
 
-    # discovery continuity segment = the post-seam NQU6 segment
-    disc_mask = et["ts_open_et"] >= pd.Timestamp("2026-07-05 00:00", tz=TZ)
-    disc_seg = int(et.loc[disc_mask, "segment_id"].min()) if disc_mask.any() else None
-    warm_last = et.loc[et["segment_id"] < disc_seg, "ts_open_et"].max()
-    disc_first = et.loc[et["segment_id"] == disc_seg, "ts_open_et"].min()
+    # discovery ABSOLUTE segment = the segment containing 2026-07-06
+    disc_mask = et["ts_open_et"] >= pd.Timestamp("2026-07-06 00:00", tz=TZ)
+    disc_seg = int(et.loc[disc_mask, "segment_id"].min())
+    disc_norm = int(et.loc[disc_mask, "norm_segment_id"].min())
+    disc_abs_start = et.loc[et["segment_id"] == disc_seg, "ts_open_et"].min()
+    norm_start = et.loc[et["norm_segment_id"] == disc_norm, "ts_open_et"].min()
+    june_cut = roll_cutoff(2026, 6)
 
-    audit["warmup"] = {
-        "hash_path": warmup_hash_path,
-        "file_sha256": sha256_file(warmup_hash_path),
-        "rows_selected_continuous": int(len(sel_df)),
-        "symbols_used": sorted(seg_ledger["contract"].unique().tolist()),
-        "warmup_globex_sessions": int(seg_df.loc[seg_df["segment_id"] < disc_seg, "gday"].nunique()),
-        "n_segments": int(seg_ledger["segment_id"].max() + 1),
-        "discovery_segment_id": disc_seg,
-        "seam": {
-            "last_pre_discovery_bar_et": str(warm_last),
-            "first_discovery_bar_et": str(disc_first),
-            "gap_days": float((disc_first - warm_last).total_seconds() / 86400.0),
-            "note": ("Warm-up ends on NQM6; discovery is NQU6. The seam is a new "
-                     "continuity segment (contract change + ~28-day gap). Trailing "
-                     "10/20/40 statistics require that many completed candles FROM "
-                     "THE DISCOVERY SEGMENT; warm-up observations are NOT used as "
-                     "immediate predecessors of July. Older observations existing "
-                     "does NOT make daily/4h histories available in July."),
-        },
-        "nominal_sessions_before_discovery": int(seg_df.loc[seg_df["segment_id"] < disc_seg, "gday"].nunique()),
-        "requirement_note": ("Nominal >=40 pre-July sessions exist, but they are in "
-                             "prior segments; per-segment continuity governs feature "
-                             "validity, so daily/4h 40-candle histories remain "
-                             "unavailable in the July week."),
+    audit["context_files"] = [{"hash_path": p, "file_sha256": sha256_file(p)}
+                              for p in extra_hash_paths]
+    audit["roll_model"] = {
+        "type": "FROZEN predetermined quarterly roll (not volume-based)",
+        "june_2026_cutoff_et": str(june_cut),
+        "june_2026_cutoff_utc": str(june_cut.tz_convert("UTC")),
+        "rule": "Globex open (18:00 ET) on the Monday of the third-Friday expiry week",
+        "switch": "NQM6 -> NQU6 at the cutoff; absolute structures reset there",
+    }
+    audit["segments"] = {
+        "n_absolute_segments": int(seg_ledger["segment_id"].max() + 1),
+        "discovery_absolute_segment_id": disc_seg,
+        "discovery_absolute_segment_start_et": str(disc_abs_start),
+        "discovery_norm_segment_id": disc_norm,
+        "discovery_norm_segment_start_et": str(norm_start),
+        "data_gap_outage_threshold_days": DATA_GAP_MAX_DAYS,
+        "model": ("ABSOLUTE segments reset at every frozen roll and every >"
+                  f"{DATA_GAP_MAX_DAYS}-day data outage; no absolute structure "
+                  "spans one. NORMALIZATION segments reset ONLY at a data outage, "
+                  "so scale-invariant trailing percentiles continue ACROSS the "
+                  "contract roll. Weekends / maintenance / holidays / early closes "
+                  "are scheduled closures (< threshold) and do not break either."),
     }
     tf_ledgers = {tf.name: aggregate_tf(et, tf) for tf in TIMEFRAMES}
-    return et, audit, tf_ledgers, roll_ledger, seg_ledger
+    return et, audit, tf_ledgers, roll_sched, seg_ledger
 
 
 if __name__ == "__main__":

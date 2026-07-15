@@ -7,20 +7,20 @@ no setup discovery, no trade evaluation, no profitability.
 ## Layout
 
 ```
-core.py         loader, audit, ET tz, CAUSAL contract selection, continuity
-                segments, segment-aware HTF aggregation (daily = 18:00->16:59)
+core.py         loader, audit, ET tz, FROZEN quarterly roll, dual (absolute/
+                normalization) segments, segment-aware HTF agg (daily=18:00->16:59)
 primitives.py   FVG, iFVG, liquidity refs, rejection-block candidates,
-                displacement; segment-restricted trailing percentiles + validity
-run.py          driver -> all ledgers + roll/segment/validity ledgers + report
+                displacement; norm-segment trailing percentiles + validity
+run.py          driver -> all ledgers + roll_schedule/segments/validity + report
 charts.py       deterministic human-audit examples + annotated PNG charts
-tests.py        114 invariant checks (causality, continuity, counts)
+tests.py        119 invariant checks (frozen roll, dual segments, counts)
 REPORT.md       human-readable Phase-1 report (read this first)
 outputs/
   data_quality_report.json         includes warmup, seam, validity summary
   reproducibility_manifest.json
   nq_1m_et_normalized.csv           ET frame (segment_id, selected contract)
   htf_candles_<tf>.csv              HTF candles w/ complete, availability, segment
-  ledgers/                          primitive + roll_decisions + continuity_segments
+  ledgers/                          primitive + roll_schedule + continuity_segments
                                     + trailing_validity_table (CSV; JSON for small)
   charts/                           37 annotated audit charts
   examples/audit_examples.json      machine index of the audit examples
@@ -30,27 +30,29 @@ outputs/
 
 ```
 pip install pandas numpy pytz zstandard matplotlib
-# decompress both delivered .zst files to CSV first
-python3 run.py  discovery.csv <discovery.csv.zst>  warmup.csv <warmup.csv.zst>
+# decompress the three delivered .zst files to CSV first
+python3 run.py  discovery.csv <discovery.zst>  warmup.csv <warmup.zst>  gap.csv <gap.zst>
 python3 charts.py
-python3 tests.py     # 114/114 invariant checks
+python3 tests.py     # 119/119 invariant checks
 ```
 
-(Omit the two warm-up arguments to run discovery-only.)
+(Extra files are passed as `csv hash` pairs; omit them to run discovery-only.)
 Deterministic: no randomness, no seeds. Identical inputs → identical outputs.
 
 ## Key facts
 
-- **Discovery week** (`glbx-mdp3-20260706-20260712`): 2026-07-05 20:00 →
-  2026-07-12 19:59 ET, front month **NQU6**. Clean; one continuity segment.
-- **Causal contract selection:** each session's contract is decided from the
-  **previous** session's outright volume (no intra-session look-ahead). Only two
-  disclosed bootstraps (data start, post-seam). See `roll_decisions.csv`.
-- **Continuity segments (26):** new segment after each roll, the seam, and any
-  >60-min non-calendar gap. No HTF candle spans a boundary. Discovery = segment 25.
-- **Warm-up is NOT fully resolved for setup discovery.** Older sessions exist,
-  but trailing 10/20/40 require same-segment complete predecessors, and the
-  28-day seam isolates July. **daily (all N) and 4h prev40 stay null all week;**
-  15m/30m/1h become valid partway through — see `trailing_validity_table.csv`.
+- **Three contiguous files** stitch 2025-01-01 → 2026-07-12 with no gap:
+  warm-up (2025-01→2026-06-07) + gap-fill (2026-06-08→07-05) + discovery
+  (2026-07-06→07-12). All SHA-256-verified.
+- **Frozen quarterly roll** (not volume): Globex open on the Monday of the
+  third-Friday expiry week. June 2026 → **NQM6 → NQU6 at `2026-06-15 18:00 ET`**
+  (`roll_schedule.csv`).
+- **Dual segments.** *Absolute* segments reset at every roll + >4-day outage
+  (7 segments, one per contract); no absolute structure (FVG/liquidity/rejection/
+  displacement) spans a roll — discovery = NQU6 segment 6. *Normalization*
+  segments reset only at a >4-day outage, so scale-invariant trailing percentiles
+  cross contracts — the whole history is one norm segment (id 0).
+- **Every trailing 10/20/40 percentile is valid in July** (0 null, incl. daily
+  prev40) — see `trailing_validity_table.csv`.
 
 See `REPORT.md` §0. Parameter version: `phase1-v1.0.0`.

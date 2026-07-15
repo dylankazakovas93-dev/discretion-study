@@ -70,8 +70,9 @@ class Candles:
     l: np.ndarray
     c: np.ndarray
     v: np.ndarray
-    segment_id: np.ndarray   # continuity-segment id per candle
-    complete: np.ndarray     # bool: full interval, single segment (usable as history)
+    segment_id: np.ndarray       # ABSOLUTE segment (resets at roll+outage)
+    norm_segment_id: np.ndarray  # NORMALIZATION segment (resets at outage only)
+    complete: np.ndarray         # bool: full interval, single segment (usable history)
 
     @property
     def n(self):
@@ -94,6 +95,7 @@ def make_candles(ledger: pd.DataFrame, tf: str) -> Candles:
         c=d["close"].to_numpy(float),
         v=d["volume"].to_numpy(float),
         segment_id=d["segment_id"].to_numpy(int),
+        norm_segment_id=d["norm_segment_id"].to_numpy(int),
         complete=d["complete"].astype(bool).to_numpy(),
     )
 
@@ -129,7 +131,7 @@ def validity_table(cd: "Candles") -> list:
         nnull = 0
         first_valid = None
         for i in range(d0, d1):
-            ok = _n_same_seg_complete_preds(cd.segment_id, cd.complete, i, N) >= N
+            ok = _n_same_seg_complete_preds(cd.norm_segment_id, cd.complete, i, N) >= N
             if ok and first_valid is None:
                 first_valid = cd.t_avail[i]
             if not ok:
@@ -139,8 +141,8 @@ def validity_table(cd: "Candles") -> list:
             "discovery_candles": int(total),
             "null_count": int(nnull), "valid_count": int(total - nnull),
             "first_valid_july_availability_et": first_valid,
-            "discovery_segment_id": int(cd.segment_id[d0]) if total else None,
-            "exclusion_reason": ("insufficient_same_segment_complete_predecessors"
+            "discovery_norm_segment_id": int(cd.norm_segment_id[d0]) if total else None,
+            "exclusion_reason": ("insufficient_same_norm_segment_complete_predecessors"
                                  if nnull else ""),
         })
     return rows
@@ -149,11 +151,12 @@ def validity_table(cd: "Candles") -> list:
 def seg_hist(values: np.ndarray, seg: np.ndarray, complete: np.ndarray,
              i: int, N: int):
     """The N most recent COMPLETE predecessors of i that are IN THE SAME
-    continuity segment. Returns None if fewer than N exist (-> null feature).
+    (normalization) segment. Returns None if fewer than N exist (-> null).
 
-    The current candle i is excluded. Scanning stops at the segment boundary:
-    warm-up / prior-contract candles never serve as predecessors across a roll
-    or the seam. Incomplete (boundary) candles are skipped, not counted.
+    The current candle i is excluded. Scanning stops at the segment boundary;
+    for scale-invariant percentiles this is the NORMALIZATION segment, which
+    crosses contract rolls and breaks only at a genuine data outage. Incomplete
+    (boundary) candles are skipped, not counted.
     """
     out = []
     j = i - 1
@@ -176,13 +179,18 @@ def seg_hist(values: np.ndarray, seg: np.ndarray, complete: np.ndarray,
 def detect_fvgs(cd: Candles) -> pd.DataFrame:
     rows = []
     o, h, l, c = cd.o, cd.h, cd.l, cd.c
-    # detect only where candle A is post-seam (discovery-side, contiguous). This
-    # includes Jul-5 evening structures that may convert during the week.
-    start = max(2, _postseam_first(cd.t_open_utc) + 2)
     seg = cd.segment_id
+    # confine detection to the discovery ABSOLUTE segment (the one containing the
+    # discovery week). Absolute structures reset at the roll, so this segment is
+    # the post-roll NQU6 run; nothing before the roll can form part of a July FVG.
+    d0, d1 = _disc_bounds(cd.t_avail_utc)
+    if d0 == d1:
+        return pd.DataFrame()
+    disc_abs = seg[d0]
+    start = max(2, int(np.searchsorted(seg, disc_abs, side="left")) + 2)
     for i in range(start, cd.n):
         A, B, C = i - 2, i - 1, i
-        if not (seg[A] == seg[B] == seg[C]):  # no structure spans a segment/roll
+        if not (seg[A] == seg[B] == seg[C] == disc_abs):  # single abs segment only
             continue
         b_lo, b_hi = min(o[B], c[B]), max(o[B], c[B])
         # ---- bullish ----
@@ -393,9 +401,11 @@ def detect_rejection_blocks(cd: Candles) -> pd.DataFrame:
                 wick_hist_full = lower_wick
 
             def pctl(N):
-                hist = seg_hist(wick_hist_full, cd.segment_id, cd.complete, i, N)
+                # scale-invariant normalization: same NORM segment (crosses the
+                # contract roll), complete predecessors only.
+                hist = seg_hist(wick_hist_full, cd.norm_segment_id, cd.complete, i, N)
                 if hist is None:
-                    return np.nan  # insufficient same-segment complete history
+                    return np.nan
                 return pct_rank(dwick, hist)
 
             # ---- later state scan ----
@@ -482,11 +492,11 @@ def detect_displacement(cd: Candles, fvgs: pd.DataFrame) -> pd.DataFrame:
             fvg_by_C.setdefault(f["direction"], set()).add(int(f["C_index"]))
     rows = []
     d0, d1 = _disc_bounds(cd.t_avail_utc)
-    seam0 = _postseam_first(cd.t_open_utc)
+    seg = cd.segment_id
     for end in range(d0, d1):
         for L in (1, 2, 3):
             start = end - L + 1
-            if start < seam0:  # leg must not straddle the seam
+            if start < 0 or seg[start] != seg[end]:  # leg confined to one abs segment
                 continue
             for direction in ("bull", "bear"):
                 idx = list(range(start, end + 1))
@@ -502,7 +512,7 @@ def detect_displacement(cd: Candles, fvgs: pd.DataFrame) -> pd.DataFrame:
                 def med_body_pctile(N):
                     vals = []
                     for k in idx:
-                        hist = seg_hist(body, cd.segment_id, cd.complete, k, N)
+                        hist = seg_hist(body, cd.norm_segment_id, cd.complete, k, N)
                         if hist is None:
                             return np.nan
                         vals.append(pct_rank(body[k], hist))

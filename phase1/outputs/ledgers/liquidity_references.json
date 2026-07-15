@@ -12,7 +12,7 @@
   "sweep_et":null,
   "unswept_through_end":true,
   "session_globex_day":"2026-07-06",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -27,7 +27,7 @@
   "sweep_et":"2026-07-07T01:22:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-06",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -35,14 +35,14 @@
   "side":"high",
   "tf":"overnight_session",
   "param_version":"phase1-v1.0.0",
-  "extreme":30004.75,
+  "extreme":30011.25,
   "availability_et":"2026-07-06T13:30:00.000Z",
   "first_exact_touch_et":null,
-  "first_wick_passage_et":"2026-07-06T13:52:00.000Z",
-  "sweep_et":"2026-07-06T13:52:00.000Z",
+  "first_wick_passage_et":"2026-07-06T14:12:00.000Z",
+  "sweep_et":"2026-07-06T14:12:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-06",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -57,7 +57,7 @@
   "sweep_et":"2026-07-07T03:30:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-06",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -72,7 +72,7 @@
   "sweep_et":"2026-07-06T13:35:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-06",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -87,7 +87,7 @@
   "sweep_et":"2026-07-06T13:02:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-06",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -102,7 +102,7 @@
   "sweep_et":"2026-07-06T13:32:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-06",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -117,7 +117,7 @@
   "sweep_et":"2026-07-07T01:22:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-06",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -132,7 +132,7 @@
   "sweep_et":"2026-07-06T14:02:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-06",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -147,7 +147,7 @@
   "sweep_et":"2026-07-06T17:43:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-06",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -162,7 +162,7 @@
   "sweep_et":"2026-07-09T07:48:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-07",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -177,7 +177,7 @@
   "sweep_et":"2026-07-08T08:24:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-07",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -192,7 +192,7 @@
   "sweep_et":"2026-07-09T17:19:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-07",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -207,7 +207,7 @@
   "sweep_et":"2026-07-07T13:34:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-07",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -222,7 +222,7 @@
   "sweep_et":"2026-07-07T13:03:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-07",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -237,7 +237,7 @@
   "sweep_et":"2026-07-07T13:02:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-07",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -252,7 +252,7 @@
   "sweep_et":"2026-07-09T07:48:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-07",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -267,7 +267,7 @@
   "sweep_et":"2026-07-07T13:34:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-07",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -282,7 +282,7 @@
   "sweep_et":"2026-07-07T14:02:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-07",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -297,7 +297,7 @@
   "sweep_et":"2026-07-07T14:04:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-07",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -312,7 +312,7 @@
   "sweep_et":"2026-07-08T23:57:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-08",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -327,7 +327,7 @@
   "sweep_et":null,
   "unswept_through_end":true,
   "session_globex_day":"2026-07-08",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -342,7 +342,7 @@
   "sweep_et":"2026-07-09T00:12:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-08",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -357,7 +357,7 @@
   "sweep_et":null,
   "unswept_through_end":true,
   "session_globex_day":"2026-07-08",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -372,7 +372,7 @@
   "sweep_et":"2026-07-08T13:02:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-08",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -387,7 +387,7 @@
   "sweep_et":"2026-07-08T13:02:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-08",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -402,7 +402,7 @@
   "sweep_et":"2026-07-08T13:32:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-08",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -417,7 +417,7 @@
   "sweep_et":"2026-07-08T14:48:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-08",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -432,7 +432,7 @@
   "sweep_et":"2026-07-08T17:08:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-08",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -447,7 +447,7 @@
   "sweep_et":"2026-07-08T14:03:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-08",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -462,7 +462,7 @@
   "sweep_et":"2026-07-10T16:16:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-09",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -477,7 +477,7 @@
   "sweep_et":null,
   "unswept_through_end":true,
   "session_globex_day":"2026-07-09",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -492,7 +492,7 @@
   "sweep_et":"2026-07-09T13:36:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-09",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -507,7 +507,7 @@
   "sweep_et":null,
   "unswept_through_end":true,
   "session_globex_day":"2026-07-09",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -522,7 +522,7 @@
   "sweep_et":"2026-07-09T13:02:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-09",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -537,7 +537,7 @@
   "sweep_et":"2026-07-09T13:06:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-09",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -552,7 +552,7 @@
   "sweep_et":"2026-07-09T13:35:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-09",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -567,7 +567,7 @@
   "sweep_et":"2026-07-09T13:33:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-09",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -582,7 +582,7 @@
   "sweep_et":"2026-07-09T16:07:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-09",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -597,7 +597,7 @@
   "sweep_et":"2026-07-09T14:04:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-09",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -612,7 +612,7 @@
   "sweep_et":null,
   "unswept_through_end":true,
   "session_globex_day":"2026-07-10",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -627,7 +627,7 @@
   "sweep_et":null,
   "unswept_through_end":true,
   "session_globex_day":"2026-07-10",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -642,7 +642,7 @@
   "sweep_et":"2026-07-10T13:53:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-10",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -657,7 +657,7 @@
   "sweep_et":"2026-07-10T14:34:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-10",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -672,7 +672,7 @@
   "sweep_et":"2026-07-10T13:02:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-10",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -687,7 +687,7 @@
   "sweep_et":"2026-07-10T13:04:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-10",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -702,7 +702,7 @@
   "sweep_et":"2026-07-10T13:32:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-10",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -717,7 +717,7 @@
   "sweep_et":"2026-07-10T13:41:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-10",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -732,7 +732,7 @@
   "sweep_et":"2026-07-10T14:02:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-10",
-  "segment_id":25
+  "segment_id":6
  },
  {
   "instrument":"NQ",
@@ -747,6 +747,6 @@
   "sweep_et":"2026-07-10T14:02:00.000Z",
   "unswept_through_end":false,
   "session_globex_day":"2026-07-10",
-  "segment_id":25
+  "segment_id":6
  }
 ]

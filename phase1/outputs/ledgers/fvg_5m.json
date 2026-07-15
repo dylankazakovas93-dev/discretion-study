@@ -23,8 +23,8 @@
   "midpoint_touch_et":"2026-07-06T05:35:00.000Z",
   "full_fill_et":"2026-07-07T01:30:00.000Z",
   "invalidation_et":"2026-07-07T01:30:00.000Z",
-  "segment_id":25,
-  "C_index":100992
+  "segment_id":6,
+  "C_index":106416
  },
  {
   "id":"FVG-5m-bear-20260706T0125",
@@ -50,8 +50,8 @@
   "midpoint_touch_et":"2026-07-06T05:45:00.000Z",
   "full_fill_et":"2026-07-06T06:05:00.000Z",
   "invalidation_et":"2026-07-06T06:05:00.000Z",
-  "segment_id":25,
-  "C_index":101006
+  "segment_id":6,
+  "C_index":106430
  },
  {
   "id":"FVG-5m-bear-20260706T0130",
@@ -77,8 +77,8 @@
   "midpoint_touch_et":"2026-07-06T05:40:00.000Z",
   "full_fill_et":"2026-07-06T05:40:00.000Z",
   "invalidation_et":"2026-07-06T05:40:00.000Z",
-  "segment_id":25,
-  "C_index":101007
+  "segment_id":6,
+  "C_index":106431
  },
  {
   "id":"FVG-5m-bull-20260706T0140",
@@ -104,8 +104,8 @@
   "midpoint_touch_et":"2026-07-06T05:50:00.000Z",
   "full_fill_et":"2026-07-06T05:50:00.000Z",
   "invalidation_et":"2026-07-06T05:50:00.000Z",
-  "segment_id":25,
-  "C_index":101009
+  "segment_id":6,
+  "C_index":106433
  },
  {
   "id":"FVG-5m-bear-20260706T0210",
@@ -131,8 +131,8 @@
   "midpoint_touch_et":"2026-07-06T06:30:00.000Z",
   "full_fill_et":"2026-07-06T06:30:00.000Z",
   "invalidation_et":"2026-07-06T06:30:00.000Z",
-  "segment_id":25,
-  "C_index":101015
+  "segment_id":6,
+  "C_index":106439
  },
  {
   "id":"FVG-5m-bull-20260706T0225",
@@ -158,8 +158,8 @@
   "midpoint_touch_et":"2026-07-07T01:25:00.000Z",
   "full_fill_et":"2026-07-07T01:25:00.000Z",
   "invalidation_et":"2026-07-07T01:25:00.000Z",
-  "segment_id":25,
-  "C_index":101018
+  "segment_id":6,
+  "C_index":106442
  },
  {
   "id":"FVG-5m-bull-20260706T0230",
@@ -185,8 +185,8 @@
   "midpoint_touch_et":"2026-07-06T08:20:00.000Z",
   "full_fill_et":"2026-07-06T13:35:00.000Z",
   "invalidation_et":"2026-07-06T13:35:00.000Z",
-  "segment_id":25,
-  "C_index":101019
+  "segment_id":6,
+  "C_index":106443
  },
  {
   "id":"FVG-5m-bull-20260706T0235",
@@ -212,8 +212,8 @@
   "midpoint_touch_et":"2026-07-06T08:15:00.000Z",
   "full_fill_et":"2026-07-06T08:20:00.000Z",
   "invalidation_et":"2026-07-06T08:20:00.000Z",
-  "segment_id":25,
-  "C_index":101020
+  "segment_id":6,
+  "C_index":106444
  },
  {
   "id":"FVG-5m-bull-20260706T0240",
@@ -239,8 +239,8 @@
   "midpoint_touch_et":"2026-07-06T07:30:00.000Z",
   "full_fill_et":"2026-07-06T07:30:00.000Z",
   "invalidation_et":"2026-07-06T07:30:00.000Z",
-  "segment_id":25,
-  "C_index":101021
+  "segment_id":6,
+  "C_index":106445
  },
  {
   "id":"FVG-5m-bear-20260706T0325",
@@ -266,8 +266,8 @@
   "midpoint_touch_et":"2026-07-06T07:35:00.000Z",
   "full_fill_et":"2026-07-06T07:35:00.000Z",
   "invalidation_et":"2026-07-06T07:35:00.000Z",
-  "segment_id":25,
-  "C_index":101030
+  "segment_id":6,
+  "C_index":106454
  },
  {
   "id":"FVG-5m-bull-20260706T0345",
@@ -293,8 +293,8 @@
   "midpoint_touch_et":"2026-07-06T07:55:00.000Z",
   "full_fill_et":"2026-07-06T08:05:00.000Z",
   "invalidation_et":"2026-07-06T08:05:00.000Z",
-  "segment_id":25,
-  "C_index":101034
+  "segment_id":6,
+  "C_index":106458
  },
  {
   "id":"FVG-5m-bear-20260706T0355",
@@ -320,8 +320,8 @@
   "midpoint_touch_et":"2026-07-06T08:05:00.000Z",
   "full_fill_et":"2026-07-06T08:05:00.000Z",
   "invalidation_et":"2026-07-06T08:05:00.000Z",
-  "segment_id":25,
-  "C_index":101036
+  "segment_id":6,
+  "C_index":106460
  },
  {
   "id":"FVG-5m-bear-20260706T0415",
@@ -347,8 +347,8 @@
   "midpoint_touch_et":"2026-07-06T08:45:00.000Z",
   "full_fill_et":"2026-07-06T09:00:00.000Z",
   "invalidation_et":"2026-07-06T09:00:00.000Z",
-  "segment_id":25,
-  "C_index":101040
+  "segment_id":6,
+  "C_index":106464
  },
  {
   "id":"FVG-5m-bull-20260706T0445",
@@ -374,8 +374,8 @@
   "midpoint_touch_et":"2026-07-06T09:50:00.000Z",
   "full_fill_et":"2026-07-06T09:50:00.000Z",
   "invalidation_et":"2026-07-06T09:50:00.000Z",
-  "segment_id":25,
-  "C_index":101046
+  "segment_id":6,
+  "C_index":106470
  },
  {
   "id":"FVG-5m-bull-20260706T0555",
@@ -401,8 +401,8 @@
   "midpoint_touch_et":"2026-07-06T10:10:00.000Z",
   "full_fill_et":"2026-07-06T10:15:00.000Z",
   "invalidation_et":"2026-07-06T10:15:00.000Z",
-  "segment_id":25,
-  "C_index":101060
+  "segment_id":6,
+  "C_index":106484
  },
  {
   "id":"FVG-5m-bear-20260706T0605",
@@ -428,8 +428,8 @@
   "midpoint_touch_et":"2026-07-06T10:15:00.000Z",
   "full_fill_et":"2026-07-06T10:15:00.000Z",
   "invalidation_et":"2026-07-06T10:15:00.000Z",
-  "segment_id":25,
-  "C_index":101062
+  "segment_id":6,
+  "C_index":106486
  },
  {
   "id":"FVG-5m-bear-20260706T0645",
@@ -455,8 +455,8 @@
   "midpoint_touch_et":"2026-07-06T10:55:00.000Z",
   "full_fill_et":"2026-07-06T11:00:00.000Z",
   "invalidation_et":"2026-07-06T11:00:00.000Z",
-  "segment_id":25,
-  "C_index":101070
+  "segment_id":6,
+  "C_index":106494
  },
  {
   "id":"FVG-5m-bull-20260706T0655",
@@ -482,8 +482,8 @@
   "midpoint_touch_et":"2026-07-06T11:05:00.000Z",
   "full_fill_et":"2026-07-06T11:05:00.000Z",
   "invalidation_et":"2026-07-06T11:05:00.000Z",
-  "segment_id":25,
-  "C_index":101072
+  "segment_id":6,
+  "C_index":106496
  },
  {
   "id":"FVG-5m-bear-20260706T0705",
@@ -509,8 +509,8 @@
   "midpoint_touch_et":"2026-07-06T11:20:00.000Z",
   "full_fill_et":"2026-07-06T11:20:00.000Z",
   "invalidation_et":"2026-07-06T11:20:00.000Z",
-  "segment_id":25,
-  "C_index":101074
+  "segment_id":6,
+  "C_index":106498
  },
  {
   "id":"FVG-5m-bull-20260706T0720",
@@ -536,8 +536,8 @@
   "midpoint_touch_et":"2026-07-06T13:15:00.000Z",
   "full_fill_et":"2026-07-06T13:15:00.000Z",
   "invalidation_et":"2026-07-06T13:15:00.000Z",
-  "segment_id":25,
-  "C_index":101077
+  "segment_id":6,
+  "C_index":106501
  },
  {
   "id":"FVG-5m-bull-20260706T0750",
@@ -563,8 +563,8 @@
   "midpoint_touch_et":"2026-07-06T12:00:00.000Z",
   "full_fill_et":"2026-07-06T12:00:00.000Z",
   "invalidation_et":"2026-07-06T12:00:00.000Z",
-  "segment_id":25,
-  "C_index":101083
+  "segment_id":6,
+  "C_index":106507
  },
  {
   "id":"FVG-5m-bull-20260706T0810",
@@ -590,8 +590,8 @@
   "midpoint_touch_et":"2026-07-06T12:20:00.000Z",
   "full_fill_et":"2026-07-06T12:20:00.000Z",
   "invalidation_et":"2026-07-06T12:20:00.000Z",
-  "segment_id":25,
-  "C_index":101087
+  "segment_id":6,
+  "C_index":106511
  },
  {
   "id":"FVG-5m-bear-20260706T0825",
@@ -617,8 +617,8 @@
   "midpoint_touch_et":"2026-07-06T12:35:00.000Z",
   "full_fill_et":"2026-07-06T12:40:00.000Z",
   "invalidation_et":"2026-07-06T12:40:00.000Z",
-  "segment_id":25,
-  "C_index":101090
+  "segment_id":6,
+  "C_index":106514
  },
  {
   "id":"FVG-5m-bull-20260706T0855",
@@ -644,8 +644,8 @@
   "midpoint_touch_et":"2026-07-06T13:05:00.000Z",
   "full_fill_et":"2026-07-06T13:05:00.000Z",
   "invalidation_et":"2026-07-06T13:05:00.000Z",
-  "segment_id":25,
-  "C_index":101096
+  "segment_id":6,
+  "C_index":106520
  },
  {
   "id":"FVG-5m-bear-20260706T0905",
@@ -671,8 +671,8 @@
   "midpoint_touch_et":"2026-07-06T13:35:00.000Z",
   "full_fill_et":"2026-07-06T13:35:00.000Z",
   "invalidation_et":"2026-07-06T13:35:00.000Z",
-  "segment_id":25,
-  "C_index":101098
+  "segment_id":6,
+  "C_index":106522
  },
  {
   "id":"FVG-5m-bear-20260706T0915",
@@ -698,8 +698,8 @@
   "midpoint_touch_et":"2026-07-06T13:35:00.000Z",
   "full_fill_et":"2026-07-06T13:35:00.000Z",
   "invalidation_et":"2026-07-06T13:35:00.000Z",
-  "segment_id":25,
-  "C_index":101100
+  "segment_id":6,
+  "C_index":106524
  },
  {
   "id":"FVG-5m-bear-20260706T0920",
@@ -725,8 +725,8 @@
   "midpoint_touch_et":"2026-07-06T13:30:00.000Z",
   "full_fill_et":"2026-07-06T13:30:00.000Z",
   "invalidation_et":"2026-07-06T13:30:00.000Z",
-  "segment_id":25,
-  "C_index":101101
+  "segment_id":6,
+  "C_index":106525
  },
  {
   "id":"FVG-5m-bear-20260706T1115",
@@ -752,8 +752,8 @@
   "midpoint_touch_et":"2026-07-06T15:25:00.000Z",
   "full_fill_et":"2026-07-06T15:25:00.000Z",
   "invalidation_et":"2026-07-06T15:25:00.000Z",
-  "segment_id":25,
-  "C_index":101124
+  "segment_id":6,
+  "C_index":106548
  },
  {
   "id":"FVG-5m-bull-20260706T1125",
@@ -779,8 +779,8 @@
   "midpoint_touch_et":"2026-07-06T17:00:00.000Z",
   "full_fill_et":"2026-07-06T17:00:00.000Z",
   "invalidation_et":"2026-07-06T17:00:00.000Z",
-  "segment_id":25,
-  "C_index":101126
+  "segment_id":6,
+  "C_index":106550
  },
  {
   "id":"FVG-5m-bull-20260706T1130",
@@ -806,8 +806,8 @@
   "midpoint_touch_et":"2026-07-06T16:30:00.000Z",
   "full_fill_et":"2026-07-06T16:40:00.000Z",
   "invalidation_et":"2026-07-06T16:40:00.000Z",
-  "segment_id":25,
-  "C_index":101127
+  "segment_id":6,
+  "C_index":106551
  },
  {
   "id":"FVG-5m-bear-20260706T1225",
@@ -833,8 +833,8 @@
   "midpoint_touch_et":"2026-07-06T19:25:00.000Z",
   "full_fill_et":"2026-07-10T17:35:00.000Z",
   "invalidation_et":"2026-07-10T17:35:00.000Z",
-  "segment_id":25,
-  "C_index":101138
+  "segment_id":6,
+  "C_index":106562
  },
  {
   "id":"FVG-5m-bull-20260706T1310",
@@ -860,8 +860,8 @@
   "midpoint_touch_et":"2026-07-06T17:20:00.000Z",
   "full_fill_et":"2026-07-06T17:20:00.000Z",
   "invalidation_et":"2026-07-06T17:20:00.000Z",
-  "segment_id":25,
-  "C_index":101147
+  "segment_id":6,
+  "C_index":106571
  },
  {
   "id":"FVG-5m-bear-20260706T1320",
@@ -887,8 +887,8 @@
   "midpoint_touch_et":"2026-07-06T19:05:00.000Z",
   "full_fill_et":"2026-07-06T19:15:00.000Z",
   "invalidation_et":"2026-07-06T19:15:00.000Z",
-  "segment_id":25,
-  "C_index":101149
+  "segment_id":6,
+  "C_index":106573
  },
  {
   "id":"FVG-5m-bear-20260706T1330",
@@ -914,8 +914,8 @@
   "midpoint_touch_et":"2026-07-06T18:10:00.000Z",
   "full_fill_et":"2026-07-06T18:10:00.000Z",
   "invalidation_et":"2026-07-06T18:10:00.000Z",
-  "segment_id":25,
-  "C_index":101151
+  "segment_id":6,
+  "C_index":106575
  },
  {
   "id":"FVG-5m-bear-20260706T1335",
@@ -941,8 +941,8 @@
   "midpoint_touch_et":"2026-07-06T18:10:00.000Z",
   "full_fill_et":"2026-07-06T18:10:00.000Z",
   "invalidation_et":"2026-07-06T18:10:00.000Z",
-  "segment_id":25,
-  "C_index":101152
+  "segment_id":6,
+  "C_index":106576
  },
  {
   "id":"FVG-5m-bull-20260706T1405",
@@ -968,8 +968,8 @@
   "midpoint_touch_et":"2026-07-06T22:50:00.000Z",
   "full_fill_et":"2026-07-06T22:55:00.000Z",
   "invalidation_et":"2026-07-06T22:55:00.000Z",
-  "segment_id":25,
-  "C_index":101158
+  "segment_id":6,
+  "C_index":106582
  },
  {
   "id":"FVG-5m-bull-20260706T1410",
@@ -995,8 +995,8 @@
   "midpoint_touch_et":"2026-07-06T20:00:00.000Z",
   "full_fill_et":"2026-07-06T20:00:00.000Z",
   "invalidation_et":"2026-07-06T20:00:00.000Z",
-  "segment_id":25,
-  "C_index":101159
+  "segment_id":6,
+  "C_index":106583
  },
  {
   "id":"FVG-5m-bull-20260706T1420",
@@ -1022,8 +1022,8 @@
   "midpoint_touch_et":"2026-07-06T18:30:00.000Z",
   "full_fill_et":"2026-07-06T18:30:00.000Z",
   "invalidation_et":"2026-07-06T18:30:00.000Z",
-  "segment_id":25,
-  "C_index":101161
+  "segment_id":6,
+  "C_index":106585
  },
  {
   "id":"FVG-5m-bull-20260706T1520",
@@ -1049,8 +1049,8 @@
   "midpoint_touch_et":"2026-07-06T19:35:00.000Z",
   "full_fill_et":"2026-07-06T19:35:00.000Z",
   "invalidation_et":"2026-07-06T19:35:00.000Z",
-  "segment_id":25,
-  "C_index":101173
+  "segment_id":6,
+  "C_index":106597
  },
  {
   "id":"FVG-5m-bear-20260706T1555",
@@ -1076,8 +1076,8 @@
   "midpoint_touch_et":"2026-07-10T16:20:00.000Z",
   "full_fill_et":"2026-07-10T16:25:00.000Z",
   "invalidation_et":"2026-07-10T16:25:00.000Z",
-  "segment_id":25,
-  "C_index":101180
+  "segment_id":6,
+  "C_index":106604
  },
  {
   "id":"FVG-5m-bear-20260706T1625",
@@ -1103,8 +1103,8 @@
   "midpoint_touch_et":"2026-07-06T20:35:00.000Z",
   "full_fill_et":"2026-07-06T20:35:00.000Z",
   "invalidation_et":"2026-07-06T20:35:00.000Z",
-  "segment_id":25,
-  "C_index":101186
+  "segment_id":6,
+  "C_index":106610
  },
  {
   "id":"FVG-5m-bear-20260706T1650",
@@ -1130,8 +1130,8 @@
   "midpoint_touch_et":"2026-07-06T21:00:00.000Z",
   "full_fill_et":"2026-07-06T21:00:00.000Z",
   "invalidation_et":"2026-07-06T21:00:00.000Z",
-  "segment_id":25,
-  "C_index":101191
+  "segment_id":6,
+  "C_index":106615
  },
  {
   "id":"FVG-5m-bull-20260706T1800",
@@ -1157,8 +1157,8 @@
   "midpoint_touch_et":"2026-07-06T22:10:00.000Z",
   "full_fill_et":"2026-07-06T22:10:00.000Z",
   "invalidation_et":"2026-07-06T22:10:00.000Z",
-  "segment_id":25,
-  "C_index":101193
+  "segment_id":6,
+  "C_index":106617
  },
  {
   "id":"FVG-5m-bear-20260706T1850",
@@ -1184,8 +1184,8 @@
   "midpoint_touch_et":"2026-07-09T17:10:00.000Z",
   "full_fill_et":"2026-07-09T17:10:00.000Z",
   "invalidation_et":"2026-07-09T17:10:00.000Z",
-  "segment_id":25,
-  "C_index":101203
+  "segment_id":6,
+  "C_index":106627
  },
  {
   "id":"FVG-5m-bear-20260706T1855",
@@ -1211,8 +1211,8 @@
   "midpoint_touch_et":"2026-07-06T23:05:00.000Z",
   "full_fill_et":"2026-07-06T23:05:00.000Z",
   "invalidation_et":"2026-07-06T23:05:00.000Z",
-  "segment_id":25,
-  "C_index":101204
+  "segment_id":6,
+  "C_index":106628
  },
  {
   "id":"FVG-5m-bear-20260706T1920",
@@ -1238,8 +1238,8 @@
   "midpoint_touch_et":"2026-07-06T23:30:00.000Z",
   "full_fill_et":"2026-07-06T23:30:00.000Z",
   "invalidation_et":"2026-07-06T23:30:00.000Z",
-  "segment_id":25,
-  "C_index":101209
+  "segment_id":6,
+  "C_index":106633
  },
  {
   "id":"FVG-5m-bear-20260706T1945",
@@ -1265,8 +1265,8 @@
   "midpoint_touch_et":"2026-07-07T00:10:00.000Z",
   "full_fill_et":"2026-07-07T00:10:00.000Z",
   "invalidation_et":"2026-07-07T00:10:00.000Z",
-  "segment_id":25,
-  "C_index":101214
+  "segment_id":6,
+  "C_index":106638
  },
  {
   "id":"FVG-5m-bear-20260706T1950",
@@ -1292,8 +1292,8 @@
   "midpoint_touch_et":"2026-07-07T00:05:00.000Z",
   "full_fill_et":"2026-07-07T00:05:00.000Z",
   "invalidation_et":"2026-07-07T00:05:00.000Z",
-  "segment_id":25,
-  "C_index":101215
+  "segment_id":6,
+  "C_index":106639
  },
  {
   "id":"FVG-5m-bull-20260706T2025",
@@ -1319,8 +1319,8 @@
   "midpoint_touch_et":"2026-07-07T00:35:00.000Z",
   "full_fill_et":"2026-07-07T00:35:00.000Z",
   "invalidation_et":"2026-07-07T00:35:00.000Z",
-  "segment_id":25,
-  "C_index":101222
+  "segment_id":6,
+  "C_index":106646
  },
  {
   "id":"FVG-5m-bear-20260706T2035",
@@ -1346,8 +1346,8 @@
   "midpoint_touch_et":"2026-07-09T13:40:00.000Z",
   "full_fill_et":"2026-07-09T13:45:00.000Z",
   "invalidation_et":"2026-07-09T13:45:00.000Z",
-  "segment_id":25,
-  "C_index":101224
+  "segment_id":6,
+  "C_index":106648
  },
  {
   "id":"FVG-5m-bull-20260706T2145",
@@ -1373,8 +1373,8 @@
   "midpoint_touch_et":"2026-07-07T02:00:00.000Z",
   "full_fill_et":"2026-07-07T02:00:00.000Z",
   "invalidation_et":"2026-07-07T02:00:00.000Z",
-  "segment_id":25,
-  "C_index":101238
+  "segment_id":6,
+  "C_index":106662
  },
  {
   "id":"FVG-5m-bull-20260706T2150",
@@ -1400,8 +1400,8 @@
   "midpoint_touch_et":"2026-07-07T02:00:00.000Z",
   "full_fill_et":"2026-07-07T02:00:00.000Z",
   "invalidation_et":"2026-07-07T02:00:00.000Z",
-  "segment_id":25,
-  "C_index":101239
+  "segment_id":6,
+  "C_index":106663
  },
  {
   "id":"FVG-5m-bull-20260706T2210",
@@ -1427,8 +1427,8 @@
   "midpoint_touch_et":"2026-07-07T02:25:00.000Z",
   "full_fill_et":"2026-07-07T02:25:00.000Z",
   "invalidation_et":"2026-07-07T02:25:00.000Z",
-  "segment_id":25,
-  "C_index":101243
+  "segment_id":6,
+  "C_index":106667
  },
  {
   "id":"FVG-5m-bear-20260706T2225",
@@ -1454,8 +1454,8 @@
   "midpoint_touch_et":"2026-07-09T13:40:00.000Z",
   "full_fill_et":"2026-07-09T13:40:00.000Z",
   "invalidation_et":"2026-07-09T13:40:00.000Z",
-  "segment_id":25,
-  "C_index":101246
+  "segment_id":6,
+  "C_index":106670
  },
  {
   "id":"FVG-5m-bear-20260706T2315",
@@ -1481,8 +1481,8 @@
   "midpoint_touch_et":"2026-07-09T12:35:00.000Z",
   "full_fill_et":"2026-07-09T12:35:00.000Z",
   "invalidation_et":"2026-07-09T12:35:00.000Z",
-  "segment_id":25,
-  "C_index":101256
+  "segment_id":6,
+  "C_index":106680
  },
  {
   "id":"FVG-5m-bear-20260706T2325",
@@ -1508,8 +1508,8 @@
   "midpoint_touch_et":"2026-07-07T07:20:00.000Z",
   "full_fill_et":"2026-07-07T07:20:00.000Z",
   "invalidation_et":"2026-07-07T07:20:00.000Z",
-  "segment_id":25,
-  "C_index":101258
+  "segment_id":6,
+  "C_index":106682
  },
  {
   "id":"FVG-5m-bear-20260706T2330",
@@ -1535,8 +1535,8 @@
   "midpoint_touch_et":"2026-07-07T07:05:00.000Z",
   "full_fill_et":"2026-07-07T07:05:00.000Z",
   "invalidation_et":"2026-07-07T07:05:00.000Z",
-  "segment_id":25,
-  "C_index":101259
+  "segment_id":6,
+  "C_index":106683
  },
  {
   "id":"FVG-5m-bear-20260706T2350",
@@ -1562,8 +1562,8 @@
   "midpoint_touch_et":"2026-07-07T04:00:00.000Z",
   "full_fill_et":"2026-07-07T04:00:00.000Z",
   "invalidation_et":"2026-07-07T04:00:00.000Z",
-  "segment_id":25,
-  "C_index":101263
+  "segment_id":6,
+  "C_index":106687
  },
  {
   "id":"FVG-5m-bear-20260707T0015",
@@ -1589,8 +1589,8 @@
   "midpoint_touch_et":"2026-07-07T04:35:00.000Z",
   "full_fill_et":"2026-07-07T05:45:00.000Z",
   "invalidation_et":"2026-07-07T05:45:00.000Z",
-  "segment_id":25,
-  "C_index":101268
+  "segment_id":6,
+  "C_index":106692
  },
  {
   "id":"FVG-5m-bear-20260707T0020",
@@ -1616,8 +1616,8 @@
   "midpoint_touch_et":"2026-07-07T04:30:00.000Z",
   "full_fill_et":"2026-07-07T04:30:00.000Z",
   "invalidation_et":"2026-07-07T04:30:00.000Z",
-  "segment_id":25,
-  "C_index":101269
+  "segment_id":6,
+  "C_index":106693
  },
  {
   "id":"FVG-5m-bull-20260707T0030",
@@ -1643,8 +1643,8 @@
   "midpoint_touch_et":"2026-07-07T04:40:00.000Z",
   "full_fill_et":"2026-07-07T04:40:00.000Z",
   "invalidation_et":"2026-07-07T04:40:00.000Z",
-  "segment_id":25,
-  "C_index":101271
+  "segment_id":6,
+  "C_index":106695
  },
  {
   "id":"FVG-5m-bear-20260707T0050",
@@ -1670,8 +1670,8 @@
   "midpoint_touch_et":"2026-07-07T05:35:00.000Z",
   "full_fill_et":"2026-07-07T05:35:00.000Z",
   "invalidation_et":"2026-07-07T05:35:00.000Z",
-  "segment_id":25,
-  "C_index":101275
+  "segment_id":6,
+  "C_index":106699
  },
  {
   "id":"FVG-5m-bear-20260707T0105",
@@ -1697,8 +1697,8 @@
   "midpoint_touch_et":"2026-07-07T05:25:00.000Z",
   "full_fill_et":"2026-07-07T05:35:00.000Z",
   "invalidation_et":"2026-07-07T05:35:00.000Z",
-  "segment_id":25,
-  "C_index":101278
+  "segment_id":6,
+  "C_index":106702
  },
  {
   "id":"FVG-5m-bull-20260707T0135",
@@ -1724,8 +1724,8 @@
   "midpoint_touch_et":"2026-07-07T11:05:00.000Z",
   "full_fill_et":"2026-07-07T11:40:00.000Z",
   "invalidation_et":"2026-07-07T11:40:00.000Z",
-  "segment_id":25,
-  "C_index":101284
+  "segment_id":6,
+  "C_index":106708
  },
  {
   "id":"FVG-5m-bull-20260707T0140",
@@ -1751,8 +1751,8 @@
   "midpoint_touch_et":"2026-07-07T06:15:00.000Z",
   "full_fill_et":"2026-07-07T06:15:00.000Z",
   "invalidation_et":"2026-07-07T06:15:00.000Z",
-  "segment_id":25,
-  "C_index":101285
+  "segment_id":6,
+  "C_index":106709
  },
  {
   "id":"FVG-5m-bull-20260707T0155",
@@ -1778,8 +1778,8 @@
   "midpoint_touch_et":"2026-07-07T06:10:00.000Z",
   "full_fill_et":"2026-07-07T06:10:00.000Z",
   "invalidation_et":"2026-07-07T06:10:00.000Z",
-  "segment_id":25,
-  "C_index":101288
+  "segment_id":6,
+  "C_index":106712
  },
  {
   "id":"FVG-5m-bear-20260707T0210",
@@ -1805,8 +1805,8 @@
   "midpoint_touch_et":"2026-07-07T06:25:00.000Z",
   "full_fill_et":"2026-07-07T06:40:00.000Z",
   "invalidation_et":"2026-07-07T06:40:00.000Z",
-  "segment_id":25,
-  "C_index":101291
+  "segment_id":6,
+  "C_index":106715
  },
  {
   "id":"FVG-5m-bull-20260707T0305",
@@ -1832,8 +1832,8 @@
   "midpoint_touch_et":"2026-07-07T07:15:00.000Z",
   "full_fill_et":"2026-07-07T07:15:00.000Z",
   "invalidation_et":"2026-07-07T07:15:00.000Z",
-  "segment_id":25,
-  "C_index":101302
+  "segment_id":6,
+  "C_index":106726
  },
  {
   "id":"FVG-5m-bear-20260707T0335",
@@ -1859,8 +1859,8 @@
   "midpoint_touch_et":"2026-07-07T12:15:00.000Z",
   "full_fill_et":"2026-07-07T12:15:00.000Z",
   "invalidation_et":"2026-07-07T12:15:00.000Z",
-  "segment_id":25,
-  "C_index":101308
+  "segment_id":6,
+  "C_index":106732
  },
  {
   "id":"FVG-5m-bear-20260707T0350",
@@ -1886,8 +1886,8 @@
   "midpoint_touch_et":"2026-07-07T08:15:00.000Z",
   "full_fill_et":"2026-07-07T08:15:00.000Z",
   "invalidation_et":"2026-07-07T08:15:00.000Z",
-  "segment_id":25,
-  "C_index":101311
+  "segment_id":6,
+  "C_index":106735
  },
  {
   "id":"FVG-5m-bear-20260707T0355",
@@ -1913,8 +1913,8 @@
   "midpoint_touch_et":"2026-07-07T08:15:00.000Z",
   "full_fill_et":"2026-07-07T08:15:00.000Z",
   "invalidation_et":"2026-07-07T08:15:00.000Z",
-  "segment_id":25,
-  "C_index":101312
+  "segment_id":6,
+  "C_index":106736
  },
  {
   "id":"FVG-5m-bear-20260707T0400",
@@ -1940,8 +1940,8 @@
   "midpoint_touch_et":"2026-07-07T08:15:00.000Z",
   "full_fill_et":"2026-07-07T08:15:00.000Z",
   "invalidation_et":"2026-07-07T08:15:00.000Z",
-  "segment_id":25,
-  "C_index":101313
+  "segment_id":6,
+  "C_index":106737
  },
  {
   "id":"FVG-5m-bull-20260707T0415",
@@ -1967,8 +1967,8 @@
   "midpoint_touch_et":"2026-07-07T08:35:00.000Z",
   "full_fill_et":"2026-07-07T09:00:00.000Z",
   "invalidation_et":"2026-07-07T09:00:00.000Z",
-  "segment_id":25,
-  "C_index":101316
+  "segment_id":6,
+  "C_index":106740
  },
  {
   "id":"FVG-5m-bear-20260707T0455",
@@ -1994,8 +1994,8 @@
   "midpoint_touch_et":"2026-07-07T09:10:00.000Z",
   "full_fill_et":"2026-07-07T09:10:00.000Z",
   "invalidation_et":"2026-07-07T09:10:00.000Z",
-  "segment_id":25,
-  "C_index":101324
+  "segment_id":6,
+  "C_index":106748
  },
  {
   "id":"FVG-5m-bear-20260707T0525",
@@ -2021,8 +2021,8 @@
   "midpoint_touch_et":"2026-07-07T10:05:00.000Z",
   "full_fill_et":"2026-07-07T10:05:00.000Z",
   "invalidation_et":"2026-07-07T10:05:00.000Z",
-  "segment_id":25,
-  "C_index":101330
+  "segment_id":6,
+  "C_index":106754
  },
  {
   "id":"FVG-5m-bear-20260707T0530",
@@ -2048,8 +2048,8 @@
   "midpoint_touch_et":"2026-07-07T10:00:00.000Z",
   "full_fill_et":"2026-07-07T10:00:00.000Z",
   "invalidation_et":"2026-07-07T10:00:00.000Z",
-  "segment_id":25,
-  "C_index":101331
+  "segment_id":6,
+  "C_index":106755
  },
  {
   "id":"FVG-5m-bear-20260707T0535",
@@ -2075,8 +2075,8 @@
   "midpoint_touch_et":"2026-07-07T09:45:00.000Z",
   "full_fill_et":"2026-07-07T09:45:00.000Z",
   "invalidation_et":"2026-07-07T09:45:00.000Z",
-  "segment_id":25,
-  "C_index":101332
+  "segment_id":6,
+  "C_index":106756
  },
  {
   "id":"FVG-5m-bull-20260707T0600",
@@ -2102,8 +2102,8 @@
   "midpoint_touch_et":"2026-07-07T10:10:00.000Z",
   "full_fill_et":"2026-07-07T10:10:00.000Z",
   "invalidation_et":"2026-07-07T10:10:00.000Z",
-  "segment_id":25,
-  "C_index":101337
+  "segment_id":6,
+  "C_index":106761
  },
  {
   "id":"FVG-5m-bull-20260707T0620",
@@ -2129,8 +2129,8 @@
   "midpoint_touch_et":"2026-07-07T10:35:00.000Z",
   "full_fill_et":"2026-07-07T10:35:00.000Z",
   "invalidation_et":"2026-07-07T10:35:00.000Z",
-  "segment_id":25,
-  "C_index":101341
+  "segment_id":6,
+  "C_index":106765
  },
  {
   "id":"FVG-5m-bear-20260707T0635",
@@ -2156,8 +2156,8 @@
   "midpoint_touch_et":"2026-07-07T12:10:00.000Z",
   "full_fill_et":"2026-07-07T12:10:00.000Z",
   "invalidation_et":"2026-07-07T12:10:00.000Z",
-  "segment_id":25,
-  "C_index":101344
+  "segment_id":6,
+  "C_index":106768
  },
  {
   "id":"FVG-5m-bear-20260707T0705",
@@ -2183,8 +2183,8 @@
   "midpoint_touch_et":"2026-07-07T11:20:00.000Z",
   "full_fill_et":"2026-07-07T11:25:00.000Z",
   "invalidation_et":"2026-07-07T11:25:00.000Z",
-  "segment_id":25,
-  "C_index":101350
+  "segment_id":6,
+  "C_index":106774
  },
  {
   "id":"FVG-5m-bull-20260707T0720",
@@ -2210,8 +2210,8 @@
   "midpoint_touch_et":"2026-07-07T11:35:00.000Z",
   "full_fill_et":"2026-07-07T11:35:00.000Z",
   "invalidation_et":"2026-07-07T11:35:00.000Z",
-  "segment_id":25,
-  "C_index":101353
+  "segment_id":6,
+  "C_index":106777
  },
  {
   "id":"FVG-5m-bear-20260707T0735",
@@ -2237,8 +2237,8 @@
   "midpoint_touch_et":"2026-07-07T11:45:00.000Z",
   "full_fill_et":"2026-07-07T11:50:00.000Z",
   "invalidation_et":"2026-07-07T11:50:00.000Z",
-  "segment_id":25,
-  "C_index":101356
+  "segment_id":6,
+  "C_index":106780
  },
  {
   "id":"FVG-5m-bull-20260707T0745",
@@ -2264,8 +2264,8 @@
   "midpoint_touch_et":"2026-07-07T11:55:00.000Z",
   "full_fill_et":"2026-07-07T11:55:00.000Z",
   "invalidation_et":"2026-07-07T11:55:00.000Z",
-  "segment_id":25,
-  "C_index":101358
+  "segment_id":6,
+  "C_index":106782
  },
  {
   "id":"FVG-5m-bull-20260707T0800",
@@ -2291,8 +2291,8 @@
   "midpoint_touch_et":"2026-07-07T12:50:00.000Z",
   "full_fill_et":"2026-07-07T12:50:00.000Z",
   "invalidation_et":"2026-07-07T12:50:00.000Z",
-  "segment_id":25,
-  "C_index":101361
+  "segment_id":6,
+  "C_index":106785
  },
  {
   "id":"FVG-5m-bull-20260707T0810",
@@ -2318,8 +2318,8 @@
   "midpoint_touch_et":"2026-07-07T12:20:00.000Z",
   "full_fill_et":"2026-07-07T12:25:00.000Z",
   "invalidation_et":"2026-07-07T12:25:00.000Z",
-  "segment_id":25,
-  "C_index":101363
+  "segment_id":6,
+  "C_index":106787
  },
  {
   "id":"FVG-5m-bear-20260707T0820",
@@ -2345,8 +2345,8 @@
   "midpoint_touch_et":"2026-07-07T12:30:00.000Z",
   "full_fill_et":"2026-07-07T12:35:00.000Z",
   "invalidation_et":"2026-07-07T12:35:00.000Z",
-  "segment_id":25,
-  "C_index":101365
+  "segment_id":6,
+  "C_index":106789
  },
  {
   "id":"FVG-5m-bear-20260707T0850",
@@ -2372,8 +2372,8 @@
   "midpoint_touch_et":"2026-07-07T13:35:00.000Z",
   "full_fill_et":"2026-07-07T13:35:00.000Z",
   "invalidation_et":"2026-07-07T13:35:00.000Z",
-  "segment_id":25,
-  "C_index":101371
+  "segment_id":6,
+  "C_index":106795
  },
  {
   "id":"FVG-5m-bear-20260707T0920",
@@ -2399,8 +2399,8 @@
   "midpoint_touch_et":"2026-07-07T13:35:00.000Z",
   "full_fill_et":"2026-07-07T13:35:00.000Z",
   "invalidation_et":"2026-07-07T13:35:00.000Z",
-  "segment_id":25,
-  "C_index":101377
+  "segment_id":6,
+  "C_index":106801
  },
  {
   "id":"FVG-5m-bear-20260707T0935",
@@ -2426,8 +2426,8 @@
   "midpoint_touch_et":"2026-07-07T13:45:00.000Z",
   "full_fill_et":"2026-07-07T13:45:00.000Z",
   "invalidation_et":"2026-07-07T13:45:00.000Z",
-  "segment_id":25,
-  "C_index":101380
+  "segment_id":6,
+  "C_index":106804
  },
  {
   "id":"FVG-5m-bear-20260707T0955",
@@ -2453,8 +2453,8 @@
   "midpoint_touch_et":"2026-07-07T14:05:00.000Z",
   "full_fill_et":"2026-07-07T14:05:00.000Z",
   "invalidation_et":"2026-07-07T14:05:00.000Z",
-  "segment_id":25,
-  "C_index":101384
+  "segment_id":6,
+  "C_index":106808
  },
  {
   "id":"FVG-5m-bear-20260707T1015",
@@ -2480,8 +2480,8 @@
   "midpoint_touch_et":"2026-07-07T16:05:00.000Z",
   "full_fill_et":"2026-07-07T16:05:00.000Z",
   "invalidation_et":"2026-07-07T16:05:00.000Z",
-  "segment_id":25,
-  "C_index":101388
+  "segment_id":6,
+  "C_index":106812
  },
  {
   "id":"FVG-5m-bull-20260707T1145",
@@ -2507,8 +2507,8 @@
   "midpoint_touch_et":"2026-07-07T19:15:00.000Z",
   "full_fill_et":"2026-07-07T19:20:00.000Z",
   "invalidation_et":"2026-07-07T19:20:00.000Z",
-  "segment_id":25,
-  "C_index":101406
+  "segment_id":6,
+  "C_index":106830
  },
  {
   "id":"FVG-5m-bull-20260707T1205",
@@ -2534,8 +2534,8 @@
   "midpoint_touch_et":"2026-07-07T19:00:00.000Z",
   "full_fill_et":"2026-07-07T19:00:00.000Z",
   "invalidation_et":"2026-07-07T19:00:00.000Z",
-  "segment_id":25,
-  "C_index":101410
+  "segment_id":6,
+  "C_index":106834
  },
  {
   "id":"FVG-5m-bull-20260707T1225",
@@ -2561,8 +2561,8 @@
   "midpoint_touch_et":"2026-07-07T16:40:00.000Z",
   "full_fill_et":"2026-07-07T18:45:00.000Z",
   "invalidation_et":"2026-07-07T18:45:00.000Z",
-  "segment_id":25,
-  "C_index":101414
+  "segment_id":6,
+  "C_index":106838
  },
  {
   "id":"FVG-5m-bull-20260707T1250",
@@ -2588,8 +2588,8 @@
   "midpoint_touch_et":"2026-07-07T17:00:00.000Z",
   "full_fill_et":"2026-07-07T17:00:00.000Z",
   "invalidation_et":"2026-07-07T17:00:00.000Z",
-  "segment_id":25,
-  "C_index":101419
+  "segment_id":6,
+  "C_index":106843
  },
  {
   "id":"FVG-5m-bear-20260707T1315",
@@ -2615,8 +2615,8 @@
   "midpoint_touch_et":"2026-07-07T17:25:00.000Z",
   "full_fill_et":"2026-07-07T17:25:00.000Z",
   "invalidation_et":"2026-07-07T17:25:00.000Z",
-  "segment_id":25,
-  "C_index":101424
+  "segment_id":6,
+  "C_index":106848
  },
  {
   "id":"FVG-5m-bear-20260707T1430",
@@ -2642,8 +2642,8 @@
   "midpoint_touch_et":"2026-07-08T00:50:00.000Z",
   "full_fill_et":"2026-07-08T00:50:00.000Z",
   "invalidation_et":"2026-07-08T00:50:00.000Z",
-  "segment_id":25,
-  "C_index":101439
+  "segment_id":6,
+  "C_index":106863
  },
  {
   "id":"FVG-5m-bear-20260707T1445",
@@ -2669,8 +2669,8 @@
   "midpoint_touch_et":"2026-07-08T00:45:00.000Z",
   "full_fill_et":"2026-07-08T00:45:00.000Z",
   "invalidation_et":"2026-07-08T00:45:00.000Z",
-  "segment_id":25,
-  "C_index":101442
+  "segment_id":6,
+  "C_index":106866
  },
  {
   "id":"FVG-5m-bear-20260707T1510",
@@ -2696,8 +2696,8 @@
   "midpoint_touch_et":"2026-07-07T19:35:00.000Z",
   "full_fill_et":"2026-07-07T19:35:00.000Z",
   "invalidation_et":"2026-07-07T19:35:00.000Z",
-  "segment_id":25,
-  "C_index":101447
+  "segment_id":6,
+  "C_index":106871
  },
  {
   "id":"FVG-5m-bull-20260707T1555",
@@ -2723,8 +2723,8 @@
   "midpoint_touch_et":"2026-07-07T22:05:00.000Z",
   "full_fill_et":"2026-07-07T22:05:00.000Z",
   "invalidation_et":"2026-07-07T22:05:00.000Z",
-  "segment_id":25,
-  "C_index":101456
+  "segment_id":6,
+  "C_index":106880
  },
  {
   "id":"FVG-5m-bull-20260707T1600",
@@ -2750,8 +2750,8 @@
   "midpoint_touch_et":null,
   "full_fill_et":"2026-07-07T22:05:00.000Z",
   "invalidation_et":"2026-07-07T22:05:00.000Z",
-  "segment_id":25,
-  "C_index":101457
+  "segment_id":6,
+  "C_index":106881
  },
  {
   "id":"FVG-5m-bull-20260707T1605",
@@ -2777,8 +2777,8 @@
   "midpoint_touch_et":"2026-07-07T20:20:00.000Z",
   "full_fill_et":"2026-07-07T20:20:00.000Z",
   "invalidation_et":"2026-07-07T20:20:00.000Z",
-  "segment_id":25,
-  "C_index":101458
+  "segment_id":6,
+  "C_index":106882
  },
  {
   "id":"FVG-5m-bull-20260707T1835",
@@ -2804,8 +2804,8 @@
   "midpoint_touch_et":"2026-07-07T22:45:00.000Z",
   "full_fill_et":"2026-07-07T22:50:00.000Z",
   "invalidation_et":"2026-07-07T22:50:00.000Z",
-  "segment_id":25,
-  "C_index":101476
+  "segment_id":6,
+  "C_index":106900
  },
  {
   "id":"FVG-5m-bull-20260707T1920",
@@ -2831,8 +2831,8 @@
   "midpoint_touch_et":"2026-07-07T23:35:00.000Z",
   "full_fill_et":"2026-07-07T23:40:00.000Z",
   "invalidation_et":"2026-07-07T23:40:00.000Z",
-  "segment_id":25,
-  "C_index":101485
+  "segment_id":6,
+  "C_index":106909
  },
  {
   "id":"FVG-5m-bear-20260707T1940",
@@ -2858,8 +2858,8 @@
   "midpoint_touch_et":"2026-07-08T00:10:00.000Z",
   "full_fill_et":"2026-07-08T00:10:00.000Z",
   "invalidation_et":"2026-07-08T00:10:00.000Z",
-  "segment_id":25,
-  "C_index":101489
+  "segment_id":6,
+  "C_index":106913
  },
  {
   "id":"FVG-5m-bear-20260707T1955",
@@ -2885,8 +2885,8 @@
   "midpoint_touch_et":"2026-07-08T00:05:00.000Z",
   "full_fill_et":"2026-07-08T00:05:00.000Z",
   "invalidation_et":"2026-07-08T00:05:00.000Z",
-  "segment_id":25,
-  "C_index":101492
+  "segment_id":6,
+  "C_index":106916
  },
  {
   "id":"FVG-5m-bull-20260707T2005",
@@ -2912,8 +2912,8 @@
   "midpoint_touch_et":"2026-07-08T05:50:00.000Z",
   "full_fill_et":"2026-07-08T05:50:00.000Z",
   "invalidation_et":"2026-07-08T05:50:00.000Z",
-  "segment_id":25,
-  "C_index":101494
+  "segment_id":6,
+  "C_index":106918
  },
  {
   "id":"FVG-5m-bull-20260707T2010",
@@ -2939,8 +2939,8 @@
   "midpoint_touch_et":"2026-07-08T05:35:00.000Z",
   "full_fill_et":"2026-07-08T05:50:00.000Z",
   "invalidation_et":"2026-07-08T05:50:00.000Z",
-  "segment_id":25,
-  "C_index":101495
+  "segment_id":6,
+  "C_index":106919
  },
  {
   "id":"FVG-5m-bull-20260707T2040",
@@ -2966,8 +2966,8 @@
   "midpoint_touch_et":"2026-07-08T01:35:00.000Z",
   "full_fill_et":"2026-07-08T01:35:00.000Z",
   "invalidation_et":"2026-07-08T01:35:00.000Z",
-  "segment_id":25,
-  "C_index":101501
+  "segment_id":6,
+  "C_index":106925
  },
  {
   "id":"FVG-5m-bull-20260707T2045",
@@ -2993,8 +2993,8 @@
   "midpoint_touch_et":"2026-07-08T01:10:00.000Z",
   "full_fill_et":"2026-07-08T01:35:00.000Z",
   "invalidation_et":"2026-07-08T01:35:00.000Z",
-  "segment_id":25,
-  "C_index":101502
+  "segment_id":6,
+  "C_index":106926
  },
  {
   "id":"FVG-5m-bear-20260707T2125",
@@ -3020,8 +3020,8 @@
   "midpoint_touch_et":"2026-07-08T03:30:00.000Z",
   "full_fill_et":"2026-07-08T03:30:00.000Z",
   "invalidation_et":"2026-07-08T03:30:00.000Z",
-  "segment_id":25,
-  "C_index":101510
+  "segment_id":6,
+  "C_index":106934
  },
  {
   "id":"FVG-5m-bear-20260707T2130",
@@ -3047,8 +3047,8 @@
   "midpoint_touch_et":"2026-07-08T03:20:00.000Z",
   "full_fill_et":"2026-07-08T03:25:00.000Z",
   "invalidation_et":"2026-07-08T03:25:00.000Z",
-  "segment_id":25,
-  "C_index":101511
+  "segment_id":6,
+  "C_index":106935
  },
  {
   "id":"FVG-5m-bear-20260707T2135",
@@ -3074,8 +3074,8 @@
   "midpoint_touch_et":"2026-07-08T01:50:00.000Z",
   "full_fill_et":"2026-07-08T01:50:00.000Z",
   "invalidation_et":"2026-07-08T01:50:00.000Z",
-  "segment_id":25,
-  "C_index":101512
+  "segment_id":6,
+  "C_index":106936
  },
  {
   "id":"FVG-5m-bear-20260707T2155",
@@ -3101,8 +3101,8 @@
   "midpoint_touch_et":"2026-07-08T02:30:00.000Z",
   "full_fill_et":"2026-07-08T02:30:00.000Z",
   "invalidation_et":"2026-07-08T02:30:00.000Z",
-  "segment_id":25,
-  "C_index":101516
+  "segment_id":6,
+  "C_index":106940
  },
  {
   "id":"FVG-5m-bear-20260707T2205",
@@ -3128,8 +3128,8 @@
   "midpoint_touch_et":"2026-07-08T02:20:00.000Z",
   "full_fill_et":"2026-07-08T02:20:00.000Z",
   "invalidation_et":"2026-07-08T02:20:00.000Z",
-  "segment_id":25,
-  "C_index":101518
+  "segment_id":6,
+  "C_index":106942
  },
  {
   "id":"FVG-5m-bull-20260707T2245",
@@ -3155,8 +3155,8 @@
   "midpoint_touch_et":"2026-07-08T04:15:00.000Z",
   "full_fill_et":"2026-07-08T04:35:00.000Z",
   "invalidation_et":"2026-07-08T04:35:00.000Z",
-  "segment_id":25,
-  "C_index":101526
+  "segment_id":6,
+  "C_index":106950
  },
  {
   "id":"FVG-5m-bull-20260707T2325",
@@ -3182,8 +3182,8 @@
   "midpoint_touch_et":"2026-07-08T03:40:00.000Z",
   "full_fill_et":"2026-07-08T03:45:00.000Z",
   "invalidation_et":"2026-07-08T03:45:00.000Z",
-  "segment_id":25,
-  "C_index":101534
+  "segment_id":6,
+  "C_index":106958
  },
  {
   "id":"FVG-5m-bear-20260707T2345",
@@ -3209,8 +3209,8 @@
   "midpoint_touch_et":"2026-07-08T20:00:00.000Z",
   "full_fill_et":"2026-07-08T20:00:00.000Z",
   "invalidation_et":"2026-07-08T20:00:00.000Z",
-  "segment_id":25,
-  "C_index":101538
+  "segment_id":6,
+  "C_index":106962
  },
  {
   "id":"FVG-5m-bear-20260707T2355",
@@ -3236,8 +3236,8 @@
   "midpoint_touch_et":"2026-07-08T20:00:00.000Z",
   "full_fill_et":"2026-07-08T20:00:00.000Z",
   "invalidation_et":"2026-07-08T20:00:00.000Z",
-  "segment_id":25,
-  "C_index":101540
+  "segment_id":6,
+  "C_index":106964
  },
  {
   "id":"FVG-5m-bear-20260708T0015",
@@ -3263,8 +3263,8 @@
   "midpoint_touch_et":"2026-07-08T04:25:00.000Z",
   "full_fill_et":"2026-07-08T04:25:00.000Z",
   "invalidation_et":"2026-07-08T04:25:00.000Z",
-  "segment_id":25,
-  "C_index":101544
+  "segment_id":6,
+  "C_index":106968
  },
  {
   "id":"FVG-5m-bear-20260708T0035",
@@ -3290,8 +3290,8 @@
   "midpoint_touch_et":"2026-07-08T05:05:00.000Z",
   "full_fill_et":"2026-07-08T05:10:00.000Z",
   "invalidation_et":"2026-07-08T05:10:00.000Z",
-  "segment_id":25,
-  "C_index":101548
+  "segment_id":6,
+  "C_index":106972
  },
  {
   "id":"FVG-5m-bear-20260708T0130",
@@ -3317,8 +3317,8 @@
   "midpoint_touch_et":"2026-07-08T07:35:00.000Z",
   "full_fill_et":"2026-07-08T07:35:00.000Z",
   "invalidation_et":"2026-07-08T07:35:00.000Z",
-  "segment_id":25,
-  "C_index":101559
+  "segment_id":6,
+  "C_index":106983
  },
  {
   "id":"FVG-5m-bear-20260708T0145",
@@ -3344,8 +3344,8 @@
   "midpoint_touch_et":"2026-07-08T06:00:00.000Z",
   "full_fill_et":"2026-07-08T06:00:00.000Z",
   "invalidation_et":"2026-07-08T06:00:00.000Z",
-  "segment_id":25,
-  "C_index":101562
+  "segment_id":6,
+  "C_index":106986
  },
  {
   "id":"FVG-5m-bear-20260708T0150",
@@ -3371,8 +3371,8 @@
   "midpoint_touch_et":"2026-07-08T06:00:00.000Z",
   "full_fill_et":"2026-07-08T06:00:00.000Z",
   "invalidation_et":"2026-07-08T06:00:00.000Z",
-  "segment_id":25,
-  "C_index":101563
+  "segment_id":6,
+  "C_index":106987
  },
  {
   "id":"FVG-5m-bear-20260708T0235",
@@ -3398,8 +3398,8 @@
   "midpoint_touch_et":"2026-07-08T06:50:00.000Z",
   "full_fill_et":"2026-07-08T06:55:00.000Z",
   "invalidation_et":"2026-07-08T06:55:00.000Z",
-  "segment_id":25,
-  "C_index":101572
+  "segment_id":6,
+  "C_index":106996
  },
  {
   "id":"FVG-5m-bear-20260708T0305",
@@ -3425,8 +3425,8 @@
   "midpoint_touch_et":"2026-07-08T07:15:00.000Z",
   "full_fill_et":"2026-07-08T07:15:00.000Z",
   "invalidation_et":"2026-07-08T07:15:00.000Z",
-  "segment_id":25,
-  "C_index":101578
+  "segment_id":6,
+  "C_index":107002
  },
  {
   "id":"FVG-5m-bull-20260708T0325",
@@ -3452,8 +3452,8 @@
   "midpoint_touch_et":"2026-07-08T08:20:00.000Z",
   "full_fill_et":"2026-07-08T08:20:00.000Z",
   "invalidation_et":"2026-07-08T08:20:00.000Z",
-  "segment_id":25,
-  "C_index":101582
+  "segment_id":6,
+  "C_index":107006
  },
  {
   "id":"FVG-5m-bull-20260708T0330",
@@ -3479,8 +3479,8 @@
   "midpoint_touch_et":"2026-07-08T08:10:00.000Z",
   "full_fill_et":"2026-07-08T08:10:00.000Z",
   "invalidation_et":"2026-07-08T08:10:00.000Z",
-  "segment_id":25,
-  "C_index":101583
+  "segment_id":6,
+  "C_index":107007
  },
  {
   "id":"FVG-5m-bull-20260708T0335",
@@ -3506,8 +3506,8 @@
   "midpoint_touch_et":"2026-07-08T08:05:00.000Z",
   "full_fill_et":"2026-07-08T08:05:00.000Z",
   "invalidation_et":"2026-07-08T08:05:00.000Z",
-  "segment_id":25,
-  "C_index":101584
+  "segment_id":6,
+  "C_index":107008
  },
  {
   "id":"FVG-5m-bear-20260708T0420",
@@ -3533,8 +3533,8 @@
   "midpoint_touch_et":"2026-07-08T13:40:00.000Z",
   "full_fill_et":"2026-07-08T13:45:00.000Z",
   "invalidation_et":"2026-07-08T13:45:00.000Z",
-  "segment_id":25,
-  "C_index":101593
+  "segment_id":6,
+  "C_index":107017
  },
  {
   "id":"FVG-5m-bear-20260708T0425",
@@ -3560,8 +3560,8 @@
   "midpoint_touch_et":"2026-07-08T12:55:00.000Z",
   "full_fill_et":"2026-07-08T13:35:00.000Z",
   "invalidation_et":"2026-07-08T13:35:00.000Z",
-  "segment_id":25,
-  "C_index":101594
+  "segment_id":6,
+  "C_index":107018
  },
  {
   "id":"FVG-5m-bear-20260708T0430",
@@ -3587,8 +3587,8 @@
   "midpoint_touch_et":"2026-07-08T11:45:00.000Z",
   "full_fill_et":"2026-07-08T11:45:00.000Z",
   "invalidation_et":"2026-07-08T11:45:00.000Z",
-  "segment_id":25,
-  "C_index":101595
+  "segment_id":6,
+  "C_index":107019
  },
  {
   "id":"FVG-5m-bear-20260708T0440",
@@ -3614,8 +3614,8 @@
   "midpoint_touch_et":"2026-07-08T08:50:00.000Z",
   "full_fill_et":"2026-07-08T08:50:00.000Z",
   "invalidation_et":"2026-07-08T08:50:00.000Z",
-  "segment_id":25,
-  "C_index":101597
+  "segment_id":6,
+  "C_index":107021
  },
  {
   "id":"FVG-5m-bear-20260708T0505",
@@ -3641,8 +3641,8 @@
   "midpoint_touch_et":"2026-07-08T09:40:00.000Z",
   "full_fill_et":"2026-07-08T09:40:00.000Z",
   "invalidation_et":"2026-07-08T09:40:00.000Z",
-  "segment_id":25,
-  "C_index":101602
+  "segment_id":6,
+  "C_index":107026
  },
  {
   "id":"FVG-5m-bear-20260708T0510",
@@ -3668,8 +3668,8 @@
   "midpoint_touch_et":"2026-07-08T09:35:00.000Z",
   "full_fill_et":"2026-07-08T09:35:00.000Z",
   "invalidation_et":"2026-07-08T09:35:00.000Z",
-  "segment_id":25,
-  "C_index":101603
+  "segment_id":6,
+  "C_index":107027
  },
  {
   "id":"FVG-5m-bull-20260708T0635",
@@ -3695,8 +3695,8 @@
   "midpoint_touch_et":"2026-07-08T11:00:00.000Z",
   "full_fill_et":"2026-07-08T11:00:00.000Z",
   "invalidation_et":"2026-07-08T11:00:00.000Z",
-  "segment_id":25,
-  "C_index":101620
+  "segment_id":6,
+  "C_index":107044
  },
  {
   "id":"FVG-5m-bear-20260708T0700",
@@ -3722,8 +3722,8 @@
   "midpoint_touch_et":"2026-07-08T11:40:00.000Z",
   "full_fill_et":"2026-07-08T11:45:00.000Z",
   "invalidation_et":"2026-07-08T11:45:00.000Z",
-  "segment_id":25,
-  "C_index":101625
+  "segment_id":6,
+  "C_index":107049
  },
  {
   "id":"FVG-5m-bull-20260708T0735",
@@ -3749,8 +3749,8 @@
   "midpoint_touch_et":"2026-07-08T11:45:00.000Z",
   "full_fill_et":"2026-07-08T11:45:00.000Z",
   "invalidation_et":"2026-07-08T11:45:00.000Z",
-  "segment_id":25,
-  "C_index":101632
+  "segment_id":6,
+  "C_index":107056
  },
  {
   "id":"FVG-5m-bull-20260708T0745",
@@ -3776,8 +3776,8 @@
   "midpoint_touch_et":"2026-07-08T15:30:00.000Z",
   "full_fill_et":null,
   "invalidation_et":null,
-  "segment_id":25,
-  "C_index":101634
+  "segment_id":6,
+  "C_index":107058
  },
  {
   "id":"FVG-5m-bull-20260708T0810",
@@ -3803,8 +3803,8 @@
   "midpoint_touch_et":"2026-07-08T12:25:00.000Z",
   "full_fill_et":"2026-07-08T15:20:00.000Z",
   "invalidation_et":"2026-07-08T15:20:00.000Z",
-  "segment_id":25,
-  "C_index":101639
+  "segment_id":6,
+  "C_index":107063
  },
  {
   "id":"FVG-5m-bull-20260708T0915",
@@ -3830,8 +3830,8 @@
   "midpoint_touch_et":"2026-07-08T13:25:00.000Z",
   "full_fill_et":"2026-07-08T13:25:00.000Z",
   "invalidation_et":"2026-07-08T13:25:00.000Z",
-  "segment_id":25,
-  "C_index":101652
+  "segment_id":6,
+  "C_index":107076
  },
  {
   "id":"FVG-5m-bull-20260708T0935",
@@ -3857,8 +3857,8 @@
   "midpoint_touch_et":"2026-07-08T14:20:00.000Z",
   "full_fill_et":"2026-07-08T14:45:00.000Z",
   "invalidation_et":"2026-07-08T14:45:00.000Z",
-  "segment_id":25,
-  "C_index":101656
+  "segment_id":6,
+  "C_index":107080
  },
  {
   "id":"FVG-5m-bear-20260708T1115",
@@ -3884,8 +3884,8 @@
   "midpoint_touch_et":"2026-07-08T16:10:00.000Z",
   "full_fill_et":"2026-07-08T16:15:00.000Z",
   "invalidation_et":"2026-07-08T16:15:00.000Z",
-  "segment_id":25,
-  "C_index":101676
+  "segment_id":6,
+  "C_index":107100
  },
  {
   "id":"FVG-5m-bear-20260708T1125",
@@ -3911,8 +3911,8 @@
   "midpoint_touch_et":"2026-07-08T15:35:00.000Z",
   "full_fill_et":"2026-07-08T15:35:00.000Z",
   "invalidation_et":"2026-07-08T15:35:00.000Z",
-  "segment_id":25,
-  "C_index":101678
+  "segment_id":6,
+  "C_index":107102
  },
  {
   "id":"FVG-5m-bull-20260708T1135",
@@ -3938,8 +3938,8 @@
   "midpoint_touch_et":"2026-07-08T15:55:00.000Z",
   "full_fill_et":"2026-07-08T15:55:00.000Z",
   "invalidation_et":"2026-07-08T15:55:00.000Z",
-  "segment_id":25,
-  "C_index":101680
+  "segment_id":6,
+  "C_index":107104
  },
  {
   "id":"FVG-5m-bear-20260708T1150",
@@ -3965,8 +3965,8 @@
   "midpoint_touch_et":"2026-07-08T16:00:00.000Z",
   "full_fill_et":"2026-07-08T16:00:00.000Z",
   "invalidation_et":"2026-07-08T16:00:00.000Z",
-  "segment_id":25,
-  "C_index":101683
+  "segment_id":6,
+  "C_index":107107
  },
  {
   "id":"FVG-5m-bull-20260708T1205",
@@ -3992,8 +3992,8 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
-  "segment_id":25,
-  "C_index":101686
+  "segment_id":6,
+  "C_index":107110
  },
  {
   "id":"FVG-5m-bull-20260708T1210",
@@ -4019,8 +4019,8 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
-  "segment_id":25,
-  "C_index":101687
+  "segment_id":6,
+  "C_index":107111
  },
  {
   "id":"FVG-5m-bull-20260708T1215",
@@ -4046,8 +4046,8 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
-  "segment_id":25,
-  "C_index":101688
+  "segment_id":6,
+  "C_index":107112
  },
  {
   "id":"FVG-5m-bull-20260708T1220",
@@ -4073,8 +4073,8 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
-  "segment_id":25,
-  "C_index":101689
+  "segment_id":6,
+  "C_index":107113
  },
  {
   "id":"FVG-5m-bull-20260708T1225",
@@ -4100,8 +4100,8 @@
   "midpoint_touch_et":"2026-07-08T16:40:00.000Z",
   "full_fill_et":null,
   "invalidation_et":null,
-  "segment_id":25,
-  "C_index":101690
+  "segment_id":6,
+  "C_index":107114
  },
  {
   "id":"FVG-5m-bull-20260708T1320",
@@ -4127,8 +4127,8 @@
   "midpoint_touch_et":"2026-07-08T17:50:00.000Z",
   "full_fill_et":"2026-07-08T17:50:00.000Z",
   "invalidation_et":"2026-07-08T17:50:00.000Z",
-  "segment_id":25,
-  "C_index":101701
+  "segment_id":6,
+  "C_index":107125
  },
  {
   "id":"FVG-5m-bull-20260708T1325",
@@ -4154,8 +4154,8 @@
   "midpoint_touch_et":"2026-07-08T17:45:00.000Z",
   "full_fill_et":"2026-07-08T17:45:00.000Z",
   "invalidation_et":"2026-07-08T17:45:00.000Z",
-  "segment_id":25,
-  "C_index":101702
+  "segment_id":6,
+  "C_index":107126
  },
  {
   "id":"FVG-5m-bull-20260708T1330",
@@ -4181,8 +4181,8 @@
   "midpoint_touch_et":"2026-07-08T17:40:00.000Z",
   "full_fill_et":"2026-07-08T17:40:00.000Z",
   "invalidation_et":"2026-07-08T17:40:00.000Z",
-  "segment_id":25,
-  "C_index":101703
+  "segment_id":6,
+  "C_index":107127
  },
  {
   "id":"FVG-5m-bear-20260708T1340",
@@ -4208,8 +4208,8 @@
   "midpoint_touch_et":"2026-07-08T19:05:00.000Z",
   "full_fill_et":"2026-07-08T19:05:00.000Z",
   "invalidation_et":"2026-07-08T19:05:00.000Z",
-  "segment_id":25,
-  "C_index":101705
+  "segment_id":6,
+  "C_index":107129
  },
  {
   "id":"FVG-5m-bear-20260708T1345",
@@ -4235,8 +4235,8 @@
   "midpoint_touch_et":"2026-07-08T18:05:00.000Z",
   "full_fill_et":"2026-07-08T18:05:00.000Z",
   "invalidation_et":"2026-07-08T18:05:00.000Z",
-  "segment_id":25,
-  "C_index":101706
+  "segment_id":6,
+  "C_index":107130
  },
  {
   "id":"FVG-5m-bull-20260708T1405",
@@ -4262,8 +4262,8 @@
   "midpoint_touch_et":"2026-07-08T18:35:00.000Z",
   "full_fill_et":"2026-07-08T18:35:00.000Z",
   "invalidation_et":"2026-07-08T18:35:00.000Z",
-  "segment_id":25,
-  "C_index":101710
+  "segment_id":6,
+  "C_index":107134
  },
  {
   "id":"FVG-5m-bear-20260708T1430",
@@ -4289,8 +4289,8 @@
   "midpoint_touch_et":"2026-07-08T18:40:00.000Z",
   "full_fill_et":"2026-07-08T18:40:00.000Z",
   "invalidation_et":"2026-07-08T18:40:00.000Z",
-  "segment_id":25,
-  "C_index":101715
+  "segment_id":6,
+  "C_index":107139
  },
  {
   "id":"FVG-5m-bull-20260708T1525",
@@ -4316,8 +4316,8 @@
   "midpoint_touch_et":"2026-07-08T19:35:00.000Z",
   "full_fill_et":"2026-07-08T19:35:00.000Z",
   "invalidation_et":"2026-07-08T19:35:00.000Z",
-  "segment_id":25,
-  "C_index":101726
+  "segment_id":6,
+  "C_index":107150
  },
  {
   "id":"FVG-5m-bull-20260708T1555",
@@ -4343,8 +4343,8 @@
   "midpoint_touch_et":"2026-07-08T20:05:00.000Z",
   "full_fill_et":"2026-07-08T20:15:00.000Z",
   "invalidation_et":"2026-07-08T20:15:00.000Z",
-  "segment_id":25,
-  "C_index":101732
+  "segment_id":6,
+  "C_index":107156
  },
  {
   "id":"FVG-5m-bear-20260708T1605",
@@ -4370,8 +4370,8 @@
   "midpoint_touch_et":"2026-07-08T23:10:00.000Z",
   "full_fill_et":"2026-07-08T23:10:00.000Z",
   "invalidation_et":"2026-07-08T23:10:00.000Z",
-  "segment_id":25,
-  "C_index":101734
+  "segment_id":6,
+  "C_index":107158
  },
  {
   "id":"FVG-5m-bear-20260708T1615",
@@ -4397,8 +4397,8 @@
   "midpoint_touch_et":"2026-07-08T22:05:00.000Z",
   "full_fill_et":"2026-07-08T22:05:00.000Z",
   "invalidation_et":"2026-07-08T22:05:00.000Z",
-  "segment_id":25,
-  "C_index":101736
+  "segment_id":6,
+  "C_index":107160
  },
  {
   "id":"FVG-5m-bear-20260708T1620",
@@ -4424,8 +4424,8 @@
   "midpoint_touch_et":"2026-07-08T20:55:00.000Z",
   "full_fill_et":"2026-07-08T21:00:00.000Z",
   "invalidation_et":"2026-07-08T21:00:00.000Z",
-  "segment_id":25,
-  "C_index":101737
+  "segment_id":6,
+  "C_index":107161
  },
  {
   "id":"FVG-5m-bear-20260708T1635",
@@ -4451,8 +4451,8 @@
   "midpoint_touch_et":"2026-07-08T20:45:00.000Z",
   "full_fill_et":"2026-07-08T20:45:00.000Z",
   "invalidation_et":"2026-07-08T20:45:00.000Z",
-  "segment_id":25,
-  "C_index":101740
+  "segment_id":6,
+  "C_index":107164
  },
  {
   "id":"FVG-5m-bull-20260708T1645",
@@ -4478,8 +4478,8 @@
   "midpoint_touch_et":"2026-07-08T21:00:00.000Z",
   "full_fill_et":"2026-07-08T21:00:00.000Z",
   "invalidation_et":"2026-07-08T21:00:00.000Z",
-  "segment_id":25,
-  "C_index":101742
+  "segment_id":6,
+  "C_index":107166
  },
  {
   "id":"FVG-5m-bull-20260708T1910",
@@ -4505,8 +4505,8 @@
   "midpoint_touch_et":"2026-07-08T23:20:00.000Z",
   "full_fill_et":"2026-07-08T23:20:00.000Z",
   "invalidation_et":"2026-07-08T23:20:00.000Z",
-  "segment_id":25,
-  "C_index":101759
+  "segment_id":6,
+  "C_index":107183
  },
  {
   "id":"FVG-5m-bear-20260708T1920",
@@ -4532,8 +4532,8 @@
   "midpoint_touch_et":"2026-07-08T23:35:00.000Z",
   "full_fill_et":"2026-07-08T23:35:00.000Z",
   "invalidation_et":"2026-07-08T23:35:00.000Z",
-  "segment_id":25,
-  "C_index":101761
+  "segment_id":6,
+  "C_index":107185
  },
  {
   "id":"FVG-5m-bull-20260708T1935",
@@ -4559,8 +4559,8 @@
   "midpoint_touch_et":"2026-07-09T02:05:00.000Z",
   "full_fill_et":"2026-07-09T02:05:00.000Z",
   "invalidation_et":"2026-07-09T02:05:00.000Z",
-  "segment_id":25,
-  "C_index":101764
+  "segment_id":6,
+  "C_index":107188
  },
  {
   "id":"FVG-5m-bull-20260708T2005",
@@ -4586,8 +4586,8 @@
   "midpoint_touch_et":"2026-07-09T00:55:00.000Z",
   "full_fill_et":"2026-07-09T00:55:00.000Z",
   "invalidation_et":"2026-07-09T00:55:00.000Z",
-  "segment_id":25,
-  "C_index":101770
+  "segment_id":6,
+  "C_index":107194
  },
  {
   "id":"FVG-5m-bear-20260708T2200",
@@ -4613,8 +4613,8 @@
   "midpoint_touch_et":"2026-07-09T02:10:00.000Z",
   "full_fill_et":"2026-07-09T02:10:00.000Z",
   "invalidation_et":"2026-07-09T02:10:00.000Z",
-  "segment_id":25,
-  "C_index":101793
+  "segment_id":6,
+  "C_index":107217
  },
  {
   "id":"FVG-5m-bull-20260708T2210",
@@ -4640,8 +4640,8 @@
   "midpoint_touch_et":"2026-07-09T02:40:00.000Z",
   "full_fill_et":"2026-07-09T02:45:00.000Z",
   "invalidation_et":"2026-07-09T02:45:00.000Z",
-  "segment_id":25,
-  "C_index":101795
+  "segment_id":6,
+  "C_index":107219
  },
  {
   "id":"FVG-5m-bull-20260708T2215",
@@ -4667,8 +4667,8 @@
   "midpoint_touch_et":"2026-07-09T02:35:00.000Z",
   "full_fill_et":"2026-07-09T02:35:00.000Z",
   "invalidation_et":"2026-07-09T02:35:00.000Z",
-  "segment_id":25,
-  "C_index":101796
+  "segment_id":6,
+  "C_index":107220
  },
  {
   "id":"FVG-5m-bull-20260708T2220",
@@ -4694,8 +4694,8 @@
   "midpoint_touch_et":"2026-07-09T02:30:00.000Z",
   "full_fill_et":"2026-07-09T02:30:00.000Z",
   "invalidation_et":"2026-07-09T02:30:00.000Z",
-  "segment_id":25,
-  "C_index":101797
+  "segment_id":6,
+  "C_index":107221
  },
  {
   "id":"FVG-5m-bear-20260708T2235",
@@ -4721,8 +4721,8 @@
   "midpoint_touch_et":"2026-07-09T04:00:00.000Z",
   "full_fill_et":"2026-07-09T04:35:00.000Z",
   "invalidation_et":"2026-07-09T04:35:00.000Z",
-  "segment_id":25,
-  "C_index":101800
+  "segment_id":6,
+  "C_index":107224
  },
  {
   "id":"FVG-5m-bear-20260708T2240",
@@ -4748,8 +4748,8 @@
   "midpoint_touch_et":"2026-07-09T03:45:00.000Z",
   "full_fill_et":"2026-07-09T03:45:00.000Z",
   "invalidation_et":"2026-07-09T03:45:00.000Z",
-  "segment_id":25,
-  "C_index":101801
+  "segment_id":6,
+  "C_index":107225
  },
  {
   "id":"FVG-5m-bear-20260708T2245",
@@ -4775,8 +4775,8 @@
   "midpoint_touch_et":"2026-07-09T03:30:00.000Z",
   "full_fill_et":"2026-07-09T03:30:00.000Z",
   "invalidation_et":"2026-07-09T03:30:00.000Z",
-  "segment_id":25,
-  "C_index":101802
+  "segment_id":6,
+  "C_index":107226
  },
  {
   "id":"FVG-5m-bear-20260708T2250",
@@ -4802,8 +4802,8 @@
   "midpoint_touch_et":"2026-07-09T03:30:00.000Z",
   "full_fill_et":"2026-07-09T03:30:00.000Z",
   "invalidation_et":"2026-07-09T03:30:00.000Z",
-  "segment_id":25,
-  "C_index":101803
+  "segment_id":6,
+  "C_index":107227
  },
  {
   "id":"FVG-5m-bull-20260708T2330",
@@ -4829,8 +4829,8 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
-  "segment_id":25,
-  "C_index":101811
+  "segment_id":6,
+  "C_index":107235
  },
  {
   "id":"FVG-5m-bull-20260708T2335",
@@ -4856,8 +4856,8 @@
   "midpoint_touch_et":"2026-07-09T03:45:00.000Z",
   "full_fill_et":"2026-07-09T03:45:00.000Z",
   "invalidation_et":"2026-07-09T03:45:00.000Z",
-  "segment_id":25,
-  "C_index":101812
+  "segment_id":6,
+  "C_index":107236
  },
  {
   "id":"FVG-5m-bear-20260709T0025",
@@ -4883,8 +4883,8 @@
   "midpoint_touch_et":"2026-07-09T04:35:00.000Z",
   "full_fill_et":"2026-07-09T04:35:00.000Z",
   "invalidation_et":"2026-07-09T04:35:00.000Z",
-  "segment_id":25,
-  "C_index":101822
+  "segment_id":6,
+  "C_index":107246
  },
  {
   "id":"FVG-5m-bull-20260709T0035",
@@ -4910,8 +4910,8 @@
   "midpoint_touch_et":"2026-07-09T05:35:00.000Z",
   "full_fill_et":"2026-07-09T05:35:00.000Z",
   "invalidation_et":"2026-07-09T05:35:00.000Z",
-  "segment_id":25,
-  "C_index":101824
+  "segment_id":6,
+  "C_index":107248
  },
  {
   "id":"FVG-5m-bull-20260709T0055",
@@ -4937,8 +4937,8 @@
   "midpoint_touch_et":"2026-07-09T05:05:00.000Z",
   "full_fill_et":"2026-07-09T05:05:00.000Z",
   "invalidation_et":"2026-07-09T05:05:00.000Z",
-  "segment_id":25,
-  "C_index":101828
+  "segment_id":6,
+  "C_index":107252
  },
  {
   "id":"FVG-5m-bear-20260709T0105",
@@ -4964,8 +4964,8 @@
   "midpoint_touch_et":"2026-07-09T05:15:00.000Z",
   "full_fill_et":"2026-07-09T05:15:00.000Z",
   "invalidation_et":"2026-07-09T05:15:00.000Z",
-  "segment_id":25,
-  "C_index":101830
+  "segment_id":6,
+  "C_index":107254
  },
  {
   "id":"FVG-5m-bear-20260709T0125",
@@ -4991,8 +4991,8 @@
   "midpoint_touch_et":"2026-07-09T05:35:00.000Z",
   "full_fill_et":"2026-07-09T05:35:00.000Z",
   "invalidation_et":"2026-07-09T05:35:00.000Z",
-  "segment_id":25,
-  "C_index":101834
+  "segment_id":6,
+  "C_index":107258
  },
  {
   "id":"FVG-5m-bull-20260709T0155",
@@ -5018,8 +5018,8 @@
   "midpoint_touch_et":"2026-07-09T10:55:00.000Z",
   "full_fill_et":"2026-07-09T11:00:00.000Z",
   "invalidation_et":"2026-07-09T11:00:00.000Z",
-  "segment_id":25,
-  "C_index":101840
+  "segment_id":6,
+  "C_index":107264
  },
  {
   "id":"FVG-5m-bull-20260709T0200",
@@ -5045,8 +5045,8 @@
   "midpoint_touch_et":"2026-07-09T06:10:00.000Z",
   "full_fill_et":"2026-07-09T06:10:00.000Z",
   "invalidation_et":"2026-07-09T06:10:00.000Z",
-  "segment_id":25,
-  "C_index":101841
+  "segment_id":6,
+  "C_index":107265
  },
  {
   "id":"FVG-5m-bull-20260709T0220",
@@ -5072,8 +5072,8 @@
   "midpoint_touch_et":"2026-07-09T06:35:00.000Z",
   "full_fill_et":"2026-07-09T06:35:00.000Z",
   "invalidation_et":"2026-07-09T06:35:00.000Z",
-  "segment_id":25,
-  "C_index":101845
+  "segment_id":6,
+  "C_index":107269
  },
  {
   "id":"FVG-5m-bull-20260709T0315",
@@ -5099,8 +5099,8 @@
   "midpoint_touch_et":"2026-07-09T07:25:00.000Z",
   "full_fill_et":"2026-07-09T09:10:00.000Z",
   "invalidation_et":"2026-07-09T09:10:00.000Z",
-  "segment_id":25,
-  "C_index":101856
+  "segment_id":6,
+  "C_index":107280
  },
  {
   "id":"FVG-5m-bull-20260709T0345",
@@ -5126,8 +5126,8 @@
   "midpoint_touch_et":"2026-07-09T08:00:00.000Z",
   "full_fill_et":"2026-07-09T08:05:00.000Z",
   "invalidation_et":"2026-07-09T08:05:00.000Z",
-  "segment_id":25,
-  "C_index":101862
+  "segment_id":6,
+  "C_index":107286
  },
  {
   "id":"FVG-5m-bull-20260709T0350",
@@ -5153,8 +5153,8 @@
   "midpoint_touch_et":"2026-07-09T08:00:00.000Z",
   "full_fill_et":"2026-07-09T08:00:00.000Z",
   "invalidation_et":"2026-07-09T08:00:00.000Z",
-  "segment_id":25,
-  "C_index":101863
+  "segment_id":6,
+  "C_index":107287
  },
  {
   "id":"FVG-5m-bull-20260709T0405",
@@ -5180,8 +5180,8 @@
   "midpoint_touch_et":"2026-07-09T08:20:00.000Z",
   "full_fill_et":"2026-07-09T08:35:00.000Z",
   "invalidation_et":"2026-07-09T08:35:00.000Z",
-  "segment_id":25,
-  "C_index":101866
+  "segment_id":6,
+  "C_index":107290
  },
  {
   "id":"FVG-5m-bear-20260709T0435",
@@ -5207,8 +5207,8 @@
   "midpoint_touch_et":"2026-07-09T11:45:00.000Z",
   "full_fill_et":"2026-07-09T11:50:00.000Z",
   "invalidation_et":"2026-07-09T11:50:00.000Z",
-  "segment_id":25,
-  "C_index":101872
+  "segment_id":6,
+  "C_index":107296
  },
  {
   "id":"FVG-5m-bull-20260709T0555",
@@ -5234,8 +5234,8 @@
   "midpoint_touch_et":"2026-07-09T10:05:00.000Z",
   "full_fill_et":"2026-07-09T10:10:00.000Z",
   "invalidation_et":"2026-07-09T10:10:00.000Z",
-  "segment_id":25,
-  "C_index":101888
+  "segment_id":6,
+  "C_index":107312
  },
  {
   "id":"FVG-5m-bear-20260709T0650",
@@ -5261,8 +5261,8 @@
   "midpoint_touch_et":"2026-07-09T11:05:00.000Z",
   "full_fill_et":"2026-07-09T11:25:00.000Z",
   "invalidation_et":"2026-07-09T11:25:00.000Z",
-  "segment_id":25,
-  "C_index":101899
+  "segment_id":6,
+  "C_index":107323
  },
  {
   "id":"FVG-5m-bull-20260709T0725",
@@ -5288,8 +5288,8 @@
   "midpoint_touch_et":"2026-07-09T14:25:00.000Z",
   "full_fill_et":null,
   "invalidation_et":null,
-  "segment_id":25,
-  "C_index":101906
+  "segment_id":6,
+  "C_index":107330
  },
  {
   "id":"FVG-5m-bull-20260709T0735",
@@ -5315,8 +5315,8 @@
   "midpoint_touch_et":"2026-07-09T14:25:00.000Z",
   "full_fill_et":"2026-07-09T14:25:00.000Z",
   "invalidation_et":"2026-07-09T14:25:00.000Z",
-  "segment_id":25,
-  "C_index":101908
+  "segment_id":6,
+  "C_index":107332
  },
  {
   "id":"FVG-5m-bull-20260709T0745",
@@ -5342,8 +5342,8 @@
   "midpoint_touch_et":"2026-07-09T13:35:00.000Z",
   "full_fill_et":"2026-07-09T13:35:00.000Z",
   "invalidation_et":"2026-07-09T13:35:00.000Z",
-  "segment_id":25,
-  "C_index":101910
+  "segment_id":6,
+  "C_index":107334
  },
  {
   "id":"FVG-5m-bull-20260709T0750",
@@ -5369,8 +5369,8 @@
   "midpoint_touch_et":"2026-07-09T12:00:00.000Z",
   "full_fill_et":"2026-07-09T12:00:00.000Z",
   "invalidation_et":"2026-07-09T12:00:00.000Z",
-  "segment_id":25,
-  "C_index":101911
+  "segment_id":6,
+  "C_index":107335
  },
  {
   "id":"FVG-5m-bull-20260709T0810",
@@ -5396,8 +5396,8 @@
   "midpoint_touch_et":"2026-07-09T12:20:00.000Z",
   "full_fill_et":"2026-07-09T12:20:00.000Z",
   "invalidation_et":"2026-07-09T12:20:00.000Z",
-  "segment_id":25,
-  "C_index":101915
+  "segment_id":6,
+  "C_index":107339
  },
  {
   "id":"FVG-5m-bull-20260709T0825",
@@ -5423,8 +5423,8 @@
   "midpoint_touch_et":"2026-07-09T12:50:00.000Z",
   "full_fill_et":"2026-07-09T12:50:00.000Z",
   "invalidation_et":"2026-07-09T12:50:00.000Z",
-  "segment_id":25,
-  "C_index":101918
+  "segment_id":6,
+  "C_index":107342
  },
  {
   "id":"FVG-5m-bull-20260709T0830",
@@ -5450,8 +5450,8 @@
   "midpoint_touch_et":"2026-07-09T12:50:00.000Z",
   "full_fill_et":"2026-07-09T12:50:00.000Z",
   "invalidation_et":"2026-07-09T12:50:00.000Z",
-  "segment_id":25,
-  "C_index":101919
+  "segment_id":6,
+  "C_index":107343
  },
  {
   "id":"FVG-5m-bull-20260709T0835",
@@ -5477,8 +5477,8 @@
   "midpoint_touch_et":"2026-07-09T12:45:00.000Z",
   "full_fill_et":"2026-07-09T12:45:00.000Z",
   "invalidation_et":"2026-07-09T12:45:00.000Z",
-  "segment_id":25,
-  "C_index":101920
+  "segment_id":6,
+  "C_index":107344
  },
  {
   "id":"FVG-5m-bear-20260709T0845",
@@ -5504,8 +5504,8 @@
   "midpoint_touch_et":"2026-07-09T13:15:00.000Z",
   "full_fill_et":"2026-07-09T13:35:00.000Z",
   "invalidation_et":"2026-07-09T13:35:00.000Z",
-  "segment_id":25,
-  "C_index":101922
+  "segment_id":6,
+  "C_index":107346
  },
  {
   "id":"FVG-5m-bull-20260709T0935",
@@ -5531,8 +5531,8 @@
   "midpoint_touch_et":"2026-07-09T14:20:00.000Z",
   "full_fill_et":"2026-07-09T14:20:00.000Z",
   "invalidation_et":"2026-07-09T14:20:00.000Z",
-  "segment_id":25,
-  "C_index":101932
+  "segment_id":6,
+  "C_index":107356
  },
  {
   "id":"FVG-5m-bull-20260709T0940",
@@ -5558,8 +5558,8 @@
   "midpoint_touch_et":"2026-07-09T14:15:00.000Z",
   "full_fill_et":"2026-07-09T14:20:00.000Z",
   "invalidation_et":"2026-07-09T14:20:00.000Z",
-  "segment_id":25,
-  "C_index":101933
+  "segment_id":6,
+  "C_index":107357
  },
  {
   "id":"FVG-5m-bull-20260709T0955",
@@ -5585,8 +5585,8 @@
   "midpoint_touch_et":"2026-07-09T14:05:00.000Z",
   "full_fill_et":"2026-07-09T14:05:00.000Z",
   "invalidation_et":"2026-07-09T14:05:00.000Z",
-  "segment_id":25,
-  "C_index":101936
+  "segment_id":6,
+  "C_index":107360
  },
  {
   "id":"FVG-5m-bear-20260709T1010",
@@ -5612,8 +5612,8 @@
   "midpoint_touch_et":"2026-07-09T15:20:00.000Z",
   "full_fill_et":"2026-07-09T15:30:00.000Z",
   "invalidation_et":"2026-07-09T15:30:00.000Z",
-  "segment_id":25,
-  "C_index":101939
+  "segment_id":6,
+  "C_index":107363
  },
  {
   "id":"FVG-5m-bear-20260709T1020",
@@ -5639,8 +5639,8 @@
   "midpoint_touch_et":"2026-07-09T14:30:00.000Z",
   "full_fill_et":"2026-07-09T14:40:00.000Z",
   "invalidation_et":"2026-07-09T14:40:00.000Z",
-  "segment_id":25,
-  "C_index":101941
+  "segment_id":6,
+  "C_index":107365
  },
  {
   "id":"FVG-5m-bull-20260709T1110",
@@ -5666,8 +5666,8 @@
   "midpoint_touch_et":"2026-07-10T00:30:00.000Z",
   "full_fill_et":"2026-07-10T00:30:00.000Z",
   "invalidation_et":"2026-07-10T00:30:00.000Z",
-  "segment_id":25,
-  "C_index":101951
+  "segment_id":6,
+  "C_index":107375
  },
  {
   "id":"FVG-5m-bull-20260709T1145",
@@ -5693,8 +5693,8 @@
   "midpoint_touch_et":"2026-07-09T16:40:00.000Z",
   "full_fill_et":"2026-07-09T16:40:00.000Z",
   "invalidation_et":"2026-07-09T16:40:00.000Z",
-  "segment_id":25,
-  "C_index":101958
+  "segment_id":6,
+  "C_index":107382
  },
  {
   "id":"FVG-5m-bull-20260709T1205",
@@ -5720,8 +5720,8 @@
   "midpoint_touch_et":"2026-07-09T16:15:00.000Z",
   "full_fill_et":"2026-07-09T16:15:00.000Z",
   "invalidation_et":"2026-07-09T16:15:00.000Z",
-  "segment_id":25,
-  "C_index":101962
+  "segment_id":6,
+  "C_index":107386
  },
  {
   "id":"FVG-5m-bull-20260709T1245",
@@ -5747,8 +5747,8 @@
   "midpoint_touch_et":"2026-07-09T17:00:00.000Z",
   "full_fill_et":"2026-07-09T17:00:00.000Z",
   "invalidation_et":"2026-07-09T17:00:00.000Z",
-  "segment_id":25,
-  "C_index":101970
+  "segment_id":6,
+  "C_index":107394
  },
  {
   "id":"FVG-5m-bull-20260709T1305",
@@ -5774,8 +5774,8 @@
   "midpoint_touch_et":"2026-07-09T19:10:00.000Z",
   "full_fill_et":"2026-07-09T19:10:00.000Z",
   "invalidation_et":"2026-07-09T19:10:00.000Z",
-  "segment_id":25,
-  "C_index":101974
+  "segment_id":6,
+  "C_index":107398
  },
  {
   "id":"FVG-5m-bull-20260709T1310",
@@ -5801,8 +5801,8 @@
   "midpoint_touch_et":"2026-07-09T19:00:00.000Z",
   "full_fill_et":"2026-07-09T19:05:00.000Z",
   "invalidation_et":"2026-07-09T19:05:00.000Z",
-  "segment_id":25,
-  "C_index":101975
+  "segment_id":6,
+  "C_index":107399
  },
  {
   "id":"FVG-5m-bull-20260709T1315",
@@ -5828,8 +5828,8 @@
   "midpoint_touch_et":"2026-07-09T18:00:00.000Z",
   "full_fill_et":"2026-07-09T18:25:00.000Z",
   "invalidation_et":"2026-07-09T18:25:00.000Z",
-  "segment_id":25,
-  "C_index":101976
+  "segment_id":6,
+  "C_index":107400
  },
  {
   "id":"FVG-5m-bull-20260709T1320",
@@ -5855,8 +5855,8 @@
   "midpoint_touch_et":"2026-07-09T17:35:00.000Z",
   "full_fill_et":"2026-07-09T17:35:00.000Z",
   "invalidation_et":"2026-07-09T17:35:00.000Z",
-  "segment_id":25,
-  "C_index":101977
+  "segment_id":6,
+  "C_index":107401
  },
  {
   "id":"FVG-5m-bear-20260709T1420",
@@ -5882,8 +5882,8 @@
   "midpoint_touch_et":"2026-07-09T20:15:00.000Z",
   "full_fill_et":"2026-07-09T20:15:00.000Z",
   "invalidation_et":"2026-07-09T20:15:00.000Z",
-  "segment_id":25,
-  "C_index":101989
+  "segment_id":6,
+  "C_index":107413
  },
  {
   "id":"FVG-5m-bear-20260709T1425",
@@ -5909,8 +5909,8 @@
   "midpoint_touch_et":"2026-07-09T18:35:00.000Z",
   "full_fill_et":"2026-07-09T18:35:00.000Z",
   "invalidation_et":"2026-07-09T18:35:00.000Z",
-  "segment_id":25,
-  "C_index":101990
+  "segment_id":6,
+  "C_index":107414
  },
  {
   "id":"FVG-5m-bear-20260709T1455",
@@ -5936,8 +5936,8 @@
   "midpoint_touch_et":"2026-07-09T19:20:00.000Z",
   "full_fill_et":"2026-07-09T19:20:00.000Z",
   "invalidation_et":"2026-07-09T19:20:00.000Z",
-  "segment_id":25,
-  "C_index":101996
+  "segment_id":6,
+  "C_index":107420
  },
  {
   "id":"FVG-5m-bear-20260709T1500",
@@ -5963,8 +5963,8 @@
   "midpoint_touch_et":"2026-07-09T19:20:00.000Z",
   "full_fill_et":"2026-07-09T19:20:00.000Z",
   "invalidation_et":"2026-07-09T19:20:00.000Z",
-  "segment_id":25,
-  "C_index":101997
+  "segment_id":6,
+  "C_index":107421
  },
  {
   "id":"FVG-5m-bull-20260709T1520",
@@ -5990,8 +5990,8 @@
   "midpoint_touch_et":"2026-07-09T19:30:00.000Z",
   "full_fill_et":"2026-07-09T19:30:00.000Z",
   "invalidation_et":"2026-07-09T19:30:00.000Z",
-  "segment_id":25,
-  "C_index":102001
+  "segment_id":6,
+  "C_index":107425
  },
  {
   "id":"FVG-5m-bull-20260709T1600",
@@ -6017,8 +6017,8 @@
   "midpoint_touch_et":"2026-07-09T20:30:00.000Z",
   "full_fill_et":"2026-07-09T20:30:00.000Z",
   "invalidation_et":"2026-07-09T20:30:00.000Z",
-  "segment_id":25,
-  "C_index":102009
+  "segment_id":6,
+  "C_index":107433
  },
  {
   "id":"FVG-5m-bear-20260709T1625",
@@ -6044,8 +6044,8 @@
   "midpoint_touch_et":"2026-07-09T22:10:00.000Z",
   "full_fill_et":"2026-07-09T22:10:00.000Z",
   "invalidation_et":"2026-07-09T22:10:00.000Z",
-  "segment_id":25,
-  "C_index":102014
+  "segment_id":6,
+  "C_index":107438
  },
  {
   "id":"FVG-5m-bear-20260709T1630",
@@ -6071,8 +6071,8 @@
   "midpoint_touch_et":"2026-07-09T22:10:00.000Z",
   "full_fill_et":"2026-07-09T22:10:00.000Z",
   "invalidation_et":"2026-07-09T22:10:00.000Z",
-  "segment_id":25,
-  "C_index":102015
+  "segment_id":6,
+  "C_index":107439
  },
  {
   "id":"FVG-5m-bear-20260709T1645",
@@ -6098,8 +6098,8 @@
   "midpoint_touch_et":"2026-07-09T22:05:00.000Z",
   "full_fill_et":"2026-07-09T22:05:00.000Z",
   "invalidation_et":"2026-07-09T22:05:00.000Z",
-  "segment_id":25,
-  "C_index":102018
+  "segment_id":6,
+  "C_index":107442
  },
  {
   "id":"FVG-5m-bear-20260709T1820",
@@ -6125,8 +6125,8 @@
   "midpoint_touch_et":"2026-07-09T22:50:00.000Z",
   "full_fill_et":"2026-07-09T23:05:00.000Z",
   "invalidation_et":"2026-07-09T23:05:00.000Z",
-  "segment_id":25,
-  "C_index":102025
+  "segment_id":6,
+  "C_index":107449
  },
  {
   "id":"FVG-5m-bull-20260709T1905",
@@ -6152,8 +6152,8 @@
   "midpoint_touch_et":"2026-07-09T23:50:00.000Z",
   "full_fill_et":"2026-07-10T00:05:00.000Z",
   "invalidation_et":"2026-07-10T00:05:00.000Z",
-  "segment_id":25,
-  "C_index":102034
+  "segment_id":6,
+  "C_index":107458
  },
  {
   "id":"FVG-5m-bull-20260709T1925",
@@ -6179,8 +6179,8 @@
   "midpoint_touch_et":"2026-07-09T23:35:00.000Z",
   "full_fill_et":"2026-07-09T23:35:00.000Z",
   "invalidation_et":"2026-07-09T23:35:00.000Z",
-  "segment_id":25,
-  "C_index":102038
+  "segment_id":6,
+  "C_index":107462
  },
  {
   "id":"FVG-5m-bear-20260709T1945",
@@ -6206,8 +6206,8 @@
   "midpoint_touch_et":"2026-07-09T23:55:00.000Z",
   "full_fill_et":"2026-07-09T23:55:00.000Z",
   "invalidation_et":"2026-07-09T23:55:00.000Z",
-  "segment_id":25,
-  "C_index":102042
+  "segment_id":6,
+  "C_index":107466
  },
  {
   "id":"FVG-5m-bear-20260709T2005",
@@ -6233,8 +6233,8 @@
   "midpoint_touch_et":"2026-07-10T02:50:00.000Z",
   "full_fill_et":"2026-07-10T02:50:00.000Z",
   "invalidation_et":"2026-07-10T02:50:00.000Z",
-  "segment_id":25,
-  "C_index":102046
+  "segment_id":6,
+  "C_index":107470
  },
  {
   "id":"FVG-5m-bear-20260709T2025",
@@ -6260,8 +6260,8 @@
   "midpoint_touch_et":"2026-07-10T01:00:00.000Z",
   "full_fill_et":"2026-07-10T01:00:00.000Z",
   "invalidation_et":"2026-07-10T01:00:00.000Z",
-  "segment_id":25,
-  "C_index":102050
+  "segment_id":6,
+  "C_index":107474
  },
  {
   "id":"FVG-5m-bear-20260709T2200",
@@ -6287,8 +6287,8 @@
   "midpoint_touch_et":"2026-07-10T02:10:00.000Z",
   "full_fill_et":"2026-07-10T02:10:00.000Z",
   "invalidation_et":"2026-07-10T02:10:00.000Z",
-  "segment_id":25,
-  "C_index":102069
+  "segment_id":6,
+  "C_index":107493
  },
  {
   "id":"FVG-5m-bull-20260709T2235",
@@ -6314,8 +6314,8 @@
   "midpoint_touch_et":"2026-07-10T04:55:00.000Z",
   "full_fill_et":"2026-07-10T04:55:00.000Z",
   "invalidation_et":"2026-07-10T04:55:00.000Z",
-  "segment_id":25,
-  "C_index":102076
+  "segment_id":6,
+  "C_index":107500
  },
  {
   "id":"FVG-5m-bull-20260709T2240",
@@ -6341,8 +6341,8 @@
   "midpoint_touch_et":"2026-07-10T04:55:00.000Z",
   "full_fill_et":"2026-07-10T04:55:00.000Z",
   "invalidation_et":"2026-07-10T04:55:00.000Z",
-  "segment_id":25,
-  "C_index":102077
+  "segment_id":6,
+  "C_index":107501
  },
  {
   "id":"FVG-5m-bull-20260709T2250",
@@ -6368,8 +6368,8 @@
   "midpoint_touch_et":"2026-07-10T03:30:00.000Z",
   "full_fill_et":"2026-07-10T03:50:00.000Z",
   "invalidation_et":"2026-07-10T03:50:00.000Z",
-  "segment_id":25,
-  "C_index":102079
+  "segment_id":6,
+  "C_index":107503
  },
  {
   "id":"FVG-5m-bull-20260709T2255",
@@ -6395,8 +6395,8 @@
   "midpoint_touch_et":"2026-07-10T03:25:00.000Z",
   "full_fill_et":"2026-07-10T03:25:00.000Z",
   "invalidation_et":"2026-07-10T03:25:00.000Z",
-  "segment_id":25,
-  "C_index":102080
+  "segment_id":6,
+  "C_index":107504
  },
  {
   "id":"FVG-5m-bear-20260709T2325",
@@ -6422,8 +6422,8 @@
   "midpoint_touch_et":"2026-07-10T04:05:00.000Z",
   "full_fill_et":"2026-07-10T04:05:00.000Z",
   "invalidation_et":"2026-07-10T04:05:00.000Z",
-  "segment_id":25,
-  "C_index":102086
+  "segment_id":6,
+  "C_index":107510
  },
  {
   "id":"FVG-5m-bear-20260710T0025",
@@ -6449,8 +6449,8 @@
   "midpoint_touch_et":"2026-07-10T13:40:00.000Z",
   "full_fill_et":"2026-07-10T13:40:00.000Z",
   "invalidation_et":"2026-07-10T13:40:00.000Z",
-  "segment_id":25,
-  "C_index":102098
+  "segment_id":6,
+  "C_index":107522
  },
  {
   "id":"FVG-5m-bear-20260710T0050",
@@ -6476,8 +6476,8 @@
   "midpoint_touch_et":"2026-07-10T13:35:00.000Z",
   "full_fill_et":"2026-07-10T13:35:00.000Z",
   "invalidation_et":"2026-07-10T13:35:00.000Z",
-  "segment_id":25,
-  "C_index":102103
+  "segment_id":6,
+  "C_index":107527
  },
  {
   "id":"FVG-5m-bear-20260710T0155",
@@ -6503,8 +6503,8 @@
   "midpoint_touch_et":"2026-07-10T10:45:00.000Z",
   "full_fill_et":"2026-07-10T10:45:00.000Z",
   "invalidation_et":"2026-07-10T10:45:00.000Z",
-  "segment_id":25,
-  "C_index":102116
+  "segment_id":6,
+  "C_index":107540
  },
  {
   "id":"FVG-5m-bear-20260710T0210",
@@ -6530,8 +6530,8 @@
   "midpoint_touch_et":"2026-07-10T10:05:00.000Z",
   "full_fill_et":"2026-07-10T10:05:00.000Z",
   "invalidation_et":"2026-07-10T10:05:00.000Z",
-  "segment_id":25,
-  "C_index":102119
+  "segment_id":6,
+  "C_index":107543
  },
  {
   "id":"FVG-5m-bear-20260710T0220",
@@ -6557,8 +6557,8 @@
   "midpoint_touch_et":"2026-07-10T06:35:00.000Z",
   "full_fill_et":"2026-07-10T06:35:00.000Z",
   "invalidation_et":"2026-07-10T06:35:00.000Z",
-  "segment_id":25,
-  "C_index":102121
+  "segment_id":6,
+  "C_index":107545
  },
  {
   "id":"FVG-5m-bear-20260710T0225",
@@ -6584,8 +6584,8 @@
   "midpoint_touch_et":"2026-07-10T06:35:00.000Z",
   "full_fill_et":"2026-07-10T06:35:00.000Z",
   "invalidation_et":"2026-07-10T06:35:00.000Z",
-  "segment_id":25,
-  "C_index":102122
+  "segment_id":6,
+  "C_index":107546
  },
  {
   "id":"FVG-5m-bull-20260710T0250",
@@ -6611,8 +6611,8 @@
   "midpoint_touch_et":"2026-07-10T07:00:00.000Z",
   "full_fill_et":"2026-07-10T07:00:00.000Z",
   "invalidation_et":"2026-07-10T07:00:00.000Z",
-  "segment_id":25,
-  "C_index":102127
+  "segment_id":6,
+  "C_index":107551
  },
  {
   "id":"FVG-5m-bear-20260710T0345",
@@ -6638,8 +6638,8 @@
   "midpoint_touch_et":"2026-07-10T08:15:00.000Z",
   "full_fill_et":"2026-07-10T08:20:00.000Z",
   "invalidation_et":"2026-07-10T08:20:00.000Z",
-  "segment_id":25,
-  "C_index":102138
+  "segment_id":6,
+  "C_index":107562
  },
  {
   "id":"FVG-5m-bear-20260710T0355",
@@ -6665,8 +6665,8 @@
   "midpoint_touch_et":"2026-07-10T08:05:00.000Z",
   "full_fill_et":"2026-07-10T08:05:00.000Z",
   "invalidation_et":"2026-07-10T08:05:00.000Z",
-  "segment_id":25,
-  "C_index":102140
+  "segment_id":6,
+  "C_index":107564
  },
  {
   "id":"FVG-5m-bear-20260710T0425",
@@ -6692,8 +6692,8 @@
   "midpoint_touch_et":"2026-07-10T08:40:00.000Z",
   "full_fill_et":"2026-07-10T08:50:00.000Z",
   "invalidation_et":"2026-07-10T08:50:00.000Z",
-  "segment_id":25,
-  "C_index":102146
+  "segment_id":6,
+  "C_index":107570
  },
  {
   "id":"FVG-5m-bull-20260710T0605",
@@ -6719,8 +6719,8 @@
   "midpoint_touch_et":"2026-07-10T10:20:00.000Z",
   "full_fill_et":"2026-07-10T10:25:00.000Z",
   "invalidation_et":"2026-07-10T10:25:00.000Z",
-  "segment_id":25,
-  "C_index":102166
+  "segment_id":6,
+  "C_index":107590
  },
  {
   "id":"FVG-5m-bull-20260710T0635",
@@ -6746,8 +6746,8 @@
   "midpoint_touch_et":"2026-07-10T10:50:00.000Z",
   "full_fill_et":"2026-07-10T10:55:00.000Z",
   "invalidation_et":"2026-07-10T10:55:00.000Z",
-  "segment_id":25,
-  "C_index":102172
+  "segment_id":6,
+  "C_index":107596
  },
  {
   "id":"FVG-5m-bull-20260710T0700",
@@ -6773,8 +6773,8 @@
   "midpoint_touch_et":"2026-07-10T11:35:00.000Z",
   "full_fill_et":"2026-07-10T11:35:00.000Z",
   "invalidation_et":"2026-07-10T11:35:00.000Z",
-  "segment_id":25,
-  "C_index":102177
+  "segment_id":6,
+  "C_index":107601
  },
  {
   "id":"FVG-5m-bull-20260710T0705",
@@ -6800,8 +6800,8 @@
   "midpoint_touch_et":"2026-07-10T11:30:00.000Z",
   "full_fill_et":"2026-07-10T11:30:00.000Z",
   "invalidation_et":"2026-07-10T11:30:00.000Z",
-  "segment_id":25,
-  "C_index":102178
+  "segment_id":6,
+  "C_index":107602
  },
  {
   "id":"FVG-5m-bear-20260710T0730",
@@ -6827,8 +6827,8 @@
   "midpoint_touch_et":"2026-07-10T12:15:00.000Z",
   "full_fill_et":"2026-07-10T12:15:00.000Z",
   "invalidation_et":"2026-07-10T12:15:00.000Z",
-  "segment_id":25,
-  "C_index":102183
+  "segment_id":6,
+  "C_index":107607
  },
  {
   "id":"FVG-5m-bear-20260710T0735",
@@ -6854,8 +6854,8 @@
   "midpoint_touch_et":"2026-07-10T12:15:00.000Z",
   "full_fill_et":"2026-07-10T12:15:00.000Z",
   "invalidation_et":"2026-07-10T12:15:00.000Z",
-  "segment_id":25,
-  "C_index":102184
+  "segment_id":6,
+  "C_index":107608
  },
  {
   "id":"FVG-5m-bear-20260710T0805",
@@ -6881,8 +6881,8 @@
   "midpoint_touch_et":"2026-07-10T12:15:00.000Z",
   "full_fill_et":"2026-07-10T12:15:00.000Z",
   "invalidation_et":"2026-07-10T12:15:00.000Z",
-  "segment_id":25,
-  "C_index":102190
+  "segment_id":6,
+  "C_index":107614
  },
  {
   "id":"FVG-5m-bull-20260710T0815",
@@ -6908,8 +6908,8 @@
   "midpoint_touch_et":"2026-07-10T13:00:00.000Z",
   "full_fill_et":"2026-07-10T13:05:00.000Z",
   "invalidation_et":"2026-07-10T13:05:00.000Z",
-  "segment_id":25,
-  "C_index":102192
+  "segment_id":6,
+  "C_index":107616
  },
  {
   "id":"FVG-5m-bear-20260710T0900",
@@ -6935,8 +6935,8 @@
   "midpoint_touch_et":"2026-07-10T13:10:00.000Z",
   "full_fill_et":"2026-07-10T13:10:00.000Z",
   "invalidation_et":"2026-07-10T13:10:00.000Z",
-  "segment_id":25,
-  "C_index":102201
+  "segment_id":6,
+  "C_index":107625
  },
  {
   "id":"FVG-5m-bull-20260710T0920",
@@ -6962,8 +6962,8 @@
   "midpoint_touch_et":"2026-07-10T13:30:00.000Z",
   "full_fill_et":"2026-07-10T13:30:00.000Z",
   "invalidation_et":"2026-07-10T13:30:00.000Z",
-  "segment_id":25,
-  "C_index":102205
+  "segment_id":6,
+  "C_index":107629
  },
  {
   "id":"FVG-5m-bull-20260710T0935",
@@ -6989,8 +6989,8 @@
   "midpoint_touch_et":"2026-07-10T13:45:00.000Z",
   "full_fill_et":"2026-07-10T13:45:00.000Z",
   "invalidation_et":"2026-07-10T13:45:00.000Z",
-  "segment_id":25,
-  "C_index":102208
+  "segment_id":6,
+  "C_index":107632
  },
  {
   "id":"FVG-5m-bull-20260710T0950",
@@ -7016,8 +7016,8 @@
   "midpoint_touch_et":"2026-07-10T14:20:00.000Z",
   "full_fill_et":"2026-07-10T14:25:00.000Z",
   "invalidation_et":"2026-07-10T14:25:00.000Z",
-  "segment_id":25,
-  "C_index":102211
+  "segment_id":6,
+  "C_index":107635
  },
  {
   "id":"FVG-5m-bear-20260710T1020",
@@ -7043,8 +7043,8 @@
   "midpoint_touch_et":"2026-07-10T14:30:00.000Z",
   "full_fill_et":"2026-07-10T14:30:00.000Z",
   "invalidation_et":"2026-07-10T14:30:00.000Z",
-  "segment_id":25,
-  "C_index":102217
+  "segment_id":6,
+  "C_index":107641
  },
  {
   "id":"FVG-5m-bear-20260710T1100",
@@ -7070,8 +7070,8 @@
   "midpoint_touch_et":"2026-07-10T15:10:00.000Z",
   "full_fill_et":"2026-07-10T15:10:00.000Z",
   "invalidation_et":"2026-07-10T15:10:00.000Z",
-  "segment_id":25,
-  "C_index":102225
+  "segment_id":6,
+  "C_index":107649
  },
  {
   "id":"FVG-5m-bull-20260710T1110",
@@ -7097,8 +7097,8 @@
   "midpoint_touch_et":"2026-07-10T15:45:00.000Z",
   "full_fill_et":"2026-07-10T15:45:00.000Z",
   "invalidation_et":"2026-07-10T15:45:00.000Z",
-  "segment_id":25,
-  "C_index":102227
+  "segment_id":6,
+  "C_index":107651
  },
  {
   "id":"FVG-5m-bull-20260710T1115",
@@ -7124,8 +7124,8 @@
   "midpoint_touch_et":"2026-07-10T15:45:00.000Z",
   "full_fill_et":"2026-07-10T15:45:00.000Z",
   "invalidation_et":"2026-07-10T15:45:00.000Z",
-  "segment_id":25,
-  "C_index":102228
+  "segment_id":6,
+  "C_index":107652
  },
  {
   "id":"FVG-5m-bull-20260710T1120",
@@ -7151,8 +7151,8 @@
   "midpoint_touch_et":"2026-07-10T15:45:00.000Z",
   "full_fill_et":"2026-07-10T15:45:00.000Z",
   "invalidation_et":"2026-07-10T15:45:00.000Z",
-  "segment_id":25,
-  "C_index":102229
+  "segment_id":6,
+  "C_index":107653
  },
  {
   "id":"FVG-5m-bull-20260710T1130",
@@ -7178,8 +7178,8 @@
   "midpoint_touch_et":"2026-07-10T15:40:00.000Z",
   "full_fill_et":"2026-07-10T15:40:00.000Z",
   "invalidation_et":"2026-07-10T15:40:00.000Z",
-  "segment_id":25,
-  "C_index":102231
+  "segment_id":6,
+  "C_index":107655
  },
  {
   "id":"FVG-5m-bear-20260710T1140",
@@ -7205,8 +7205,8 @@
   "midpoint_touch_et":"2026-07-10T16:00:00.000Z",
   "full_fill_et":"2026-07-10T16:05:00.000Z",
   "invalidation_et":"2026-07-10T16:05:00.000Z",
-  "segment_id":25,
-  "C_index":102233
+  "segment_id":6,
+  "C_index":107657
  },
  {
   "id":"FVG-5m-bull-20260710T1200",
@@ -7232,8 +7232,8 @@
   "midpoint_touch_et":"2026-07-12T22:05:00.000Z",
   "full_fill_et":"2026-07-12T22:05:00.000Z",
   "invalidation_et":"2026-07-12T22:05:00.000Z",
-  "segment_id":25,
-  "C_index":102237
+  "segment_id":6,
+  "C_index":107661
  },
  {
   "id":"FVG-5m-bull-20260710T1205",
@@ -7259,8 +7259,8 @@
   "midpoint_touch_et":"2026-07-12T22:05:00.000Z",
   "full_fill_et":"2026-07-12T22:05:00.000Z",
   "invalidation_et":"2026-07-12T22:05:00.000Z",
-  "segment_id":25,
-  "C_index":102238
+  "segment_id":6,
+  "C_index":107662
  },
  {
   "id":"FVG-5m-bull-20260710T1220",
@@ -7286,8 +7286,8 @@
   "midpoint_touch_et":null,
   "full_fill_et":"2026-07-12T22:05:00.000Z",
   "invalidation_et":"2026-07-12T22:05:00.000Z",
-  "segment_id":25,
-  "C_index":102241
+  "segment_id":6,
+  "C_index":107665
  },
  {
   "id":"FVG-5m-bull-20260710T1325",
@@ -7313,8 +7313,8 @@
   "midpoint_touch_et":"2026-07-10T18:00:00.000Z",
   "full_fill_et":"2026-07-10T18:20:00.000Z",
   "invalidation_et":"2026-07-10T18:20:00.000Z",
-  "segment_id":25,
-  "C_index":102254
+  "segment_id":6,
+  "C_index":107678
  },
  {
   "id":"FVG-5m-bull-20260710T1330",
@@ -7340,8 +7340,8 @@
   "midpoint_touch_et":"2026-07-10T18:00:00.000Z",
   "full_fill_et":"2026-07-10T18:00:00.000Z",
   "invalidation_et":"2026-07-10T18:00:00.000Z",
-  "segment_id":25,
-  "C_index":102255
+  "segment_id":6,
+  "C_index":107679
  },
  {
   "id":"FVG-5m-bear-20260710T1355",
@@ -7367,8 +7367,8 @@
   "midpoint_touch_et":"2026-07-10T18:05:00.000Z",
   "full_fill_et":"2026-07-10T18:10:00.000Z",
   "invalidation_et":"2026-07-10T18:10:00.000Z",
-  "segment_id":25,
-  "C_index":102260
+  "segment_id":6,
+  "C_index":107684
  },
  {
   "id":"FVG-5m-bull-20260710T1650",
@@ -7394,7 +7394,7 @@
   "midpoint_touch_et":null,
   "full_fill_et":"2026-07-12T22:05:00.000Z",
   "invalidation_et":"2026-07-12T22:05:00.000Z",
-  "segment_id":25,
-  "C_index":102295
+  "segment_id":6,
+  "C_index":107719
  }
 ]

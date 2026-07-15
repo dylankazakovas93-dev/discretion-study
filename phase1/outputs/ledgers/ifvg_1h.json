@@ -1,5 +1,47 @@
 [
  {
+  "ifvg_id":"FVG-1h-bear-20260702T1100-iFVG",
+  "source_fvg_id":"FVG-1h-bear-20260702T1100",
+  "instrument":"NQ",
+  "tf":"1h",
+  "param_version":"phase1-v1.0.0",
+  "original_direction":"bear",
+  "ifvg_direction":"bull",
+  "source_lower":29852.0,
+  "source_upper":30007.75,
+  "conversion_close":30025.25,
+  "conversion_et":"2026-07-06T15:00:00.000Z",
+  "source_availability_et":"2026-07-02T16:00:00.000Z"
+ },
+ {
+  "ifvg_id":"FVG-1h-bull-20260702T2200-iFVG",
+  "source_fvg_id":"FVG-1h-bull-20260702T2200",
+  "instrument":"NQ",
+  "tf":"1h",
+  "param_version":"phase1-v1.0.0",
+  "original_direction":"bull",
+  "ifvg_direction":"bear",
+  "source_lower":29638.75,
+  "source_upper":29680.5,
+  "conversion_close":29625.5,
+  "conversion_et":"2026-07-07T05:00:00.000Z",
+  "source_availability_et":"2026-07-03T03:00:00.000Z"
+ },
+ {
+  "ifvg_id":"FVG-1h-bull-20260702T2300-iFVG",
+  "source_fvg_id":"FVG-1h-bull-20260702T2300",
+  "instrument":"NQ",
+  "tf":"1h",
+  "param_version":"phase1-v1.0.0",
+  "original_direction":"bull",
+  "ifvg_direction":"bear",
+  "source_lower":29699.5,
+  "source_upper":29717.75,
+  "conversion_close":29668.25,
+  "conversion_et":"2026-07-07T04:00:00.000Z",
+  "source_availability_et":"2026-07-03T04:00:00.000Z"
+ },
+ {
   "ifvg_id":"FVG-1h-bear-20260705T2200-iFVG",
   "source_fvg_id":"FVG-1h-bear-20260705T2200",
   "instrument":"NQ",

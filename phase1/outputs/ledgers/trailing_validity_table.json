@@ -7,7 +7,7 @@
   "null_count":0,
   "valid_count":6541,
   "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
-  "discovery_segment_id":25,
+  "discovery_norm_segment_id":0,
   "exclusion_reason":""
  },
  {
@@ -18,7 +18,7 @@
   "null_count":0,
   "valid_count":6541,
   "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
-  "discovery_segment_id":25,
+  "discovery_norm_segment_id":0,
   "exclusion_reason":""
  },
  {
@@ -29,7 +29,7 @@
   "null_count":0,
   "valid_count":6541,
   "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
-  "discovery_segment_id":25,
+  "discovery_norm_segment_id":0,
   "exclusion_reason":""
  },
  {
@@ -40,7 +40,7 @@
   "null_count":0,
   "valid_count":1309,
   "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
-  "discovery_segment_id":25,
+  "discovery_norm_segment_id":0,
   "exclusion_reason":""
  },
  {
@@ -51,7 +51,7 @@
   "null_count":0,
   "valid_count":1309,
   "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
-  "discovery_segment_id":25,
+  "discovery_norm_segment_id":0,
   "exclusion_reason":""
  },
  {
@@ -62,7 +62,7 @@
   "null_count":0,
   "valid_count":1309,
   "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
-  "discovery_segment_id":25,
+  "discovery_norm_segment_id":0,
   "exclusion_reason":""
  },
  {
@@ -73,7 +73,7 @@
   "null_count":0,
   "valid_count":437,
   "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
-  "discovery_segment_id":25,
+  "discovery_norm_segment_id":0,
   "exclusion_reason":""
  },
  {
@@ -81,153 +81,153 @@
   "horizon_N":20,
   "param_version":"phase1-v1.0.0",
   "discovery_candles":437,
-  "null_count":5,
-  "valid_count":432,
-  "first_valid_july_availability_et":"2026-07-06T05:15:00.000Z",
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
+  "null_count":0,
+  "valid_count":437,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
  },
  {
   "tf":"15m",
   "horizon_N":40,
   "param_version":"phase1-v1.0.0",
   "discovery_candles":437,
-  "null_count":25,
-  "valid_count":412,
-  "first_valid_july_availability_et":"2026-07-06T10:15:00.000Z",
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
+  "null_count":0,
+  "valid_count":437,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
  },
  {
   "tf":"30m",
   "horizon_N":10,
   "param_version":"phase1-v1.0.0",
   "discovery_candles":219,
-  "null_count":3,
-  "valid_count":216,
-  "first_valid_july_availability_et":"2026-07-06T05:30:00.000Z",
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
+  "null_count":0,
+  "valid_count":219,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
  },
  {
   "tf":"30m",
   "horizon_N":20,
   "param_version":"phase1-v1.0.0",
   "discovery_candles":219,
-  "null_count":13,
-  "valid_count":206,
-  "first_valid_july_availability_et":"2026-07-06T10:30:00.000Z",
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
+  "null_count":0,
+  "valid_count":219,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
  },
  {
   "tf":"30m",
   "horizon_N":40,
   "param_version":"phase1-v1.0.0",
   "discovery_candles":219,
-  "null_count":33,
-  "valid_count":186,
-  "first_valid_july_availability_et":"2026-07-06T20:30:00.000Z",
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
+  "null_count":0,
+  "valid_count":219,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
  },
  {
   "tf":"1h",
   "horizon_N":10,
   "param_version":"phase1-v1.0.0",
   "discovery_candles":110,
-  "null_count":7,
-  "valid_count":103,
-  "first_valid_july_availability_et":"2026-07-06T11:00:00.000Z",
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
+  "null_count":0,
+  "valid_count":110,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
  },
  {
   "tf":"1h",
   "horizon_N":20,
   "param_version":"phase1-v1.0.0",
   "discovery_candles":110,
-  "null_count":17,
-  "valid_count":93,
+  "null_count":0,
+  "valid_count":110,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
+ },
+ {
+  "tf":"1h",
+  "horizon_N":40,
+  "param_version":"phase1-v1.0.0",
+  "discovery_candles":110,
+  "null_count":0,
+  "valid_count":110,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
+ },
+ {
+  "tf":"4h",
+  "horizon_N":10,
+  "param_version":"phase1-v1.0.0",
+  "discovery_candles":30,
+  "null_count":0,
+  "valid_count":30,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
+ },
+ {
+  "tf":"4h",
+  "horizon_N":20,
+  "param_version":"phase1-v1.0.0",
+  "discovery_candles":30,
+  "null_count":0,
+  "valid_count":30,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
+ },
+ {
+  "tf":"4h",
+  "horizon_N":40,
+  "param_version":"phase1-v1.0.0",
+  "discovery_candles":30,
+  "null_count":0,
+  "valid_count":30,
+  "first_valid_july_availability_et":"2026-07-06T04:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
+ },
+ {
+  "tf":"daily",
+  "horizon_N":10,
+  "param_version":"phase1-v1.0.0",
+  "discovery_candles":5,
+  "null_count":0,
+  "valid_count":5,
   "first_valid_july_availability_et":"2026-07-06T21:00:00.000Z",
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
- },
- {
-  "tf":"1h",
-  "horizon_N":40,
-  "param_version":"phase1-v1.0.0",
-  "discovery_candles":110,
-  "null_count":37,
-  "valid_count":73,
-  "first_valid_july_availability_et":"2026-07-07T18:00:00.000Z",
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
- },
- {
-  "tf":"4h",
-  "horizon_N":10,
-  "param_version":"phase1-v1.0.0",
-  "discovery_candles":30,
-  "null_count":11,
-  "valid_count":19,
-  "first_valid_july_availability_et":"2026-07-08T00:00:00.000Z",
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
- },
- {
-  "tf":"4h",
-  "horizon_N":20,
-  "param_version":"phase1-v1.0.0",
-  "discovery_candles":30,
-  "null_count":23,
-  "valid_count":7,
-  "first_valid_july_availability_et":"2026-07-10T00:00:00.000Z",
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
- },
- {
-  "tf":"4h",
-  "horizon_N":40,
-  "param_version":"phase1-v1.0.0",
-  "discovery_candles":30,
-  "null_count":30,
-  "valid_count":0,
-  "first_valid_july_availability_et":null,
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
- },
- {
-  "tf":"daily",
-  "horizon_N":10,
-  "param_version":"phase1-v1.0.0",
-  "discovery_candles":5,
-  "null_count":5,
-  "valid_count":0,
-  "first_valid_july_availability_et":null,
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
  },
  {
   "tf":"daily",
   "horizon_N":20,
   "param_version":"phase1-v1.0.0",
   "discovery_candles":5,
-  "null_count":5,
-  "valid_count":0,
-  "first_valid_july_availability_et":null,
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
+  "null_count":0,
+  "valid_count":5,
+  "first_valid_july_availability_et":"2026-07-06T21:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
  },
  {
   "tf":"daily",
   "horizon_N":40,
   "param_version":"phase1-v1.0.0",
   "discovery_candles":5,
-  "null_count":5,
-  "valid_count":0,
-  "first_valid_july_availability_et":null,
-  "discovery_segment_id":25,
-  "exclusion_reason":"insufficient_same_segment_complete_predecessors"
+  "null_count":0,
+  "valid_count":5,
+  "first_valid_july_availability_et":"2026-07-06T21:00:00.000Z",
+  "discovery_norm_segment_id":0,
+  "exclusion_reason":""
  }
 ]

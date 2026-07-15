@@ -1,5 +1,33 @@
 [
  {
+  "ifvg_id":"FVG-4h-bull-20260703T0000-iFVG",
+  "source_fvg_id":"FVG-4h-bull-20260703T0000",
+  "instrument":"NQ",
+  "tf":"4h",
+  "param_version":"phase1-v1.0.0",
+  "original_direction":"bull",
+  "ifvg_direction":"bear",
+  "source_lower":29622.25,
+  "source_upper":29764.0,
+  "conversion_close":29386.75,
+  "conversion_et":"2026-07-07T16:00:00.000Z",
+  "source_availability_et":"2026-07-03T08:00:00.000Z"
+ },
+ {
+  "ifvg_id":"FVG-4h-bull-20260703T0400-iFVG",
+  "source_fvg_id":"FVG-4h-bull-20260703T0400",
+  "instrument":"NQ",
+  "tf":"4h",
+  "param_version":"phase1-v1.0.0",
+  "original_direction":"bull",
+  "ifvg_direction":"bear",
+  "source_lower":29775.25,
+  "source_upper":29827.75,
+  "conversion_close":29730.25,
+  "conversion_et":"2026-07-06T04:00:00.000Z",
+  "source_availability_et":"2026-07-03T12:00:00.000Z"
+ },
+ {
   "ifvg_id":"FVG-4h-bear-20260707T0000-iFVG",
   "source_fvg_id":"FVG-4h-bear-20260707T0000",
   "instrument":"NQ",

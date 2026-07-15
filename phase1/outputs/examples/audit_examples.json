@@ -27,8 +27,8 @@
       "midpoint_touch_et": "2026-07-06 00:07:00-04:00",
       "full_fill_et": "2026-07-06 00:10:00-04:00",
       "invalidation_et": "2026-07-06 00:10:00-04:00",
-      "segment_id": 25,
-      "C_index": 504911
+      "segment_id": 6,
+      "C_index": 532033
     }
   },
   {
@@ -59,8 +59,8 @@
       "midpoint_touch_et": "2026-07-06 01:08:00-04:00",
       "full_fill_et": "2026-07-06 01:08:00-04:00",
       "invalidation_et": "2026-07-06 01:08:00-04:00",
-      "segment_id": 25,
-      "C_index": 504968
+      "segment_id": 6,
+      "C_index": 532090
     }
   },
   {
@@ -91,8 +91,8 @@
       "midpoint_touch_et": "2026-07-06 01:35:00-04:00",
       "full_fill_et": "2026-07-06 21:30:00-04:00",
       "invalidation_et": "2026-07-06 21:30:00-04:00",
-      "segment_id": 25,
-      "C_index": 100992
+      "segment_id": 6,
+      "C_index": 106416
     }
   },
   {
@@ -123,8 +123,8 @@
       "midpoint_touch_et": "2026-07-06 01:45:00-04:00",
       "full_fill_et": "2026-07-06 02:05:00-04:00",
       "invalidation_et": "2026-07-06 02:05:00-04:00",
-      "segment_id": 25,
-      "C_index": 101006
+      "segment_id": 6,
+      "C_index": 106430
     }
   },
   {
@@ -155,8 +155,8 @@
       "midpoint_touch_et": "2026-07-06 01:45:00-04:00",
       "full_fill_et": "2026-07-06 21:30:00-04:00",
       "invalidation_et": "2026-07-06 21:30:00-04:00",
-      "segment_id": 25,
-      "C_index": 33664
+      "segment_id": 6,
+      "C_index": 35472
     }
   },
   {
@@ -187,8 +187,8 @@
       "midpoint_touch_et": "2026-07-06 04:45:00-04:00",
       "full_fill_et": "2026-07-06 04:45:00-04:00",
       "invalidation_et": "2026-07-06 04:45:00-04:00",
-      "segment_id": 25,
-      "C_index": 33680
+      "segment_id": 6,
+      "C_index": 35488
     }
   },
   {
@@ -219,8 +219,8 @@
       "midpoint_touch_et": "2026-07-06 04:30:00-04:00",
       "full_fill_et": "2026-07-06 04:30:00-04:00",
       "invalidation_et": "2026-07-06 04:30:00-04:00",
-      "segment_id": 25,
-      "C_index": 16840
+      "segment_id": 6,
+      "C_index": 17744
     }
   },
   {
@@ -251,8 +251,8 @@
       "midpoint_touch_et": "2026-07-06 14:30:00-04:00",
       "full_fill_et": "2026-07-06 14:30:00-04:00",
       "invalidation_et": "2026-07-06 14:30:00-04:00",
-      "segment_id": 25,
-      "C_index": 16861
+      "segment_id": 6,
+      "C_index": 17765
     }
   },
   {
@@ -283,8 +283,8 @@
       "midpoint_touch_et": "2026-07-07 15:00:00-04:00",
       "full_fill_et": "2026-07-07 15:00:00-04:00",
       "invalidation_et": "2026-07-07 15:00:00-04:00",
-      "segment_id": 25,
-      "C_index": 8456
+      "segment_id": 6,
+      "C_index": 8908
     }
   },
   {
@@ -315,8 +315,8 @@
       "midpoint_touch_et": "2026-07-09 10:00:00-04:00",
       "full_fill_et": "2026-07-09 10:00:00-04:00",
       "invalidation_et": "2026-07-09 10:00:00-04:00",
-      "segment_id": 25,
-      "C_index": 8438
+      "segment_id": 6,
+      "C_index": 8890
     }
   },
   {
@@ -347,8 +347,8 @@
       "midpoint_touch_et": "2026-07-10 04:00:00-04:00",
       "full_fill_et": "2026-07-10 08:00:00-04:00",
       "invalidation_et": "2026-07-10 08:00:00-04:00",
-      "segment_id": 25,
-      "C_index": 2313
+      "segment_id": 6,
+      "C_index": 2435
     }
   },
   {
@@ -379,8 +379,8 @@
       "midpoint_touch_et": "2026-07-09 12:00:00-04:00",
       "full_fill_et": "2026-07-09 12:00:00-04:00",
       "invalidation_et": "2026-07-09 12:00:00-04:00",
-      "segment_id": 25,
-      "C_index": 2298
+      "segment_id": 6,
+      "C_index": 2420
     }
   },
   {
@@ -411,8 +411,8 @@
       "midpoint_touch_et": null,
       "full_fill_et": null,
       "invalidation_et": null,
-      "segment_id": 25,
-      "C_index": 376
+      "segment_id": 6,
+      "C_index": 394
     }
   },
   {
@@ -443,8 +443,8 @@
       "midpoint_touch_et": "2026-07-09 17:00:00-04:00",
       "full_fill_et": "2026-07-09 17:00:00-04:00",
       "invalidation_et": "2026-07-09 17:00:00-04:00",
-      "segment_id": 25,
-      "C_index": 374
+      "segment_id": 6,
+      "C_index": 392
     }
   },
   {
@@ -468,21 +468,21 @@
   },
   {
     "kind": "first_ifvg_to_bear",
-    "tf": "15m",
+    "tf": "4h",
     "chart": "ifvg_bear.png",
     "record": {
-      "ifvg_id": "FVG-15m-bull-20260705T2315-iFVG",
-      "source_fvg_id": "FVG-15m-bull-20260705T2315",
+      "ifvg_id": "FVG-4h-bull-20260703T0400-iFVG",
+      "source_fvg_id": "FVG-4h-bull-20260703T0400",
       "instrument": "NQ",
-      "tf": "15m",
+      "tf": "4h",
       "param_version": "phase1-v1.0.0",
       "original_direction": "bull",
       "ifvg_direction": "bear",
-      "source_lower": 29732.0,
-      "source_upper": 29748.0,
+      "source_lower": 29775.25,
+      "source_upper": 29827.75,
       "conversion_close": 29730.25,
       "conversion_et": "2026-07-06T00:00:00-04:00",
-      "source_availability_et": "2026-07-05 23:30:00-04:00"
+      "source_availability_et": "2026-07-03 08:00:00-04:00"
     }
   },
   {
@@ -502,7 +502,7 @@
       "sweep_et": "2026-07-06 09:35:00-04:00",
       "unswept_through_end": false,
       "session_globex_day": "2026-07-06",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -522,7 +522,7 @@
       "sweep_et": "2026-07-06 09:02:00-04:00",
       "unswept_through_end": false,
       "session_globex_day": "2026-07-06",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -542,7 +542,7 @@
       "sweep_et": "2026-07-06 09:32:00-04:00",
       "unswept_through_end": false,
       "session_globex_day": "2026-07-06",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -562,7 +562,7 @@
       "sweep_et": "2026-07-06 21:22:00-04:00",
       "unswept_through_end": false,
       "session_globex_day": "2026-07-06",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -582,7 +582,7 @@
       "sweep_et": "2026-07-06 10:02:00-04:00",
       "unswept_through_end": false,
       "session_globex_day": "2026-07-06",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -602,7 +602,7 @@
       "sweep_et": "2026-07-06 13:43:00-04:00",
       "unswept_through_end": false,
       "session_globex_day": "2026-07-06",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -615,14 +615,14 @@
       "side": "high",
       "tf": "overnight_session",
       "param_version": "phase1-v1.0.0",
-      "extreme": 30004.75,
+      "extreme": 30011.25,
       "availability_et": "2026-07-06T09:30:00-04:00",
       "first_exact_touch_et": null,
-      "first_wick_passage_et": "2026-07-06 09:52:00-04:00",
-      "sweep_et": "2026-07-06 09:52:00-04:00",
+      "first_wick_passage_et": "2026-07-06 10:12:00-04:00",
+      "sweep_et": "2026-07-06 10:12:00-04:00",
       "unswept_through_end": false,
       "session_globex_day": "2026-07-06",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -642,7 +642,7 @@
       "sweep_et": "2026-07-06 23:30:00-04:00",
       "unswept_through_end": false,
       "session_globex_day": "2026-07-06",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -662,7 +662,7 @@
       "sweep_et": null,
       "unswept_through_end": true,
       "session_globex_day": "2026-07-08",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -682,7 +682,7 @@
       "sweep_et": "2026-07-09 03:48:00-04:00",
       "unswept_through_end": false,
       "session_globex_day": "2026-07-07",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -702,7 +702,7 @@
       "sweep_et": null,
       "unswept_through_end": true,
       "session_globex_day": "2026-07-06",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -722,7 +722,7 @@
       "sweep_et": "2026-07-06 21:22:00-04:00",
       "unswept_through_end": false,
       "session_globex_day": "2026-07-06",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -742,7 +742,7 @@
       "sweep_et": null,
       "unswept_through_end": true,
       "session_globex_day": "2026-07-08",
-      "segment_id": 25
+      "segment_id": 6
     }
   },
   {
@@ -779,9 +779,9 @@
       "invalidation_et": null,
       "still_valid_end_of_data": true,
       "untested_through_jul10": false,
-      "segment_id": 25,
+      "segment_id": 6,
       "source_complete": true,
-      "source_index": 101740,
+      "source_index": 107164,
       "rank_metric": 0.8301886792452831
     }
   },
@@ -819,9 +819,9 @@
       "invalidation_et": null,
       "still_valid_end_of_data": true,
       "untested_through_jul10": false,
-      "segment_id": 25,
+      "segment_id": 6,
       "source_complete": true,
-      "source_index": 509009,
+      "source_index": 536131,
       "rank_metric": 0.7454545454545455
     }
   },
@@ -848,9 +848,9 @@
       "total_range": 649.0,
       "dwick_body_ratio": 26.51428571428572,
       "dwick_range_ratio": 0.7149460708782742,
-      "dwick_pctile_prev10": null,
-      "dwick_pctile_prev20": null,
-      "dwick_pctile_prev40": null,
+      "dwick_pctile_prev10": 90.0,
+      "dwick_pctile_prev20": 90.0,
+      "dwick_pctile_prev40": 95.0,
       "first_partial_wick_entry_et": null,
       "first_body_overlap_et": null,
       "first_complete_traversal_et": null,
@@ -859,9 +859,9 @@
       "invalidation_et": null,
       "still_valid_end_of_data": true,
       "untested_through_jul10": true,
-      "segment_id": 25,
+      "segment_id": 6,
       "source_complete": true,
-      "source_index": 374,
+      "source_index": 392,
       "rank_metric": 0.7149460708782742
     }
   },
@@ -897,9 +897,9 @@
       "invalidation_et": "2026-07-06T00:01:00-04:00",
       "still_valid_end_of_data": false,
       "untested_through_jul10": false,
-      "segment_id": 25,
+      "segment_id": 6,
       "source_complete": true,
-      "source_index": 504905
+      "source_index": 532027
     }
   },
   {
@@ -934,9 +934,9 @@
       "invalidation_et": "2026-07-06T00:07:00-04:00",
       "still_valid_end_of_data": false,
       "untested_through_jul10": false,
-      "segment_id": 25,
+      "segment_id": 6,
       "source_complete": true,
-      "source_index": 504911
+      "source_index": 532033
     }
   },
   {
@@ -947,26 +947,26 @@
     "record": {
       "instrument": "NQ",
       "tf": "1m",
-      "direction": "bull",
+      "direction": "bear",
       "leg_len": 3,
       "param_version": "phase1-v1.0.0",
-      "start_open_et": "2026-07-08 05:11:00-04:00",
-      "end_open_et": "2026-07-08 05:13:00-04:00",
-      "availability_et": "2026-07-08 05:14:00-04:00",
-      "net_directional_move": -8.25,
+      "start_open_et": "2026-07-09 15:05:00-04:00",
+      "end_open_et": "2026-07-09 15:07:00-04:00",
+      "availability_et": "2026-07-09 15:08:00-04:00",
+      "net_directional_move": -16.25,
       "n_bodies_aligned": 0,
       "prop_bodies_aligned": 0.0,
       "median_aligned_body": 0.0,
-      "median_body_pctile_prev10": 10.0,
-      "median_body_pctile_prev20": 15.0,
-      "median_body_pctile_prev40": 15.0,
-      "adjacent_overlap": 12.5,
-      "terminal_close_location": 0.3076923076923077,
-      "path_efficiency": 0.1341463414634146,
-      "total_distance": 61.5,
+      "median_body_pctile_prev10": 40.0,
+      "median_body_pctile_prev20": 55.0,
+      "median_body_pctile_prev40": 57.5,
+      "adjacent_overlap": 4.25,
+      "terminal_close_location": 0.3,
+      "path_efficiency": 0.40625,
+      "total_distance": 40.0,
       "created_fvg": false,
-      "segment_id": 25,
-      "end_index": 507979,
+      "segment_id": 6,
+      "end_index": 537075,
       "qual": 0.0
     }
   },
@@ -978,27 +978,27 @@
     "record": {
       "instrument": "NQ",
       "tf": "1m",
-      "direction": "bull",
+      "direction": "bear",
       "leg_len": 3,
       "param_version": "phase1-v1.0.0",
-      "start_open_et": "2026-07-09 01:13:00-04:00",
-      "end_open_et": "2026-07-09 01:15:00-04:00",
-      "availability_et": "2026-07-09 01:16:00-04:00",
-      "net_directional_move": -10.75,
-      "n_bodies_aligned": 1,
-      "prop_bodies_aligned": 0.3333333333333333,
-      "median_aligned_body": 4.25,
+      "start_open_et": "2026-07-07 19:21:00-04:00",
+      "end_open_et": "2026-07-07 19:23:00-04:00",
+      "availability_et": "2026-07-07 19:24:00-04:00",
+      "net_directional_move": 4.5,
+      "n_bodies_aligned": 2,
+      "prop_bodies_aligned": 0.6666666666666666,
+      "median_aligned_body": 2.75,
       "median_body_pctile_prev10": 20.0,
-      "median_body_pctile_prev20": 45.0,
-      "median_body_pctile_prev40": 48.75,
-      "adjacent_overlap": 7.625,
-      "terminal_close_location": 0.265625,
-      "path_efficiency": 0.233695652173913,
-      "total_distance": 46.0,
+      "median_body_pctile_prev20": 22.5,
+      "median_body_pctile_prev40": 23.75,
+      "adjacent_overlap": 4.5,
+      "terminal_close_location": 0.4705882352941176,
+      "path_efficiency": 0.2337662337662337,
+      "total_distance": 19.25,
       "created_fvg": false,
-      "segment_id": 25,
-      "end_index": 509121,
-      "qual": 0.03505434782608695
+      "segment_id": 6,
+      "end_index": 534511,
+      "qual": 0.035064935064935056
     }
   },
   {
@@ -1027,8 +1027,8 @@
       "path_efficiency": 0.9151785714285714,
       "total_distance": 56.0,
       "created_fvg": true,
-      "segment_id": 25,
-      "end_index": 506377,
+      "segment_id": 6,
+      "end_index": 533499,
       "qual": 0.8694196428571428
     }
   }

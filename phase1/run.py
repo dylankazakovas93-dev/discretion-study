@@ -33,12 +33,12 @@ def write_ledger(df: pd.DataFrame, name: str):
     return len(df)
 
 
-def main(csv_path, orig_path, warmup_csv=None, warmup_orig=None):
+def main(csv_path, orig_path, extra_csvs=None, extra_origs=None):
     os.makedirs(LED, exist_ok=True)
     roll_ledger = seg_ledger = None
-    if warmup_csv:
+    if extra_csvs:
         et, audit, tf_ledgers, roll_ledger, seg_ledger = core.build_combined(
-            csv_path, warmup_csv, orig_path, warmup_orig)
+            csv_path, extra_csvs, orig_path, extra_origs)
     else:
         et, audit, tf_ledgers = core.build_all(csv_path, orig_path)
 
@@ -98,12 +98,9 @@ def main(csv_path, orig_path, warmup_csv=None, warmup_orig=None):
     liq = P.detect_liquidity(et)
     counts["liquidity"] = write_ledger(liq, "liquidity_references")
 
-    # roll-decision + continuity-segment ledgers
+    # frozen roll schedule + continuity-segment ledgers
     if roll_ledger is not None:
-        rl = roll_ledger.copy()
-        rl["evidence_session_volumes"] = rl["evidence_session_volumes"].apply(json.dumps)
-        rl["current_session_volumes"] = rl["current_session_volumes"].apply(json.dumps)
-        counts["roll_decisions"] = write_ledger(rl, "roll_decisions")
+        counts["roll_schedule"] = write_ledger(roll_ledger.copy(), "roll_schedule")
         counts["continuity_segments"] = write_ledger(seg_ledger.copy(), "continuity_segments")
 
     # per-timeframe trailing-feature validity table (discovery week)
@@ -127,8 +124,10 @@ def main(csv_path, orig_path, warmup_csv=None, warmup_orig=None):
 
 
 if __name__ == "__main__":
+    # usage: run.py <disc_csv> <disc_hash> [ctx_csv ctx_hash]...
     csv_path = sys.argv[1]
     orig_path = sys.argv[2]
-    warmup_csv = sys.argv[3] if len(sys.argv) > 3 else None
-    warmup_orig = sys.argv[4] if len(sys.argv) > 4 else None
-    main(csv_path, orig_path, warmup_csv, warmup_orig)
+    rest = sys.argv[3:]
+    extra_csvs = rest[0::2] if rest else None
+    extra_origs = rest[1::2] if rest else None
+    main(csv_path, orig_path, extra_csvs, extra_origs)
