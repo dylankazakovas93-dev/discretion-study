@@ -1,0 +1,102 @@
+{
+  "file_path": "/root/.claude/uploads/e2fef3a7-b60e-5477-b97f-9440d32db324/e898ce4c-glbxmdp32026070620260712.ohlcv1m.csv.zst",
+  "file_sha256": "1d0aac62e1acbcbb341bcac0ab1b672d4948a3d27e5b67068e218c87f91cf007",
+  "raw_columns": [
+    "ts_event",
+    "rtype",
+    "publisher_id",
+    "instrument_id",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "symbol"
+  ],
+  "raw_row_count": 9057,
+  "timestamp_timezone_source": "UTC (ts_event, ISO8601 'Z')",
+  "timestamp_marks": "bar OPENING (interval start); Databento ohlcv-1m convention. Availability = open + 1 minute.",
+  "converted_timezone": "America/New_York",
+  "selected_row_count": 6900,
+  "first_ts_utc": "2026-07-06 00:00:00+00:00",
+  "last_ts_utc": "2026-07-12 23:59:00+00:00",
+  "first_ts_open_et": "2026-07-05 20:00:00-04:00",
+  "last_ts_open_et": "2026-07-12 19:59:00-04:00",
+  "duplicate_timestamp_count": 0,
+  "duplicate_timestamps": [],
+  "expected_minutes_full_grid": 10080,
+  "present_unique_minutes": 6900,
+  "missing_interval_count_full_grid": 3180,
+  "missing_maintenance_minutes": 420,
+  "missing_weekend_minutes": 2940,
+  "missing_other_minutes": 0,
+  "missing_other_examples": [],
+  "nan_ohlcv_row_count": 0,
+  "nonpositive_volume_count": 0,
+  "nonpositive_volume_examples": [],
+  "high_lt_max_oc_count": 0,
+  "low_gt_min_oc_count": 0,
+  "high_lt_low_count": 0,
+  "high_lt_max_oc_examples": [],
+  "low_gt_min_oc_examples": [],
+  "warmup_rows_before_2026_07_06_ET": 240,
+  "warmup_sessions_before_discovery": 1,
+  "warmup_requirement_met": false,
+  "instrument_selection": {
+    "selected_symbol": "NQU6",
+    "selected_instrument_id": 42004177,
+    "volume_by_symbol": {
+      "NQU6": 2445469,
+      "NQU6-NQZ6": 1522,
+      "NQZ6": 4500
+    },
+    "outright_volume_ranking": {
+      "NQU6": 2445469,
+      "NQZ6": 4500
+    }
+  },
+  "daily_candles": [
+    {
+      "globex_day": "2026-07-05->2026-07-06",
+      "open_et": "2026-07-05T18:00:00-04:00",
+      "close_et": "2026-07-06T17:00:00-04:00",
+      "n_source_minutes": 1201,
+      "first_source": "2026-07-05T20:00:00-04:00"
+    },
+    {
+      "globex_day": "2026-07-06->2026-07-07",
+      "open_et": "2026-07-06T18:00:00-04:00",
+      "close_et": "2026-07-07T17:00:00-04:00",
+      "n_source_minutes": 1321,
+      "first_source": "2026-07-06T18:00:00-04:00"
+    },
+    {
+      "globex_day": "2026-07-07->2026-07-08",
+      "open_et": "2026-07-07T18:00:00-04:00",
+      "close_et": "2026-07-08T17:00:00-04:00",
+      "n_source_minutes": 1321,
+      "first_source": "2026-07-07T18:00:00-04:00"
+    },
+    {
+      "globex_day": "2026-07-08->2026-07-09",
+      "open_et": "2026-07-08T18:00:00-04:00",
+      "close_et": "2026-07-09T17:00:00-04:00",
+      "n_source_minutes": 1321,
+      "first_source": "2026-07-08T18:00:00-04:00"
+    },
+    {
+      "globex_day": "2026-07-09->2026-07-10",
+      "open_et": "2026-07-09T18:00:00-04:00",
+      "close_et": "2026-07-10T17:00:00-04:00",
+      "n_source_minutes": 1321,
+      "first_source": "2026-07-09T18:00:00-04:00"
+    },
+    {
+      "globex_day": "2026-07-12->2026-07-13",
+      "open_et": "2026-07-12T18:00:00-04:00",
+      "close_et": "2026-07-13T17:00:00-04:00",
+      "n_source_minutes": 120,
+      "first_source": "2026-07-12T18:00:00-04:00"
+    }
+  ]
+}

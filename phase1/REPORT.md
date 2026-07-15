@@ -1,0 +1,149 @@
+# Phase 1 — NQ 1-Minute OHLCV Primitive-Definition & Implementation Audit
+
+**Parameter version:** `phase1-v1.0.0`
+**Instrument:** NQ front-month outright — `NQU6`, `instrument_id 42004177` (selected by total traded volume)
+**Scope:** Primitive definition + implementation audit only. **No setups discovered, no trades evaluated, no profitability computed, no entries/stops/targets, no outcome-based classification.**
+
+All numbers below were produced by executing code against the attached dataset (every row inspected). Nothing is visually estimated. Reproduce with:
+
+```
+python3 core.py  <decompressed.csv> <original.csv.zst>   # audit + HTF ledgers
+python3 run.py    <decompressed.csv> <original.csv.zst>   # all primitive ledgers
+python3 charts.py                                         # deterministic audit examples + charts
+```
+
+---
+
+## 0. BLOCKING DATA-REQUIREMENT FINDING (read first)
+
+The task requires **≥ 40 completed trading sessions before 2026-07-06 as warm-up**. **The attached dataset does not contain them.**
+
+| Requirement | Delivered |
+|---|---|
+| ≥ 40 sessions before Jul 6 | **1 partial session** (Sun Jul 5, 20:00–24:00 ET; 240 minutes) |
+| Discovery week Jul 6–10 | ✅ present and complete |
+| Data range (ET) | 2026-07-05 20:00 → 2026-07-12 19:59 |
+
+**Consequences (handled honestly, not fabricated):**
+
+1. **Trailing percentiles (N = 10/20/40)** for early bars have insufficient history. These are written as **`null`** with an implicit insufficient-history flag rather than computed on a short window. Example: 260 / 17,302 rejection-block rows have a `null` `prev40` percentile.
+2. **"Previous completed RTH high/low"** for the Jul 6 RTH session cannot be sourced (no Jul 2/3 data). The first usable *previous-RTH* reference is Jul 6's own RTH, available at its close and used from Jul 7 onward.
+3. The **first daily (Globex) candle** (globex day ending 2026-07-06) is **incomplete**: it is missing its first two hours (18:00–20:00 ET Sun Jul 5). It has 1201 source minutes vs. 1321 for full days. It is retained but flagged `incomplete`.
+4. HTF context and "structures that existed before July 6" can only be seeded from the ~4h of Sunday-evening warm-up, not 40 sessions.
+
+**This does not invalidate the Phase 1 implementation** — the primitives are fully implemented and the discovery-week ledgers are complete — but the warm-up-dependent statistics are under-supported and must be regenerated once ≥ 40 warm-up sessions are supplied. This is the top unresolved item.
+
+---
+
+## 1. Data-Quality Report
+
+Full machine version: `outputs/data_quality_report.json`.
+
+| Field | Value |
+|---|---|
+| Columns | `ts_event, rtype, publisher_id, instrument_id, open, high, low, close, volume, symbol` |
+| Timestamp timezone (source) | **UTC** (`ts_event`, ISO-8601 `Z`) |
+| Timestamp marks | **bar OPENING** (interval start); Databento `ohlcv-1m` convention. Availability = open + 1 min |
+| Converted timezone | **America/New_York** (DST-aware; sample is entirely EDT / UTC−4) |
+| First / last (UTC) | 2026-07-06 00:00 → 2026-07-12 23:59 |
+| First / last (ET) | 2026-07-05 20:00 → 2026-07-12 19:59 |
+| Raw rows | 9,057 (3 symbols: `NQU6`, `NQZ6`, spread `NQU6-NQZ6`) |
+| Selected-instrument rows | 6,900 (`NQU6`) |
+| Duplicate timestamps (selected) | **0** |
+| Missing intervals vs full 1-min grid | 3,180 → **420 maintenance** (7×60) + **2,940 weekend** (Fri 17:00→Sun 18:00) + **0 unexplained** |
+| Malformed / NaN OHLCV rows | **0** |
+| Nonpositive volume | **0** |
+| `high < max(open, close)` | **0** |
+| `low > min(open, close)` | **0** |
+| `high < low` | **0** |
+
+**No data was silently repaired.** The raw CSV was preserved; the multi-symbol structure was resolved by selecting the highest-volume outright and excluding the calendar spread.
+
+**Instrument selection:** `NQU6` 2,445,469 vol vs `NQZ6` 4,500 vol (outrights); `NQU6-NQZ6` (1,522) is a spread and excluded from the study instrument.
+
+---
+
+## 2. Time Conventions Applied
+
+* Globex trading day: **18:00 ET → 17:00 ET** next calendar day.
+* Overnight: **18:00–09:29 ET**; RTH: **09:30–16:00 ET**; maintenance **17:00–18:00 ET** (no synthetic bars).
+* HTF fixed ET clock boundaries — 5m `min%5==0`, 15m `min%15==0`, 30m `{00,30}`, 1h clock hour, 4h `{00,04,08,12,16,20}`, daily = one Globex day.
+* A HTF candle becomes **available only when its full interval has ended** (`availability_et = bucket_close_et`).
+
+Completed-candle counts (whole sample): 1m 6900 · 5m 1380 · 15m 460 · 30m 230 · 1h 115 · 4h 31 · daily 6.
+
+---
+
+## 3. Complete Machine-Readable Primitive Ledgers
+
+Discovery-week emission window: availability in `[2026-07-06 00:00 ET, 2026-07-11 00:00 ET)`. Every record carries `instrument, tf, source timestamp(s), availability_et, boundaries, later state-change timestamps, param_version`.
+
+Files in `outputs/ledgers/`. **CSV is canonical** for every ledger; a JSON mirror is also written for compact ledgers (≤ 5000 rows) to avoid multi-MB duplicates of the large 1m/5m ledgers. Row counts (discovery week):
+
+| Primitive | 1m | 5m | 15m | 30m | 1h | 4h | daily |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| FVG | 1136 | 274 | 90 | 40 | 22 | 5 | 2 |
+| iFVG conversions | 1103 | 254 | 81 | 34 | 19 | 2 | 1 |
+| Rejection-block candidates | 13082 | 2618 | 874 | 438 | 220 | 60 | 10 |
+| Displacement legs | 39246 | 7854 | 2622 | 1314 | 660 | 174 | 24 |
+
+**Liquidity references:** `outputs/ledgers/liquidity_references.csv` — 50 records across 10 source types (prev-RTH high/low, overnight high/low, 09:00/09:30/10:00 one-minute high/low). Each has extreme, availability, first exact touch, first wick passage, sweep timestamp, unswept flag. (Under OHLCV-only rules, first wick passage and sweep coincide — both = first strict penetration; recorded in separate columns for auditability.)
+
+These are **complete ledgers, not selected examples.**
+
+---
+
+## 4. Deterministic Human-Audit Examples
+
+37 examples with annotated charts in `outputs/charts/`; machine index in `outputs/examples/audit_examples.json`. Every one is selected chronologically or by a **structural** rank metric — **none** by subsequent profitability.
+
+* **First bullish / bearish FVG on each timeframe** — `fvg_<tf>_<dir>.png` (14 charts).
+  Verified example — first 1m bullish FVG `FVG-1m-bull-20260706T0005`: A(00:03) high 29725.0 < C(00:05) low 29732.5, B(00:04) bullish, body-containment holds; zone [29725.0, 29732.5]; available 00:06 ET; first wick entry 00:07; full fill 00:10.
+* **First FVG→iFVG conversion each direction** — `ifvg_bull.png`, `ifvg_bear.png`. Bull example: bearish source `FVG-1m-bear-20260705T2342` converts when a later candle **closes** 29785.5 above the upper boundary at 00:17 ET (a warm-up structure maintained into the discovery week — exactly the pre-existing-structure case).
+* **First swept + first still-unswept liquidity reference per source type** — `liq_<source>_<swept|unswept>.png`.
+* **Three highest-ranked *valid* rejection-block candidates on three different timeframes** — `rejblock_top1_5m.png`, `rejblock_top2_1m.png`, `rejblock_top3_daily.png` (provisional display rank = directional-wick/range ratio among never-invalidated candidates; **not** a frozen threshold).
+* **First rejection-block invalidated by body overlap** — `rejblock_first_bodyoverlap.png`.
+* **First invalidated by complete wick traversal beyond far boundary** — `rejblock_first_traversal.png`.
+* **High / middle / low displacement examples** — `disp_high.png`, `disp_middle.png`, `disp_low.png` (provisional structural score = path-efficiency × proportion-aligned × prev-20 body percentile; no outcome optimization).
+
+---
+
+## 5. Cases the Implementation Could Not Classify Without Additional Rules
+
+1. **Warm-up percentiles.** With < N prior same-timeframe candles, `prev10/20/40` percentiles are undefined. Left `null` (no short-window substitution). Fully resolvable only with the missing warm-up data.
+2. **First daily candle completeness.** The Globex day ending Jul 6 is missing 18:00–20:00 ET. Emitted but flagged incomplete; whether an incomplete HTF candle should participate in FVG/displacement detection is a definitional choice (currently: it participates, flagged).
+3. **First-RTH liquidity reference.** No "previous RTH" exists for Jul 6; that reference is simply absent, not imputed.
+4. **Wick-passage vs sweep under OHLCV.** Bar ordering inside a minute is unknown, so "first wick passage" and "sweep" cannot be distinguished from OHLCV alone; they are recorded as coincident. A tick/quote feed would be needed to separate them.
+5. **Zero-body candles (dojis) in ratio denominators.** `dwick/body` is `null` when body = 0 (division guarded), rather than assigned ∞.
+
+---
+
+## 6. Unresolved Definition Decisions (for human freeze)
+
+1. **Warm-up window** — dataset must be extended to ≥ 40 sessions before Jul 6 before warm-up-dependent statistics are trusted. *(Blocking.)*
+2. **Rejection-block "prominence" threshold** — deliberately **not** frozen. Candidates are ranked, not certified. Needs a human-frozen percentile/ratio cutoff.
+3. **Displacement classification threshold** — raw measurements preserved; no single label assigned. Needs human freeze.
+4. **FVG "full fill" vs "invalidation" semantics** — currently invalidation = full fill (gap fully retraced). If partial mitigation should invalidate, redefine.
+5. **iFVG re-conversion** — currently a single conversion event is recorded per FVG. Whether an iFVG can revert/re-convert on subsequent closes is unspecified.
+6. **"Consecutive candles" across session gaps** — FVGs use consecutive *ledger* candles regardless of weekend/maintenance calendar gaps. Confirm this is desired for HTFs spanning a break.
+7. **Rejection-block direction per candle** — every candle yields both a bullish (lower-wick) and bearish (upper-wick) candidate. Confirm both should always be emitted.
+8. **4h anchor** — anchored to midnight ET (00,04,08,12,16,20). Confirm vs a Globex-open (18:00) anchor.
+9. **Displacement leg direction enumeration** — both directions computed for every window/length. Confirm vs. intrinsic-direction-only.
+10. **Liquidity sweep equality** — exact touch excluded from sweep (per spec); confirm the same for the daily/HTF-derived levels.
+
+---
+
+## 7. Reproducibility Manifest
+
+Full machine version: `outputs/reproducibility_manifest.json`.
+
+* **Input file SHA-256:** `1d0aac62e1acbcbb341bcac0ab1b672d4948a3d27e5b67068e218c87f91cf007` — **matches** the delivery manifest. ✅
+* **Param version:** `phase1-v1.0.0`
+* **Code SHA-256:** `core.py`, `primitives.py`, `run.py`, `charts.py` (hashes in manifest).
+* **Environment:** Python 3.11.15 · pandas 3.0.3 · numpy 2.4.6 · Linux.
+* **Timezone rules / session definitions / HTF boundaries / causality rules:** as in §2 and the manifest.
+* **Determinism:** no randomness, no seeds; identical inputs → identical outputs.
+
+---
+
+**Phase 1 stops here.** No setup discovery, no profitability inspection, no primitive-combination analysis was performed.

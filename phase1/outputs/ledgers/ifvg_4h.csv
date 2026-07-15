@@ -1,0 +1,3 @@
+ifvg_id,source_fvg_id,instrument,tf,param_version,original_direction,ifvg_direction,source_lower,source_upper,conversion_close,conversion_et,source_availability_et
+FVG-4h-bear-20260707T0000-iFVG,FVG-4h-bear-20260707T0000,NQ,4h,phase1-v1.0.0,bear,bull,29744.0,29839.25,29886.25,2026-07-09 12:00:00-04:00,2026-07-07 04:00:00-04:00
+FVG-4h-bear-20260707T1200-iFVG,FVG-4h-bear-20260707T1200,NQ,4h,phase1-v1.0.0,bear,bull,29580.75,29591.25,29686.25,2026-07-09 04:00:00-04:00,2026-07-07 16:00:00-04:00

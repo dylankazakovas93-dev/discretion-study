@@ -1,0 +1,88 @@
+{
+  "phase": "Phase 1 primitive-definition & implementation audit",
+  "param_version": "phase1-v1.0.0",
+  "instrument": "NQ front-month outright (NQU6, instrument_id 42004177), selected by total volume",
+  "input_file": {
+    "name": "glbx-mdp3-20260706-20260712.ohlcv-1m.csv.zst",
+    "sha256": "1d0aac62e1acbcbb341bcac0ab1b672d4948a3d27e5b67068e218c87f91cf007",
+    "manifest_declared_sha256": "1d0aac62e1acbcbb341bcac0ab1b672d4948a3d27e5b67068e218c87f91cf007",
+    "hash_match": true
+  },
+  "dataset": {
+    "schema": "ohlcv-1m",
+    "dataset_id": "GLBX.MDP3",
+    "rows_raw": 9057,
+    "rows_selected_instrument": 6900,
+    "range_utc": [
+      "2026-07-06T00:00:00Z",
+      "2026-07-12T23:59:00Z"
+    ],
+    "range_et": [
+      "2026-07-05T20:00:00-04:00",
+      "2026-07-12T19:59:00-04:00"
+    ]
+  },
+  "timezone_rules": {
+    "iana": "America/New_York",
+    "dst": "handled via zoneinfo/pytz (EDT UTC-4 across sample)",
+    "ts_event_marks": "bar OPENING (interval start)",
+    "availability": "interval end = open + tf length",
+    "globex_day": "18:00 ET -> 17:00 ET next day",
+    "overnight": "18:00-09:29 ET",
+    "rth": "09:30-16:00 ET",
+    "htf_boundaries": {
+      "5m": "min%5==0",
+      "15m": "min%15==0",
+      "30m": "min in {0,30}",
+      "1h": "clock hour",
+      "4h": "00,04,08,12,16,20 ET",
+      "daily": "globex day 18:00->17:00 ET"
+    },
+    "maintenance": "17:00-18:00 ET, no synthetic bars"
+  },
+  "causality": [
+    "only bars completed by t used",
+    "current event excluded from own trailing history",
+    "no centered calculations",
+    "no future look-back to mark structures earlier",
+    "boundaries never retrospectively moved",
+    "availability timestamp stored per structure",
+    "no intrabar ordering inferred from OHLCV"
+  ],
+  "primitives_params": {
+    "fvg": "3 consecutive completed candles; body-containment enforced; available after C close",
+    "ifvg": "conversion only on later candle CLOSE beyond opposite boundary (wick/inside insufficient)",
+    "liquidity_sources": [
+      "prev_rth_high/low",
+      "overnight_high/low",
+      "candle_0900",
+      "candle_0930",
+      "candle_1000"
+    ],
+    "liquidity_sweep": "strict penetration; exact touch != sweep",
+    "rejection_block": "wick-only zone; percentiles vs prev 10/20/40 same-tf same-direction wick; invalidation = first body-overlap OR complete wick traversal beyond far boundary",
+    "displacement": "legs len 1/2/3 both directions; trailing N=10/20/40; raw measurements preserved; NO outcome-based classification threshold"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "pandas": "3.0.3",
+    "numpy": "2.4.6",
+    "platform": "Linux-6.18.5-x86_64-with-glibc2.39"
+  },
+  "code_sha256": {
+    "core.py": "4df8d4366a9d210d3cf0f6c3cf5ca579d5c44affa68316965870c1c23197995d",
+    "primitives.py": "aa536e90546e6fd5a00cff46698545106721911610ab5fbe6a84d23a1b625584",
+    "run.py": "672c68c5b314d2071e933dac4de0bd3c87353d88ff3845aeea060a589b7d982c",
+    "charts.py": "0aa22b666f26d2b62bdea94f9531814c7413a5d9e2af7e0307b7f8a452a0048a"
+  },
+  "git_commit_at_build": "14f2a4ad2aa13d8ef0140abd70c5dacfacd09fc3",
+  "outputs": {
+    "ledgers": "outputs/ledgers/*.csv|json",
+    "htf_candles": "outputs/htf_candles_*.csv",
+    "normalized_minutes": "outputs/nq_1m_et_normalized.csv",
+    "charts": "outputs/charts/*.png",
+    "examples": "outputs/examples/audit_examples.json",
+    "data_quality": "outputs/data_quality_report.json"
+  },
+  "determinism": "no randomness; no seeds required; identical inputs reproduce identical outputs"
+}

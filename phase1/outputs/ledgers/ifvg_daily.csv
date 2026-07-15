@@ -1,0 +1,2 @@
+ifvg_id,source_fvg_id,instrument,tf,param_version,original_direction,ifvg_direction,source_lower,source_upper,conversion_close,conversion_et,source_availability_et
+FVG-daily-bear-20260707T1800-iFVG,FVG-daily-bear-20260707T1800,NQ,daily,phase1-v1.0.0,bear,bull,29558.75,29683.0,29951.5,2026-07-09 17:00:00-04:00,2026-07-08 17:00:00-04:00
