@@ -1,7 +1,7 @@
 {
-  "phase": "Phase 1 primitive-definition & implementation audit",
+  "phase": "Phase 1 primitive-definition & implementation audit (causal contract selection + continuity segments)",
   "param_version": "phase1-v1.0.0",
-  "instrument": "NQ front-month outright; discovery=NQU6 (id 42004177); warm-up=continuous front-month via per-day volume roll",
+  "instrument": "NQ front-month; discovery=NQU6; warm-up=continuous front-month via CAUSAL prev-session volume roll",
   "input_files": {
     "discovery": {
       "name": "glbx-mdp3-20260706-20260712.ohlcv-1m.csv.zst",
@@ -14,102 +14,70 @@
       "sha256": "4a56638dad7a79c8d0d42a28da2a2bab58273fb0b8274f47bf54da05b7dc7cad",
       "manifest_declared_sha256": "4a56638dad7a79c8d0d42a28da2a2bab58273fb0b8274f47bf54da05b7dc7cad",
       "hash_match": true
-    },
-    "warmup_zip_container": {
-      "name": "nq2025.zip",
-      "sha256": "b4fcf58ff5db70d2a8d45d605ce5a2742ab003a1cf694ef2721a04562b6608e2"
     }
   },
   "dataset": {
     "schema": "ohlcv-1m",
     "dataset_id": "GLBX.MDP3",
+    "combined_series_rows": 511566,
     "discovery_range_et": [
       "2026-07-05T20:00:00-04:00",
       "2026-07-12T19:59:00-04:00"
     ],
-    "warmup_range_utc": [
-      "2025-01-01T23:00:00.000000000Z",
-      "2026-06-07T23:59:00.000000000Z"
-    ],
-    "combined_series_rows": 511567,
-    "warmup_globex_sessions": 371,
-    "warmup_requirement_met": true,
-    "warmup_roll_dates": [
-      {
-        "date": "2025-01-01",
-        "symbol": "NQH5"
-      },
-      {
-        "date": "2025-03-18",
-        "symbol": "NQM5"
-      },
-      {
-        "date": "2025-06-16",
-        "symbol": "NQU5"
-      },
-      {
-        "date": "2025-09-15",
-        "symbol": "NQZ5"
-      },
-      {
-        "date": "2025-12-15",
-        "symbol": "NQH6"
-      },
-      {
-        "date": "2026-03-16",
-        "symbol": "NQM6"
-      }
-    ],
-    "seam_gap": {
-      "last_warmup_bar_et": "2026-06-07 19:59:00-04:00",
-      "first_discovery_bar_et": "2026-07-05 20:00:00-04:00",
-      "gap_days": 28.000694444444445,
-      "note": "Warm-up ends on NQM6; discovery is NQU6. The seam carries both a ~1-month calendar gap and a contract change. Warm-up is therefore used ONLY for relative trailing size percentiles; structural detection is confined to the post-seam discovery series."
-    }
+    "warmup_range_utc": null
+  },
+  "contract_selection": {
+    "method": "CAUSAL: contract for session S = argmax outright volume of PREVIOUS completed session S-1; frozen at S-1 close (17:00 ET). Current session never participates in its own decision.",
+    "bootstrap": "disclosed only at data-start (2025-01-02) and post-seam (2026-07-06, prev winner NQM6 expired)",
+    "ledger": "outputs/ledgers/roll_decisions.csv (per-session: selected, evidence session, decision timestamp, selected+competing volumes)"
+  },
+  "continuity_segments": {
+    "rule": "new segment after (a) contract roll, (b) seam, (c) non-calendar data gap > 60 min. Sub-60min illiquidity gaps logged, not boundaries.",
+    "n_segments": 26,
+    "discovery_segment_id": 25,
+    "no_htf_candle_spans_a_boundary": true,
+    "trailing_history": "prev 10/20/40 require that many COMPLETE SAME-SEGMENT predecessors; else null. Warm-up is NOT a predecessor of July across the seam.",
+    "ledger": "outputs/ledgers/continuity_segments.csv",
+    "validity_table": "outputs/ledgers/trailing_validity_table.csv"
+  },
+  "seam": {
+    "last_pre_discovery_bar_et": "2026-06-07 19:59:00-04:00",
+    "first_discovery_bar_et": "2026-07-05 20:00:00-04:00",
+    "gap_days": 28.000694444444445,
+    "note": "Warm-up ends on NQM6; discovery is NQU6. The seam is a new continuity segment (contract change + ~28-day gap). Trailing 10/20/40 statistics require that many completed candles FROM THE DISCOVERY SEGMENT; warm-up observations are NOT used as immediate predecessors of July. Older observations existing does NOT make daily/4h histories available in July."
+  },
+  "warmup_requirement": {
+    "nominal_sessions_before_july": 371,
+    "fully_resolved_for_setup_discovery": false,
+    "note": "Older observations exist (>=40 sessions) but are in prior segments; per-segment continuity means daily prev10/20/40 and 4h prev40 remain UNAVAILABLE (null) throughout the July week."
   },
   "timezone_rules": {
     "iana": "America/New_York",
-    "dst": "handled via zoneinfo (EDT UTC-4 across discovery; full DST across warm-up)",
-    "ts_event_marks": "bar OPENING (interval start)",
-    "availability": "interval end = open + tf length",
-    "globex_day": "18:00 ET -> 17:00 ET next day",
+    "ts_event_marks": "bar OPENING",
+    "availability": "interval end",
+    "globex_day": "18:00->17:00 ET",
     "overnight": "18:00-09:29 ET",
     "rth": "09:30-16:00 ET",
+    "daily_candle_span": "18:00 ET -> 16:59 ET (full 1380 tradeable minutes; 17:00-18:00 maintenance excluded)",
     "htf_boundaries": {
       "5m": "min%5==0",
       "15m": "min%15==0",
-      "30m": "min in {0,30}",
+      "30m": "{0,30}",
       "1h": "clock hour",
       "4h": "00,04,08,12,16,20 ET",
-      "daily": "globex day 18:00->17:00 ET"
-    },
-    "maintenance": "17:00-18:00 ET, no synthetic bars"
+      "daily": "globex day"
+    }
   },
   "causality": [
-    "only bars completed by t used",
-    "current event excluded from own trailing history",
-    "no centered calculations",
-    "no future look-back to mark structures earlier",
-    "boundaries never retrospectively moved",
-    "availability timestamp stored per structure",
-    "no intrabar ordering inferred from OHLCV",
-    "structural detection confined to post-seam discovery series; warm-up used ONLY for relative trailing size percentiles"
+    "only bars completed by t",
+    "current excluded from own trailing history",
+    "no centered calcs",
+    "no future look-back to mark structures",
+    "boundaries never moved",
+    "CAUSAL contract decision (no intra-session look-ahead)",
+    "trailing history same-segment complete only; warm-up never crosses the seam",
+    "no structure spans a segment/roll boundary"
   ],
-  "primitives_params": {
-    "fvg": "3 consecutive completed candles; body-containment enforced; available after C close; A must be post-seam",
-    "ifvg": "conversion only on later candle CLOSE beyond opposite boundary (wick/inside insufficient)",
-    "liquidity_sources": [
-      "prev_rth_high/low",
-      "overnight_high/low",
-      "candle_0900",
-      "candle_0930",
-      "candle_1000"
-    ],
-    "liquidity_sweep": "strict penetration; exact touch != sweep",
-    "rejection_block": "wick-only zone; percentiles vs prev 10/20/40 same-tf same-direction wick; invalidation = first body-overlap OR complete wick traversal beyond far boundary",
-    "displacement": "legs len 1/2/3 both directions; trailing N=10/20/40; raw measurements preserved; NO outcome-based classification threshold",
-    "trailing_context": "prev-N histories draw from the continuous warm-up series; all prev10/20/40 now fully populated (0 null)"
-  },
   "environment": {
     "python": "3.11.15",
     "pandas": "3.0.3",
@@ -117,20 +85,14 @@
     "platform": "Linux-6.18.5-x86_64-with-glibc2.39"
   },
   "code_sha256": {
-    "core.py": "be4396614acb5e05d64f26c4a4f8337ae8e54e2ddbbab18ecc4bb3890207d140",
-    "primitives.py": "92a35a49141a42fc87df237d10e7c9a2a4889c2a346f1f5bb11a791cd4d71c4b",
-    "run.py": "ff70e2b117a14aecfd34d6c878c2643cac2c7e8eaea3385bd61a29071d5f4776",
-    "charts.py": "0aa22b666f26d2b62bdea94f9531814c7413a5d9e2af7e0307b7f8a452a0048a"
+    "core.py": "c20c635b69a2a42f2c97e7fc836bd55b52ba0d91887e19591207ffc6eec45cc0",
+    "primitives.py": "5e32fbceeaa648e8297db88867c853f381977789c15dcfa85a383a4ee6048a18",
+    "run.py": "536e1e7502fddf05b3b1411ac827305d6e1d2e52a9b37e2d294ace270f2a46b7",
+    "charts.py": "0aa22b666f26d2b62bdea94f9531814c7413a5d9e2af7e0307b7f8a452a0048a",
+    "tests.py": "9f4e451aa599a1e17bcb394032ed021ab92b1baddfc5e8feee5777069f10bf15"
   },
-  "git_commit_at_build": "93f68fc1e7021c772d60d54ffc07c1ce6341b560",
-  "outputs": {
-    "ledgers": "outputs/ledgers/*.csv (+ JSON for <=5000 rows)",
-    "htf_candles": "outputs/htf_candles_*.csv",
-    "normalized_minutes": "outputs/nq_1m_et_normalized.csv (discovery-context slice)",
-    "charts": "outputs/charts/*.png",
-    "examples": "outputs/examples/audit_examples.json",
-    "data_quality": "outputs/data_quality_report.json"
-  },
-  "determinism": "no randomness; no seeds required; identical inputs reproduce identical outputs",
-  "reproduce_cmd": "python3 run.py data.csv <discovery.zst> warmup.csv <warmup.zst>  && python3 charts.py"
+  "git_commit_at_build": "0d7d964522881a3dd7e6b827d426ec29e7a0a452",
+  "tests": "tests.py -> 114/114 invariant checks pass",
+  "determinism": "no randomness; no seeds; identical inputs reproduce identical outputs",
+  "reproduce_cmd": "python3 run.py data.csv <discovery.zst> warmup.csv <warmup.zst> && python3 charts.py && python3 tests.py"
 }

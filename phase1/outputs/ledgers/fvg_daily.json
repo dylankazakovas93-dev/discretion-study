@@ -13,7 +13,7 @@
   "C_high":29558.75,
   "C_low":28909.75,
   "B_open":29960.0,
-  "B_close":29408.25,
+  "B_close":29419.5,
   "lower_boundary":29558.75,
   "upper_boundary":29683.0,
   "midpoint":29620.875,
@@ -23,7 +23,8 @@
   "midpoint_touch_et":"2026-07-09T21:00:00.000Z",
   "full_fill_et":"2026-07-09T21:00:00.000Z",
   "invalidation_et":"2026-07-09T21:00:00.000Z",
-  "C_index":373
+  "segment_id":25,
+  "C_index":374
  },
  {
   "id":"FVG-daily-bull-20260709T1800",
@@ -39,7 +40,7 @@
   "C_high":30077.75,
   "C_low":29675.0,
   "B_open":29412.0,
-  "B_close":29951.5,
+  "B_close":29931.25,
   "lower_boundary":29558.75,
   "upper_boundary":29675.0,
   "midpoint":29616.875,
@@ -49,6 +50,7 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
-  "C_index":375
+  "segment_id":25,
+  "C_index":376
  }
 ]

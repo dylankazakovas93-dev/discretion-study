@@ -23,7 +23,8 @@
   "midpoint_touch_et":"2026-07-09T16:00:00.000Z",
   "full_fill_et":"2026-07-09T16:00:00.000Z",
   "invalidation_et":"2026-07-09T16:00:00.000Z",
-  "C_index":2292
+  "segment_id":25,
+  "C_index":2298
  },
  {
   "id":"FVG-4h-bear-20260707T1200",
@@ -49,7 +50,8 @@
   "midpoint_touch_et":"2026-07-09T08:00:00.000Z",
   "full_fill_et":"2026-07-09T08:00:00.000Z",
   "invalidation_et":"2026-07-09T08:00:00.000Z",
-  "C_index":2295
+  "segment_id":25,
+  "C_index":2301
  },
  {
   "id":"FVG-4h-bull-20260709T1200",
@@ -75,7 +77,8 @@
   "midpoint_touch_et":"2026-07-10T08:00:00.000Z",
   "full_fill_et":"2026-07-10T12:00:00.000Z",
   "invalidation_et":"2026-07-10T12:00:00.000Z",
-  "C_index":2307
+  "segment_id":25,
+  "C_index":2313
  },
  {
   "id":"FVG-4h-bull-20260710T1200",
@@ -101,7 +104,8 @@
   "midpoint_touch_et":"2026-07-13T00:00:00.000Z",
   "full_fill_et":"2026-07-13T00:00:00.000Z",
   "invalidation_et":"2026-07-13T00:00:00.000Z",
-  "C_index":2313
+  "segment_id":25,
+  "C_index":2319
  },
  {
   "id":"FVG-4h-bull-20260710T1600",
@@ -127,6 +131,7 @@
   "midpoint_touch_et":null,
   "full_fill_et":"2026-07-13T00:00:00.000Z",
   "invalidation_et":"2026-07-13T00:00:00.000Z",
-  "C_index":2314
+  "segment_id":25,
+  "C_index":2320
  }
 ]

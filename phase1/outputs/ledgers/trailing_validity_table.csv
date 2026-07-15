@@ -1,0 +1,22 @@
+tf,horizon_N,param_version,discovery_candles,null_count,valid_count,first_valid_july_availability_et,discovery_segment_id,exclusion_reason
+1m,10,phase1-v1.0.0,6541,0,6541,2026-07-06 00:00:00-04:00,25,
+1m,20,phase1-v1.0.0,6541,0,6541,2026-07-06 00:00:00-04:00,25,
+1m,40,phase1-v1.0.0,6541,0,6541,2026-07-06 00:00:00-04:00,25,
+5m,10,phase1-v1.0.0,1309,0,1309,2026-07-06 00:00:00-04:00,25,
+5m,20,phase1-v1.0.0,1309,0,1309,2026-07-06 00:00:00-04:00,25,
+5m,40,phase1-v1.0.0,1309,0,1309,2026-07-06 00:00:00-04:00,25,
+15m,10,phase1-v1.0.0,437,0,437,2026-07-06 00:00:00-04:00,25,
+15m,20,phase1-v1.0.0,437,5,432,2026-07-06 01:15:00-04:00,25,insufficient_same_segment_complete_predecessors
+15m,40,phase1-v1.0.0,437,25,412,2026-07-06 06:15:00-04:00,25,insufficient_same_segment_complete_predecessors
+30m,10,phase1-v1.0.0,219,3,216,2026-07-06 01:30:00-04:00,25,insufficient_same_segment_complete_predecessors
+30m,20,phase1-v1.0.0,219,13,206,2026-07-06 06:30:00-04:00,25,insufficient_same_segment_complete_predecessors
+30m,40,phase1-v1.0.0,219,33,186,2026-07-06 16:30:00-04:00,25,insufficient_same_segment_complete_predecessors
+1h,10,phase1-v1.0.0,110,7,103,2026-07-06 07:00:00-04:00,25,insufficient_same_segment_complete_predecessors
+1h,20,phase1-v1.0.0,110,17,93,2026-07-06 17:00:00-04:00,25,insufficient_same_segment_complete_predecessors
+1h,40,phase1-v1.0.0,110,37,73,2026-07-07 14:00:00-04:00,25,insufficient_same_segment_complete_predecessors
+4h,10,phase1-v1.0.0,30,11,19,2026-07-07 20:00:00-04:00,25,insufficient_same_segment_complete_predecessors
+4h,20,phase1-v1.0.0,30,23,7,2026-07-09 20:00:00-04:00,25,insufficient_same_segment_complete_predecessors
+4h,40,phase1-v1.0.0,30,30,0,,25,insufficient_same_segment_complete_predecessors
+daily,10,phase1-v1.0.0,5,5,0,,25,insufficient_same_segment_complete_predecessors
+daily,20,phase1-v1.0.0,5,5,0,,25,insufficient_same_segment_complete_predecessors
+daily,40,phase1-v1.0.0,5,5,0,,25,insufficient_same_segment_complete_predecessors

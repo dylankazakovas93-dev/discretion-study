@@ -35,8 +35,10 @@ def write_ledger(df: pd.DataFrame, name: str):
 
 def main(csv_path, orig_path, warmup_csv=None, warmup_orig=None):
     os.makedirs(LED, exist_ok=True)
+    roll_ledger = seg_ledger = None
     if warmup_csv:
-        et, audit, tf_ledgers = core.build_combined(csv_path, warmup_csv, orig_path, warmup_orig)
+        et, audit, tf_ledgers, roll_ledger, seg_ledger = core.build_combined(
+            csv_path, warmup_csv, orig_path, warmup_orig)
     else:
         et, audit, tf_ledgers = core.build_all(csv_path, orig_path)
 
@@ -73,9 +75,6 @@ def main(csv_path, orig_path, warmup_csv=None, warmup_orig=None):
                     pass
         l2.to_csv(os.path.join(OUT, f"htf_candles_{name}.csv"), index=False)
 
-    with open(os.path.join(OUT, "data_quality_report.json"), "w") as f:
-        json.dump(audit, f, indent=2, default=jdefault)
-
     counts = {}
     all_fvgs = {}
     tf_candles = {}
@@ -99,10 +98,31 @@ def main(csv_path, orig_path, warmup_csv=None, warmup_orig=None):
     liq = P.detect_liquidity(et)
     counts["liquidity"] = write_ledger(liq, "liquidity_references")
 
+    # roll-decision + continuity-segment ledgers
+    if roll_ledger is not None:
+        rl = roll_ledger.copy()
+        rl["evidence_session_volumes"] = rl["evidence_session_volumes"].apply(json.dumps)
+        rl["current_session_volumes"] = rl["current_session_volumes"].apply(json.dumps)
+        counts["roll_decisions"] = write_ledger(rl, "roll_decisions")
+        counts["continuity_segments"] = write_ledger(seg_ledger.copy(), "continuity_segments")
+
+    # per-timeframe trailing-feature validity table (discovery week)
+    vt_rows = []
+    for tf in core.TIMEFRAMES:
+        vt_rows.extend(P.validity_table(tf_candles[tf.name]))
+    vt = pd.DataFrame(vt_rows)
+    write_ledger(vt, "trailing_validity_table")
+    audit["trailing_validity_summary"] = json.loads(vt.to_json(orient="records", date_format="iso"))
+
+    with open(os.path.join(OUT, "data_quality_report.json"), "w") as f:
+        json.dump(audit, f, indent=2, default=jdefault)
+
     with open(os.path.join(OUT, "ledger_counts.json"), "w") as f:
         json.dump(counts, f, indent=2)
 
     print(json.dumps(counts, indent=2))
+    print("\n=== trailing validity (discovery week) ===")
+    print(vt.to_string(index=False))
     return audit, counts
 
 

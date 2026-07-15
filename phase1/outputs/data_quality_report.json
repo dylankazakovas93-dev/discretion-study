@@ -58,88 +58,62 @@
   "warmup": {
     "hash_path": "/root/.claude/uploads/e2fef3a7-b60e-5477-b97f-9440d32db324/af62b6c5-nq2025.zip",
     "file_sha256": "b4fcf58ff5db70d2a8d45d605ce5a2742ab003a1cf694ef2721a04562b6608e2",
-    "rows_selected_continuous": 504667,
+    "rows_selected_continuous": 511566,
     "symbols_used": [
       "NQH5",
       "NQH6",
       "NQM5",
       "NQM6",
       "NQU5",
+      "NQU6",
       "NQZ5"
     ],
-    "roll_dates": [
-      {
-        "date": "2025-01-01",
-        "symbol": "NQH5"
-      },
-      {
-        "date": "2025-03-18",
-        "symbol": "NQM5"
-      },
-      {
-        "date": "2025-06-16",
-        "symbol": "NQU5"
-      },
-      {
-        "date": "2025-09-15",
-        "symbol": "NQZ5"
-      },
-      {
-        "date": "2025-12-15",
-        "symbol": "NQH6"
-      },
-      {
-        "date": "2026-03-16",
-        "symbol": "NQM6"
-      }
-    ],
-    "utc_range": [
-      "2025-01-01T23:00:00.000000000Z",
-      "2026-06-07T23:59:00.000000000Z"
-    ],
     "warmup_globex_sessions": 371,
-    "seam_gap": {
-      "last_warmup_bar_et": "2026-06-07 19:59:00-04:00",
+    "n_segments": 26,
+    "discovery_segment_id": 25,
+    "seam": {
+      "last_pre_discovery_bar_et": "2026-06-07 19:59:00-04:00",
       "first_discovery_bar_et": "2026-07-05 20:00:00-04:00",
       "gap_days": 28.000694444444445,
-      "note": "Warm-up ends on NQM6; discovery is NQU6. The seam carries both a ~1-month calendar gap and a contract change. Warm-up is therefore used ONLY for relative trailing size percentiles; structural detection is confined to the post-seam discovery series."
+      "note": "Warm-up ends on NQM6; discovery is NQU6. The seam is a new continuity segment (contract change + ~28-day gap). Trailing 10/20/40 statistics require that many completed candles FROM THE DISCOVERY SEGMENT; warm-up observations are NOT used as immediate predecessors of July. Older observations existing does NOT make daily/4h histories available in July."
     },
-    "requirement_met": true
+    "nominal_sessions_before_discovery": 371,
+    "requirement_note": "Nominal >=40 pre-July sessions exist, but they are in prior segments; per-segment continuity governs feature validity, so daily/4h 40-candle histories remain unavailable in the July week."
   },
   "daily_candles": [
     {
       "globex_day": "2025-01-01->2025-01-02",
       "open_et": "2025-01-01T18:00:00-05:00",
       "close_et": "2025-01-02T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-01T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-02->2025-01-03",
       "open_et": "2025-01-02T18:00:00-05:00",
       "close_et": "2025-01-03T17:00:00-05:00",
-      "n_source_minutes": 1320,
+      "n_source_minutes": 1379,
       "first_source": "2025-01-02T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-05->2025-01-06",
       "open_et": "2025-01-05T18:00:00-05:00",
       "close_et": "2025-01-06T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-05T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-06->2025-01-07",
       "open_et": "2025-01-06T18:00:00-05:00",
       "close_et": "2025-01-07T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-06T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-07->2025-01-08",
       "open_et": "2025-01-07T18:00:00-05:00",
       "close_et": "2025-01-08T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-07T18:00:00-05:00"
     },
     {
@@ -153,42 +127,42 @@
       "globex_day": "2025-01-09->2025-01-10",
       "open_et": "2025-01-09T18:00:00-05:00",
       "close_et": "2025-01-10T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-09T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-12->2025-01-13",
       "open_et": "2025-01-12T18:00:00-05:00",
       "close_et": "2025-01-13T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-12T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-13->2025-01-14",
       "open_et": "2025-01-13T18:00:00-05:00",
       "close_et": "2025-01-14T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-13T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-14->2025-01-15",
       "open_et": "2025-01-14T18:00:00-05:00",
       "close_et": "2025-01-15T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-14T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-15->2025-01-16",
       "open_et": "2025-01-15T18:00:00-05:00",
       "close_et": "2025-01-16T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-15T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-16->2025-01-17",
       "open_et": "2025-01-16T18:00:00-05:00",
       "close_et": "2025-01-17T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-16T18:00:00-05:00"
     },
     {
@@ -202,133 +176,133 @@
       "globex_day": "2025-01-20->2025-01-21",
       "open_et": "2025-01-20T18:00:00-05:00",
       "close_et": "2025-01-21T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-20T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-21->2025-01-22",
       "open_et": "2025-01-21T18:00:00-05:00",
       "close_et": "2025-01-22T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-21T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-22->2025-01-23",
       "open_et": "2025-01-22T18:00:00-05:00",
       "close_et": "2025-01-23T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-22T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-23->2025-01-24",
       "open_et": "2025-01-23T18:00:00-05:00",
       "close_et": "2025-01-24T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-23T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-26->2025-01-27",
       "open_et": "2025-01-26T18:00:00-05:00",
       "close_et": "2025-01-27T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-26T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-27->2025-01-28",
       "open_et": "2025-01-27T18:00:00-05:00",
       "close_et": "2025-01-28T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-27T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-28->2025-01-29",
       "open_et": "2025-01-28T18:00:00-05:00",
       "close_et": "2025-01-29T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-28T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-29->2025-01-30",
       "open_et": "2025-01-29T18:00:00-05:00",
       "close_et": "2025-01-30T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-29T18:00:00-05:00"
     },
     {
       "globex_day": "2025-01-30->2025-01-31",
       "open_et": "2025-01-30T18:00:00-05:00",
       "close_et": "2025-01-31T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-01-30T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-02->2025-02-03",
       "open_et": "2025-02-02T18:00:00-05:00",
       "close_et": "2025-02-03T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-02T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-03->2025-02-04",
       "open_et": "2025-02-03T18:00:00-05:00",
       "close_et": "2025-02-04T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-03T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-04->2025-02-05",
       "open_et": "2025-02-04T18:00:00-05:00",
       "close_et": "2025-02-05T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-04T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-05->2025-02-06",
       "open_et": "2025-02-05T18:00:00-05:00",
       "close_et": "2025-02-06T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-05T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-06->2025-02-07",
       "open_et": "2025-02-06T18:00:00-05:00",
       "close_et": "2025-02-07T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-06T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-09->2025-02-10",
       "open_et": "2025-02-09T18:00:00-05:00",
       "close_et": "2025-02-10T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-09T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-10->2025-02-11",
       "open_et": "2025-02-10T18:00:00-05:00",
       "close_et": "2025-02-11T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-10T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-11->2025-02-12",
       "open_et": "2025-02-11T18:00:00-05:00",
       "close_et": "2025-02-12T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-11T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-12->2025-02-13",
       "open_et": "2025-02-12T18:00:00-05:00",
       "close_et": "2025-02-13T17:00:00-05:00",
-      "n_source_minutes": 1320,
+      "n_source_minutes": 1379,
       "first_source": "2025-02-12T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-13->2025-02-14",
       "open_et": "2025-02-13T18:00:00-05:00",
       "close_et": "2025-02-14T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-13T18:00:00-05:00"
     },
     {
@@ -342,476 +316,476 @@
       "globex_day": "2025-02-17->2025-02-18",
       "open_et": "2025-02-17T18:00:00-05:00",
       "close_et": "2025-02-18T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-17T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-18->2025-02-19",
       "open_et": "2025-02-18T18:00:00-05:00",
       "close_et": "2025-02-19T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-18T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-19->2025-02-20",
       "open_et": "2025-02-19T18:00:00-05:00",
       "close_et": "2025-02-20T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-19T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-20->2025-02-21",
       "open_et": "2025-02-20T18:00:00-05:00",
       "close_et": "2025-02-21T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-20T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-23->2025-02-24",
       "open_et": "2025-02-23T18:00:00-05:00",
       "close_et": "2025-02-24T17:00:00-05:00",
-      "n_source_minutes": 1320,
+      "n_source_minutes": 1379,
       "first_source": "2025-02-23T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-24->2025-02-25",
       "open_et": "2025-02-24T18:00:00-05:00",
       "close_et": "2025-02-25T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-24T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-25->2025-02-26",
       "open_et": "2025-02-25T18:00:00-05:00",
       "close_et": "2025-02-26T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-25T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-26->2025-02-27",
       "open_et": "2025-02-26T18:00:00-05:00",
       "close_et": "2025-02-27T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-26T18:00:00-05:00"
     },
     {
       "globex_day": "2025-02-27->2025-02-28",
       "open_et": "2025-02-27T18:00:00-05:00",
       "close_et": "2025-02-28T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-02-27T18:00:00-05:00"
     },
     {
       "globex_day": "2025-03-02->2025-03-03",
       "open_et": "2025-03-02T18:00:00-05:00",
       "close_et": "2025-03-03T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-02T18:00:00-05:00"
     },
     {
       "globex_day": "2025-03-03->2025-03-04",
       "open_et": "2025-03-03T18:00:00-05:00",
       "close_et": "2025-03-04T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-03T18:00:00-05:00"
     },
     {
       "globex_day": "2025-03-04->2025-03-05",
       "open_et": "2025-03-04T18:00:00-05:00",
       "close_et": "2025-03-05T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-04T18:00:00-05:00"
     },
     {
       "globex_day": "2025-03-05->2025-03-06",
       "open_et": "2025-03-05T18:00:00-05:00",
       "close_et": "2025-03-06T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-05T18:00:00-05:00"
     },
     {
       "globex_day": "2025-03-06->2025-03-07",
       "open_et": "2025-03-06T18:00:00-05:00",
       "close_et": "2025-03-07T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-06T18:00:00-05:00"
     },
     {
       "globex_day": "2025-03-09->2025-03-10",
       "open_et": "2025-03-09T18:00:00-04:00",
       "close_et": "2025-03-10T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-09T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-10->2025-03-11",
       "open_et": "2025-03-10T18:00:00-04:00",
       "close_et": "2025-03-11T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-10T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-11->2025-03-12",
       "open_et": "2025-03-11T18:00:00-04:00",
       "close_et": "2025-03-12T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-11T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-12->2025-03-13",
       "open_et": "2025-03-12T18:00:00-04:00",
       "close_et": "2025-03-13T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-12T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-13->2025-03-14",
       "open_et": "2025-03-13T18:00:00-04:00",
       "close_et": "2025-03-14T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-13T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-16->2025-03-17",
       "open_et": "2025-03-16T18:00:00-04:00",
       "close_et": "2025-03-17T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-16T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-17->2025-03-18",
       "open_et": "2025-03-17T18:00:00-04:00",
       "close_et": "2025-03-18T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1379,
       "first_source": "2025-03-17T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-18->2025-03-19",
       "open_et": "2025-03-18T18:00:00-04:00",
       "close_et": "2025-03-19T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-18T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-19->2025-03-20",
       "open_et": "2025-03-19T18:00:00-04:00",
       "close_et": "2025-03-20T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-19T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-20->2025-03-21",
       "open_et": "2025-03-20T18:00:00-04:00",
       "close_et": "2025-03-21T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-20T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-23->2025-03-24",
       "open_et": "2025-03-23T18:00:00-04:00",
       "close_et": "2025-03-24T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-23T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-24->2025-03-25",
       "open_et": "2025-03-24T18:00:00-04:00",
       "close_et": "2025-03-25T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-24T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-25->2025-03-26",
       "open_et": "2025-03-25T18:00:00-04:00",
       "close_et": "2025-03-26T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-25T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-26->2025-03-27",
       "open_et": "2025-03-26T18:00:00-04:00",
       "close_et": "2025-03-27T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-26T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-27->2025-03-28",
       "open_et": "2025-03-27T18:00:00-04:00",
       "close_et": "2025-03-28T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-27T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-30->2025-03-31",
       "open_et": "2025-03-30T18:00:00-04:00",
       "close_et": "2025-03-31T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-30T18:00:00-04:00"
     },
     {
       "globex_day": "2025-03-31->2025-04-01",
       "open_et": "2025-03-31T18:00:00-04:00",
       "close_et": "2025-04-01T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-03-31T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-01->2025-04-02",
       "open_et": "2025-04-01T18:00:00-04:00",
       "close_et": "2025-04-02T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1379,
       "first_source": "2025-04-01T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-02->2025-04-03",
       "open_et": "2025-04-02T18:00:00-04:00",
       "close_et": "2025-04-03T17:00:00-04:00",
-      "n_source_minutes": 1319,
+      "n_source_minutes": 1378,
       "first_source": "2025-04-02T18:02:00-04:00"
     },
     {
       "globex_day": "2025-04-03->2025-04-04",
       "open_et": "2025-04-03T18:00:00-04:00",
       "close_et": "2025-04-04T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-03T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-06->2025-04-07",
       "open_et": "2025-04-06T18:00:00-04:00",
       "close_et": "2025-04-07T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-06T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-07->2025-04-08",
       "open_et": "2025-04-07T18:00:00-04:00",
       "close_et": "2025-04-08T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-07T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-08->2025-04-09",
       "open_et": "2025-04-08T18:00:00-04:00",
       "close_et": "2025-04-09T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-08T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-09->2025-04-10",
       "open_et": "2025-04-09T18:00:00-04:00",
       "close_et": "2025-04-10T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-09T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-10->2025-04-11",
       "open_et": "2025-04-10T18:00:00-04:00",
       "close_et": "2025-04-11T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-10T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-13->2025-04-14",
       "open_et": "2025-04-13T18:00:00-04:00",
       "close_et": "2025-04-14T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-13T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-14->2025-04-15",
       "open_et": "2025-04-14T18:00:00-04:00",
       "close_et": "2025-04-15T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-14T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-15->2025-04-16",
       "open_et": "2025-04-15T18:00:00-04:00",
       "close_et": "2025-04-16T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-15T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-16->2025-04-17",
       "open_et": "2025-04-16T18:00:00-04:00",
       "close_et": "2025-04-17T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-16T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-20->2025-04-21",
       "open_et": "2025-04-20T18:00:00-04:00",
       "close_et": "2025-04-21T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-20T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-21->2025-04-22",
       "open_et": "2025-04-21T18:00:00-04:00",
       "close_et": "2025-04-22T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-21T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-22->2025-04-23",
       "open_et": "2025-04-22T18:00:00-04:00",
       "close_et": "2025-04-23T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-22T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-23->2025-04-24",
       "open_et": "2025-04-23T18:00:00-04:00",
       "close_et": "2025-04-24T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-23T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-24->2025-04-25",
       "open_et": "2025-04-24T18:00:00-04:00",
       "close_et": "2025-04-25T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-24T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-27->2025-04-28",
       "open_et": "2025-04-27T18:00:00-04:00",
       "close_et": "2025-04-28T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-27T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-28->2025-04-29",
       "open_et": "2025-04-28T18:00:00-04:00",
       "close_et": "2025-04-29T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-28T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-29->2025-04-30",
       "open_et": "2025-04-29T18:00:00-04:00",
       "close_et": "2025-04-30T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-29T18:00:00-04:00"
     },
     {
       "globex_day": "2025-04-30->2025-05-01",
       "open_et": "2025-04-30T18:00:00-04:00",
       "close_et": "2025-05-01T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-04-30T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-01->2025-05-02",
       "open_et": "2025-05-01T18:00:00-04:00",
       "close_et": "2025-05-02T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-01T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-04->2025-05-05",
       "open_et": "2025-05-04T18:00:00-04:00",
       "close_et": "2025-05-05T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-04T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-05->2025-05-06",
       "open_et": "2025-05-05T18:00:00-04:00",
       "close_et": "2025-05-06T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-05T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-06->2025-05-07",
       "open_et": "2025-05-06T18:00:00-04:00",
       "close_et": "2025-05-07T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-06T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-07->2025-05-08",
       "open_et": "2025-05-07T18:00:00-04:00",
       "close_et": "2025-05-08T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-07T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-08->2025-05-09",
       "open_et": "2025-05-08T18:00:00-04:00",
       "close_et": "2025-05-09T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-08T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-11->2025-05-12",
       "open_et": "2025-05-11T18:00:00-04:00",
       "close_et": "2025-05-12T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-11T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-12->2025-05-13",
       "open_et": "2025-05-12T18:00:00-04:00",
       "close_et": "2025-05-13T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-12T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-13->2025-05-14",
       "open_et": "2025-05-13T18:00:00-04:00",
       "close_et": "2025-05-14T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-13T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-14->2025-05-15",
       "open_et": "2025-05-14T18:00:00-04:00",
       "close_et": "2025-05-15T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-14T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-15->2025-05-16",
       "open_et": "2025-05-15T18:00:00-04:00",
       "close_et": "2025-05-16T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-15T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-18->2025-05-19",
       "open_et": "2025-05-18T18:00:00-04:00",
       "close_et": "2025-05-19T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-18T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-19->2025-05-20",
       "open_et": "2025-05-19T18:00:00-04:00",
       "close_et": "2025-05-20T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-19T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-20->2025-05-21",
       "open_et": "2025-05-20T18:00:00-04:00",
       "close_et": "2025-05-21T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-20T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-21->2025-05-22",
       "open_et": "2025-05-21T18:00:00-04:00",
       "close_et": "2025-05-22T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-21T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-22->2025-05-23",
       "open_et": "2025-05-22T18:00:00-04:00",
       "close_et": "2025-05-23T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-22T18:00:00-04:00"
     },
     {
@@ -825,119 +799,119 @@
       "globex_day": "2025-05-26->2025-05-27",
       "open_et": "2025-05-26T18:00:00-04:00",
       "close_et": "2025-05-27T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-26T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-27->2025-05-28",
       "open_et": "2025-05-27T18:00:00-04:00",
       "close_et": "2025-05-28T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-27T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-28->2025-05-29",
       "open_et": "2025-05-28T18:00:00-04:00",
       "close_et": "2025-05-29T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-28T18:00:00-04:00"
     },
     {
       "globex_day": "2025-05-29->2025-05-30",
       "open_et": "2025-05-29T18:00:00-04:00",
       "close_et": "2025-05-30T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-05-29T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-01->2025-06-02",
       "open_et": "2025-06-01T18:00:00-04:00",
       "close_et": "2025-06-02T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-01T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-02->2025-06-03",
       "open_et": "2025-06-02T18:00:00-04:00",
       "close_et": "2025-06-03T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-02T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-03->2025-06-04",
       "open_et": "2025-06-03T18:00:00-04:00",
       "close_et": "2025-06-04T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-03T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-04->2025-06-05",
       "open_et": "2025-06-04T18:00:00-04:00",
       "close_et": "2025-06-05T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-04T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-05->2025-06-06",
       "open_et": "2025-06-05T18:00:00-04:00",
       "close_et": "2025-06-06T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-05T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-08->2025-06-09",
       "open_et": "2025-06-08T18:00:00-04:00",
       "close_et": "2025-06-09T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-08T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-09->2025-06-10",
       "open_et": "2025-06-09T18:00:00-04:00",
       "close_et": "2025-06-10T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-09T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-10->2025-06-11",
       "open_et": "2025-06-10T18:00:00-04:00",
       "close_et": "2025-06-11T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-10T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-11->2025-06-12",
       "open_et": "2025-06-11T18:00:00-04:00",
       "close_et": "2025-06-12T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-11T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-12->2025-06-13",
       "open_et": "2025-06-12T18:00:00-04:00",
       "close_et": "2025-06-13T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-12T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-15->2025-06-16",
       "open_et": "2025-06-15T18:00:00-04:00",
       "close_et": "2025-06-16T17:00:00-04:00",
-      "n_source_minutes": 1319,
+      "n_source_minutes": 1379,
       "first_source": "2025-06-15T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-16->2025-06-17",
       "open_et": "2025-06-16T18:00:00-04:00",
       "close_et": "2025-06-17T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-16T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-17->2025-06-18",
       "open_et": "2025-06-17T18:00:00-04:00",
       "close_et": "2025-06-18T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-17T18:00:00-04:00"
     },
     {
@@ -951,63 +925,63 @@
       "globex_day": "2025-06-19->2025-06-20",
       "open_et": "2025-06-19T18:00:00-04:00",
       "close_et": "2025-06-20T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-19T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-22->2025-06-23",
       "open_et": "2025-06-22T18:00:00-04:00",
       "close_et": "2025-06-23T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-22T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-23->2025-06-24",
       "open_et": "2025-06-23T18:00:00-04:00",
       "close_et": "2025-06-24T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-23T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-24->2025-06-25",
       "open_et": "2025-06-24T18:00:00-04:00",
       "close_et": "2025-06-25T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-24T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-25->2025-06-26",
       "open_et": "2025-06-25T18:00:00-04:00",
       "close_et": "2025-06-26T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-25T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-26->2025-06-27",
       "open_et": "2025-06-26T18:00:00-04:00",
       "close_et": "2025-06-27T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-26T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-29->2025-06-30",
       "open_et": "2025-06-29T18:00:00-04:00",
       "close_et": "2025-06-30T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-29T18:00:00-04:00"
     },
     {
       "globex_day": "2025-06-30->2025-07-01",
       "open_et": "2025-06-30T18:00:00-04:00",
       "close_et": "2025-07-01T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-06-30T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-01->2025-07-02",
       "open_et": "2025-07-01T18:00:00-04:00",
       "close_et": "2025-07-02T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-01T18:00:00-04:00"
     },
     {
@@ -1028,280 +1002,280 @@
       "globex_day": "2025-07-06->2025-07-07",
       "open_et": "2025-07-06T18:00:00-04:00",
       "close_et": "2025-07-07T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-06T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-07->2025-07-08",
       "open_et": "2025-07-07T18:00:00-04:00",
       "close_et": "2025-07-08T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-07T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-08->2025-07-09",
       "open_et": "2025-07-08T18:00:00-04:00",
       "close_et": "2025-07-09T17:00:00-04:00",
-      "n_source_minutes": 1319,
+      "n_source_minutes": 1378,
       "first_source": "2025-07-08T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-09->2025-07-10",
       "open_et": "2025-07-09T18:00:00-04:00",
       "close_et": "2025-07-10T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-09T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-10->2025-07-11",
       "open_et": "2025-07-10T18:00:00-04:00",
       "close_et": "2025-07-11T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-10T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-13->2025-07-14",
       "open_et": "2025-07-13T18:00:00-04:00",
       "close_et": "2025-07-14T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-13T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-14->2025-07-15",
       "open_et": "2025-07-14T18:00:00-04:00",
       "close_et": "2025-07-15T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-14T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-15->2025-07-16",
       "open_et": "2025-07-15T18:00:00-04:00",
       "close_et": "2025-07-16T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-15T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-16->2025-07-17",
       "open_et": "2025-07-16T18:00:00-04:00",
       "close_et": "2025-07-17T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-16T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-17->2025-07-18",
       "open_et": "2025-07-17T18:00:00-04:00",
       "close_et": "2025-07-18T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-17T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-20->2025-07-21",
       "open_et": "2025-07-20T18:00:00-04:00",
       "close_et": "2025-07-21T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-20T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-21->2025-07-22",
       "open_et": "2025-07-21T18:00:00-04:00",
       "close_et": "2025-07-22T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-21T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-22->2025-07-23",
       "open_et": "2025-07-22T18:00:00-04:00",
       "close_et": "2025-07-23T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-22T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-23->2025-07-24",
       "open_et": "2025-07-23T18:00:00-04:00",
       "close_et": "2025-07-24T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-23T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-24->2025-07-25",
       "open_et": "2025-07-24T18:00:00-04:00",
       "close_et": "2025-07-25T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-24T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-27->2025-07-28",
       "open_et": "2025-07-27T18:00:00-04:00",
       "close_et": "2025-07-28T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-27T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-28->2025-07-29",
       "open_et": "2025-07-28T18:00:00-04:00",
       "close_et": "2025-07-29T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-28T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-29->2025-07-30",
       "open_et": "2025-07-29T18:00:00-04:00",
       "close_et": "2025-07-30T17:00:00-04:00",
-      "n_source_minutes": 1320,
+      "n_source_minutes": 1379,
       "first_source": "2025-07-29T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-30->2025-07-31",
       "open_et": "2025-07-30T18:00:00-04:00",
       "close_et": "2025-07-31T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-30T18:00:00-04:00"
     },
     {
       "globex_day": "2025-07-31->2025-08-01",
       "open_et": "2025-07-31T18:00:00-04:00",
       "close_et": "2025-08-01T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-07-31T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-03->2025-08-04",
       "open_et": "2025-08-03T18:00:00-04:00",
       "close_et": "2025-08-04T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-03T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-04->2025-08-05",
       "open_et": "2025-08-04T18:00:00-04:00",
       "close_et": "2025-08-05T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-04T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-05->2025-08-06",
       "open_et": "2025-08-05T18:00:00-04:00",
       "close_et": "2025-08-06T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-05T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-06->2025-08-07",
       "open_et": "2025-08-06T18:00:00-04:00",
       "close_et": "2025-08-07T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-06T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-07->2025-08-08",
       "open_et": "2025-08-07T18:00:00-04:00",
       "close_et": "2025-08-08T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-07T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-10->2025-08-11",
       "open_et": "2025-08-10T18:00:00-04:00",
       "close_et": "2025-08-11T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-10T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-11->2025-08-12",
       "open_et": "2025-08-11T18:00:00-04:00",
       "close_et": "2025-08-12T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-11T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-12->2025-08-13",
       "open_et": "2025-08-12T18:00:00-04:00",
       "close_et": "2025-08-13T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-12T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-13->2025-08-14",
       "open_et": "2025-08-13T18:00:00-04:00",
       "close_et": "2025-08-14T17:00:00-04:00",
-      "n_source_minutes": 1320,
+      "n_source_minutes": 1379,
       "first_source": "2025-08-13T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-14->2025-08-15",
       "open_et": "2025-08-14T18:00:00-04:00",
       "close_et": "2025-08-15T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-14T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-17->2025-08-18",
       "open_et": "2025-08-17T18:00:00-04:00",
       "close_et": "2025-08-18T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-17T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-18->2025-08-19",
       "open_et": "2025-08-18T18:00:00-04:00",
       "close_et": "2025-08-19T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-18T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-19->2025-08-20",
       "open_et": "2025-08-19T18:00:00-04:00",
       "close_et": "2025-08-20T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-19T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-20->2025-08-21",
       "open_et": "2025-08-20T18:00:00-04:00",
       "close_et": "2025-08-21T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-20T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-21->2025-08-22",
       "open_et": "2025-08-21T18:00:00-04:00",
       "close_et": "2025-08-22T17:00:00-04:00",
-      "n_source_minutes": 1320,
+      "n_source_minutes": 1379,
       "first_source": "2025-08-21T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-24->2025-08-25",
       "open_et": "2025-08-24T18:00:00-04:00",
       "close_et": "2025-08-25T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-24T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-25->2025-08-26",
       "open_et": "2025-08-25T18:00:00-04:00",
       "close_et": "2025-08-26T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-25T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-26->2025-08-27",
       "open_et": "2025-08-26T18:00:00-04:00",
       "close_et": "2025-08-27T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-26T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-27->2025-08-28",
       "open_et": "2025-08-27T18:00:00-04:00",
       "close_et": "2025-08-28T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-27T18:00:00-04:00"
     },
     {
       "globex_day": "2025-08-28->2025-08-29",
       "open_et": "2025-08-28T18:00:00-04:00",
       "close_et": "2025-08-29T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-08-28T18:00:00-04:00"
     },
     {
@@ -1315,308 +1289,308 @@
       "globex_day": "2025-09-01->2025-09-02",
       "open_et": "2025-09-01T18:00:00-04:00",
       "close_et": "2025-09-02T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-01T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-02->2025-09-03",
       "open_et": "2025-09-02T18:00:00-04:00",
       "close_et": "2025-09-03T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-02T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-03->2025-09-04",
       "open_et": "2025-09-03T18:00:00-04:00",
       "close_et": "2025-09-04T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-03T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-04->2025-09-05",
       "open_et": "2025-09-04T18:00:00-04:00",
       "close_et": "2025-09-05T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-04T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-07->2025-09-08",
       "open_et": "2025-09-07T18:00:00-04:00",
       "close_et": "2025-09-08T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-07T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-08->2025-09-09",
       "open_et": "2025-09-08T18:00:00-04:00",
       "close_et": "2025-09-09T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-08T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-09->2025-09-10",
       "open_et": "2025-09-09T18:00:00-04:00",
       "close_et": "2025-09-10T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-09T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-10->2025-09-11",
       "open_et": "2025-09-10T18:00:00-04:00",
       "close_et": "2025-09-11T17:00:00-04:00",
-      "n_source_minutes": 1320,
+      "n_source_minutes": 1379,
       "first_source": "2025-09-10T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-11->2025-09-12",
       "open_et": "2025-09-11T18:00:00-04:00",
       "close_et": "2025-09-12T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-11T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-14->2025-09-15",
       "open_et": "2025-09-14T18:00:00-04:00",
       "close_et": "2025-09-15T17:00:00-04:00",
-      "n_source_minutes": 1317,
+      "n_source_minutes": 1378,
       "first_source": "2025-09-14T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-15->2025-09-16",
       "open_et": "2025-09-15T18:00:00-04:00",
       "close_et": "2025-09-16T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1378,
       "first_source": "2025-09-15T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-16->2025-09-17",
       "open_et": "2025-09-16T18:00:00-04:00",
       "close_et": "2025-09-17T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-16T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-17->2025-09-18",
       "open_et": "2025-09-17T18:00:00-04:00",
       "close_et": "2025-09-18T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-17T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-18->2025-09-19",
       "open_et": "2025-09-18T18:00:00-04:00",
       "close_et": "2025-09-19T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-18T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-21->2025-09-22",
       "open_et": "2025-09-21T18:00:00-04:00",
       "close_et": "2025-09-22T17:00:00-04:00",
-      "n_source_minutes": 1320,
+      "n_source_minutes": 1379,
       "first_source": "2025-09-21T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-22->2025-09-23",
       "open_et": "2025-09-22T18:00:00-04:00",
       "close_et": "2025-09-23T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-22T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-23->2025-09-24",
       "open_et": "2025-09-23T18:00:00-04:00",
       "close_et": "2025-09-24T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-23T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-24->2025-09-25",
       "open_et": "2025-09-24T18:00:00-04:00",
       "close_et": "2025-09-25T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-24T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-25->2025-09-26",
       "open_et": "2025-09-25T18:00:00-04:00",
       "close_et": "2025-09-26T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-25T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-28->2025-09-29",
       "open_et": "2025-09-28T18:00:00-04:00",
       "close_et": "2025-09-29T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-28T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-29->2025-09-30",
       "open_et": "2025-09-29T18:00:00-04:00",
       "close_et": "2025-09-30T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-29T18:00:00-04:00"
     },
     {
       "globex_day": "2025-09-30->2025-10-01",
       "open_et": "2025-09-30T18:00:00-04:00",
       "close_et": "2025-10-01T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-09-30T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-01->2025-10-02",
       "open_et": "2025-10-01T18:00:00-04:00",
       "close_et": "2025-10-02T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-01T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-02->2025-10-03",
       "open_et": "2025-10-02T18:00:00-04:00",
       "close_et": "2025-10-03T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-02T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-05->2025-10-06",
       "open_et": "2025-10-05T18:00:00-04:00",
       "close_et": "2025-10-06T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-05T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-06->2025-10-07",
       "open_et": "2025-10-06T18:00:00-04:00",
       "close_et": "2025-10-07T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-06T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-07->2025-10-08",
       "open_et": "2025-10-07T18:00:00-04:00",
       "close_et": "2025-10-08T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-07T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-08->2025-10-09",
       "open_et": "2025-10-08T18:00:00-04:00",
       "close_et": "2025-10-09T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-08T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-09->2025-10-10",
       "open_et": "2025-10-09T18:00:00-04:00",
       "close_et": "2025-10-10T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-09T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-12->2025-10-13",
       "open_et": "2025-10-12T18:00:00-04:00",
       "close_et": "2025-10-13T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-12T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-13->2025-10-14",
       "open_et": "2025-10-13T18:00:00-04:00",
       "close_et": "2025-10-14T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-13T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-14->2025-10-15",
       "open_et": "2025-10-14T18:00:00-04:00",
       "close_et": "2025-10-15T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-14T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-15->2025-10-16",
       "open_et": "2025-10-15T18:00:00-04:00",
       "close_et": "2025-10-16T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-15T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-16->2025-10-17",
       "open_et": "2025-10-16T18:00:00-04:00",
       "close_et": "2025-10-17T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-16T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-19->2025-10-20",
       "open_et": "2025-10-19T18:00:00-04:00",
       "close_et": "2025-10-20T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-19T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-20->2025-10-21",
       "open_et": "2025-10-20T18:00:00-04:00",
       "close_et": "2025-10-21T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-20T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-21->2025-10-22",
       "open_et": "2025-10-21T18:00:00-04:00",
       "close_et": "2025-10-22T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-21T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-22->2025-10-23",
       "open_et": "2025-10-22T18:00:00-04:00",
       "close_et": "2025-10-23T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-22T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-23->2025-10-24",
       "open_et": "2025-10-23T18:00:00-04:00",
       "close_et": "2025-10-24T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-23T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-26->2025-10-27",
       "open_et": "2025-10-26T18:00:00-04:00",
       "close_et": "2025-10-27T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-26T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-27->2025-10-28",
       "open_et": "2025-10-27T18:00:00-04:00",
       "close_et": "2025-10-28T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-27T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-28->2025-10-29",
       "open_et": "2025-10-28T18:00:00-04:00",
       "close_et": "2025-10-29T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-28T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-29->2025-10-30",
       "open_et": "2025-10-29T18:00:00-04:00",
       "close_et": "2025-10-30T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-29T18:00:00-04:00"
     },
     {
       "globex_day": "2025-10-30->2025-10-31",
       "open_et": "2025-10-30T18:00:00-04:00",
       "close_et": "2025-10-31T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-10-30T18:00:00-04:00"
     },
     {
@@ -1630,126 +1604,126 @@
       "globex_day": "2025-11-02->2025-11-03",
       "open_et": "2025-11-02T18:00:00-05:00",
       "close_et": "2025-11-03T17:00:00-05:00",
-      "n_source_minutes": 961,
+      "n_source_minutes": 1020,
       "first_source": "2025-11-03T00:00:00-05:00"
     },
     {
       "globex_day": "2025-11-03->2025-11-04",
       "open_et": "2025-11-03T18:00:00-05:00",
       "close_et": "2025-11-04T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-03T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-04->2025-11-05",
       "open_et": "2025-11-04T18:00:00-05:00",
       "close_et": "2025-11-05T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-04T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-05->2025-11-06",
       "open_et": "2025-11-05T18:00:00-05:00",
       "close_et": "2025-11-06T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-05T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-06->2025-11-07",
       "open_et": "2025-11-06T18:00:00-05:00",
       "close_et": "2025-11-07T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-06T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-09->2025-11-10",
       "open_et": "2025-11-09T18:00:00-05:00",
       "close_et": "2025-11-10T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-09T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-10->2025-11-11",
       "open_et": "2025-11-10T18:00:00-05:00",
       "close_et": "2025-11-11T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-10T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-11->2025-11-12",
       "open_et": "2025-11-11T18:00:00-05:00",
       "close_et": "2025-11-12T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-11T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-12->2025-11-13",
       "open_et": "2025-11-12T18:00:00-05:00",
       "close_et": "2025-11-13T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-12T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-13->2025-11-14",
       "open_et": "2025-11-13T18:00:00-05:00",
       "close_et": "2025-11-14T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-13T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-16->2025-11-17",
       "open_et": "2025-11-16T18:00:00-05:00",
       "close_et": "2025-11-17T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-16T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-17->2025-11-18",
       "open_et": "2025-11-17T18:00:00-05:00",
       "close_et": "2025-11-18T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-17T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-18->2025-11-19",
       "open_et": "2025-11-18T18:00:00-05:00",
       "close_et": "2025-11-19T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-18T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-19->2025-11-20",
       "open_et": "2025-11-19T18:00:00-05:00",
       "close_et": "2025-11-20T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-19T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-20->2025-11-21",
       "open_et": "2025-11-20T18:00:00-05:00",
       "close_et": "2025-11-21T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-20T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-23->2025-11-24",
       "open_et": "2025-11-23T18:00:00-05:00",
       "close_et": "2025-11-24T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-23T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-24->2025-11-25",
       "open_et": "2025-11-24T18:00:00-05:00",
       "close_et": "2025-11-25T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-24T18:00:00-05:00"
     },
     {
       "globex_day": "2025-11-25->2025-11-26",
       "open_et": "2025-11-25T18:00:00-05:00",
       "close_et": "2025-11-26T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-25T18:00:00-05:00"
     },
     {
@@ -1763,126 +1737,133 @@
       "globex_day": "2025-11-27->2025-11-28",
       "open_et": "2025-11-27T18:00:00-05:00",
       "close_et": "2025-11-28T17:00:00-05:00",
-      "n_source_minutes": 508,
+      "n_source_minutes": 223,
       "first_source": "2025-11-27T18:00:00-05:00"
+    },
+    {
+      "globex_day": "2025-11-27->2025-11-28",
+      "open_et": "2025-11-27T18:00:00-05:00",
+      "close_et": "2025-11-28T17:00:00-05:00",
+      "n_source_minutes": 285,
+      "first_source": "2025-11-28T08:30:00-05:00"
     },
     {
       "globex_day": "2025-11-30->2025-12-01",
       "open_et": "2025-11-30T18:00:00-05:00",
       "close_et": "2025-12-01T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-11-30T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-01->2025-12-02",
       "open_et": "2025-12-01T18:00:00-05:00",
       "close_et": "2025-12-02T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-01T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-02->2025-12-03",
       "open_et": "2025-12-02T18:00:00-05:00",
       "close_et": "2025-12-03T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-02T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-03->2025-12-04",
       "open_et": "2025-12-03T18:00:00-05:00",
       "close_et": "2025-12-04T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-03T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-04->2025-12-05",
       "open_et": "2025-12-04T18:00:00-05:00",
       "close_et": "2025-12-05T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-04T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-07->2025-12-08",
       "open_et": "2025-12-07T18:00:00-05:00",
       "close_et": "2025-12-08T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-07T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-08->2025-12-09",
       "open_et": "2025-12-08T18:00:00-05:00",
       "close_et": "2025-12-09T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-08T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-09->2025-12-10",
       "open_et": "2025-12-09T18:00:00-05:00",
       "close_et": "2025-12-10T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-09T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-10->2025-12-11",
       "open_et": "2025-12-10T18:00:00-05:00",
       "close_et": "2025-12-11T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-10T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-11->2025-12-12",
       "open_et": "2025-12-11T18:00:00-05:00",
       "close_et": "2025-12-12T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-11T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-14->2025-12-15",
       "open_et": "2025-12-14T18:00:00-05:00",
       "close_et": "2025-12-15T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-14T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-15->2025-12-16",
       "open_et": "2025-12-15T18:00:00-05:00",
       "close_et": "2025-12-16T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-15T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-16->2025-12-17",
       "open_et": "2025-12-16T18:00:00-05:00",
       "close_et": "2025-12-17T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-16T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-17->2025-12-18",
       "open_et": "2025-12-17T18:00:00-05:00",
       "close_et": "2025-12-18T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-17T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-18->2025-12-19",
       "open_et": "2025-12-18T18:00:00-05:00",
       "close_et": "2025-12-19T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-18T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-21->2025-12-22",
       "open_et": "2025-12-21T18:00:00-05:00",
       "close_et": "2025-12-22T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-21T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-22->2025-12-23",
       "open_et": "2025-12-22T18:00:00-05:00",
       "close_et": "2025-12-23T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-22T18:00:00-05:00"
     },
     {
@@ -1896,105 +1877,105 @@
       "globex_day": "2025-12-25->2025-12-26",
       "open_et": "2025-12-25T18:00:00-05:00",
       "close_et": "2025-12-26T17:00:00-05:00",
-      "n_source_minutes": 1318,
+      "n_source_minutes": 1377,
       "first_source": "2025-12-25T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-28->2025-12-29",
       "open_et": "2025-12-28T18:00:00-05:00",
       "close_et": "2025-12-29T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-28T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-29->2025-12-30",
       "open_et": "2025-12-29T18:00:00-05:00",
       "close_et": "2025-12-30T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-29T18:00:00-05:00"
     },
     {
       "globex_day": "2025-12-30->2025-12-31",
       "open_et": "2025-12-30T18:00:00-05:00",
       "close_et": "2025-12-31T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2025-12-30T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-01->2026-01-02",
       "open_et": "2026-01-01T18:00:00-05:00",
       "close_et": "2026-01-02T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-01T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-04->2026-01-05",
       "open_et": "2026-01-04T18:00:00-05:00",
       "close_et": "2026-01-05T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-04T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-05->2026-01-06",
       "open_et": "2026-01-05T18:00:00-05:00",
       "close_et": "2026-01-06T17:00:00-05:00",
-      "n_source_minutes": 1320,
+      "n_source_minutes": 1379,
       "first_source": "2026-01-05T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-06->2026-01-07",
       "open_et": "2026-01-06T18:00:00-05:00",
       "close_et": "2026-01-07T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-06T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-07->2026-01-08",
       "open_et": "2026-01-07T18:00:00-05:00",
       "close_et": "2026-01-08T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-07T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-08->2026-01-09",
       "open_et": "2026-01-08T18:00:00-05:00",
       "close_et": "2026-01-09T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-08T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-11->2026-01-12",
       "open_et": "2026-01-11T18:00:00-05:00",
       "close_et": "2026-01-12T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-11T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-12->2026-01-13",
       "open_et": "2026-01-12T18:00:00-05:00",
       "close_et": "2026-01-13T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-12T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-13->2026-01-14",
       "open_et": "2026-01-13T18:00:00-05:00",
       "close_et": "2026-01-14T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-13T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-14->2026-01-15",
       "open_et": "2026-01-14T18:00:00-05:00",
       "close_et": "2026-01-15T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-14T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-15->2026-01-16",
       "open_et": "2026-01-15T18:00:00-05:00",
       "close_et": "2026-01-16T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-15T18:00:00-05:00"
     },
     {
@@ -2008,133 +1989,133 @@
       "globex_day": "2026-01-19->2026-01-20",
       "open_et": "2026-01-19T18:00:00-05:00",
       "close_et": "2026-01-20T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-19T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-20->2026-01-21",
       "open_et": "2026-01-20T18:00:00-05:00",
       "close_et": "2026-01-21T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-20T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-21->2026-01-22",
       "open_et": "2026-01-21T18:00:00-05:00",
       "close_et": "2026-01-22T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-21T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-22->2026-01-23",
       "open_et": "2026-01-22T18:00:00-05:00",
       "close_et": "2026-01-23T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-22T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-25->2026-01-26",
       "open_et": "2026-01-25T18:00:00-05:00",
       "close_et": "2026-01-26T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-25T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-26->2026-01-27",
       "open_et": "2026-01-26T18:00:00-05:00",
       "close_et": "2026-01-27T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-26T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-27->2026-01-28",
       "open_et": "2026-01-27T18:00:00-05:00",
       "close_et": "2026-01-28T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-27T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-28->2026-01-29",
       "open_et": "2026-01-28T18:00:00-05:00",
       "close_et": "2026-01-29T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-28T18:00:00-05:00"
     },
     {
       "globex_day": "2026-01-29->2026-01-30",
       "open_et": "2026-01-29T18:00:00-05:00",
       "close_et": "2026-01-30T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-01-29T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-01->2026-02-02",
       "open_et": "2026-02-01T18:00:00-05:00",
       "close_et": "2026-02-02T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-01T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-02->2026-02-03",
       "open_et": "2026-02-02T18:00:00-05:00",
       "close_et": "2026-02-03T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-02T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-03->2026-02-04",
       "open_et": "2026-02-03T18:00:00-05:00",
       "close_et": "2026-02-04T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-03T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-04->2026-02-05",
       "open_et": "2026-02-04T18:00:00-05:00",
       "close_et": "2026-02-05T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-04T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-05->2026-02-06",
       "open_et": "2026-02-05T18:00:00-05:00",
       "close_et": "2026-02-06T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-05T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-08->2026-02-09",
       "open_et": "2026-02-08T18:00:00-05:00",
       "close_et": "2026-02-09T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-08T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-09->2026-02-10",
       "open_et": "2026-02-09T18:00:00-05:00",
       "close_et": "2026-02-10T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-09T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-10->2026-02-11",
       "open_et": "2026-02-10T18:00:00-05:00",
       "close_et": "2026-02-11T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-10T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-11->2026-02-12",
       "open_et": "2026-02-11T18:00:00-05:00",
       "close_et": "2026-02-12T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-11T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-12->2026-02-13",
       "open_et": "2026-02-12T18:00:00-05:00",
       "close_et": "2026-02-13T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-12T18:00:00-05:00"
     },
     {
@@ -2148,231 +2129,231 @@
       "globex_day": "2026-02-16->2026-02-17",
       "open_et": "2026-02-16T18:00:00-05:00",
       "close_et": "2026-02-17T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-16T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-17->2026-02-18",
       "open_et": "2026-02-17T18:00:00-05:00",
       "close_et": "2026-02-18T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-17T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-18->2026-02-19",
       "open_et": "2026-02-18T18:00:00-05:00",
       "close_et": "2026-02-19T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-18T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-19->2026-02-20",
       "open_et": "2026-02-19T18:00:00-05:00",
       "close_et": "2026-02-20T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-19T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-22->2026-02-23",
       "open_et": "2026-02-22T18:00:00-05:00",
       "close_et": "2026-02-23T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-22T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-23->2026-02-24",
       "open_et": "2026-02-23T18:00:00-05:00",
       "close_et": "2026-02-24T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-23T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-24->2026-02-25",
       "open_et": "2026-02-24T18:00:00-05:00",
       "close_et": "2026-02-25T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-24T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-25->2026-02-26",
       "open_et": "2026-02-25T18:00:00-05:00",
       "close_et": "2026-02-26T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-25T18:00:00-05:00"
     },
     {
       "globex_day": "2026-02-26->2026-02-27",
       "open_et": "2026-02-26T18:00:00-05:00",
       "close_et": "2026-02-27T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-02-26T18:00:00-05:00"
     },
     {
       "globex_day": "2026-03-01->2026-03-02",
       "open_et": "2026-03-01T18:00:00-05:00",
       "close_et": "2026-03-02T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-01T18:00:00-05:00"
     },
     {
       "globex_day": "2026-03-02->2026-03-03",
       "open_et": "2026-03-02T18:00:00-05:00",
       "close_et": "2026-03-03T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-02T18:00:00-05:00"
     },
     {
       "globex_day": "2026-03-03->2026-03-04",
       "open_et": "2026-03-03T18:00:00-05:00",
       "close_et": "2026-03-04T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-03T18:00:00-05:00"
     },
     {
       "globex_day": "2026-03-04->2026-03-05",
       "open_et": "2026-03-04T18:00:00-05:00",
       "close_et": "2026-03-05T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-04T18:00:00-05:00"
     },
     {
       "globex_day": "2026-03-05->2026-03-06",
       "open_et": "2026-03-05T18:00:00-05:00",
       "close_et": "2026-03-06T17:00:00-05:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-05T18:00:00-05:00"
     },
     {
       "globex_day": "2026-03-08->2026-03-09",
       "open_et": "2026-03-08T18:00:00-04:00",
       "close_et": "2026-03-09T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-08T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-09->2026-03-10",
       "open_et": "2026-03-09T18:00:00-04:00",
       "close_et": "2026-03-10T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-09T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-10->2026-03-11",
       "open_et": "2026-03-10T18:00:00-04:00",
       "close_et": "2026-03-11T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-10T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-11->2026-03-12",
       "open_et": "2026-03-11T18:00:00-04:00",
       "close_et": "2026-03-12T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-11T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-12->2026-03-13",
       "open_et": "2026-03-12T18:00:00-04:00",
       "close_et": "2026-03-13T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-12T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-15->2026-03-16",
       "open_et": "2026-03-15T18:00:00-04:00",
       "close_et": "2026-03-16T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1379,
       "first_source": "2026-03-15T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-16->2026-03-17",
       "open_et": "2026-03-16T18:00:00-04:00",
       "close_et": "2026-03-17T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-16T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-17->2026-03-18",
       "open_et": "2026-03-17T18:00:00-04:00",
       "close_et": "2026-03-18T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-17T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-18->2026-03-19",
       "open_et": "2026-03-18T18:00:00-04:00",
       "close_et": "2026-03-19T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-18T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-19->2026-03-20",
       "open_et": "2026-03-19T18:00:00-04:00",
       "close_et": "2026-03-20T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-19T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-22->2026-03-23",
       "open_et": "2026-03-22T18:00:00-04:00",
       "close_et": "2026-03-23T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-22T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-23->2026-03-24",
       "open_et": "2026-03-23T18:00:00-04:00",
       "close_et": "2026-03-24T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-23T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-24->2026-03-25",
       "open_et": "2026-03-24T18:00:00-04:00",
       "close_et": "2026-03-25T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-24T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-25->2026-03-26",
       "open_et": "2026-03-25T18:00:00-04:00",
       "close_et": "2026-03-26T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-25T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-26->2026-03-27",
       "open_et": "2026-03-26T18:00:00-04:00",
       "close_et": "2026-03-27T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-26T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-29->2026-03-30",
       "open_et": "2026-03-29T18:00:00-04:00",
       "close_et": "2026-03-30T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-29T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-30->2026-03-31",
       "open_et": "2026-03-30T18:00:00-04:00",
       "close_et": "2026-03-31T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-30T18:00:00-04:00"
     },
     {
       "globex_day": "2026-03-31->2026-04-01",
       "open_et": "2026-03-31T18:00:00-04:00",
       "close_et": "2026-04-01T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-03-31T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-01->2026-04-02",
       "open_et": "2026-04-01T18:00:00-04:00",
       "close_et": "2026-04-02T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-01T18:00:00-04:00"
     },
     {
@@ -2386,245 +2367,245 @@
       "globex_day": "2026-04-05->2026-04-06",
       "open_et": "2026-04-05T18:00:00-04:00",
       "close_et": "2026-04-06T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-05T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-06->2026-04-07",
       "open_et": "2026-04-06T18:00:00-04:00",
       "close_et": "2026-04-07T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-06T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-07->2026-04-08",
       "open_et": "2026-04-07T18:00:00-04:00",
       "close_et": "2026-04-08T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-07T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-08->2026-04-09",
       "open_et": "2026-04-08T18:00:00-04:00",
       "close_et": "2026-04-09T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-08T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-09->2026-04-10",
       "open_et": "2026-04-09T18:00:00-04:00",
       "close_et": "2026-04-10T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-09T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-12->2026-04-13",
       "open_et": "2026-04-12T18:00:00-04:00",
       "close_et": "2026-04-13T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-12T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-13->2026-04-14",
       "open_et": "2026-04-13T18:00:00-04:00",
       "close_et": "2026-04-14T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-13T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-14->2026-04-15",
       "open_et": "2026-04-14T18:00:00-04:00",
       "close_et": "2026-04-15T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-14T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-15->2026-04-16",
       "open_et": "2026-04-15T18:00:00-04:00",
       "close_et": "2026-04-16T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-15T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-16->2026-04-17",
       "open_et": "2026-04-16T18:00:00-04:00",
       "close_et": "2026-04-17T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-16T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-19->2026-04-20",
       "open_et": "2026-04-19T18:00:00-04:00",
       "close_et": "2026-04-20T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-19T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-20->2026-04-21",
       "open_et": "2026-04-20T18:00:00-04:00",
       "close_et": "2026-04-21T17:00:00-04:00",
-      "n_source_minutes": 1320,
+      "n_source_minutes": 1379,
       "first_source": "2026-04-20T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-21->2026-04-22",
       "open_et": "2026-04-21T18:00:00-04:00",
       "close_et": "2026-04-22T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-21T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-22->2026-04-23",
       "open_et": "2026-04-22T18:00:00-04:00",
       "close_et": "2026-04-23T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-22T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-23->2026-04-24",
       "open_et": "2026-04-23T18:00:00-04:00",
       "close_et": "2026-04-24T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-23T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-26->2026-04-27",
       "open_et": "2026-04-26T18:00:00-04:00",
       "close_et": "2026-04-27T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-26T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-27->2026-04-28",
       "open_et": "2026-04-27T18:00:00-04:00",
       "close_et": "2026-04-28T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-27T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-28->2026-04-29",
       "open_et": "2026-04-28T18:00:00-04:00",
       "close_et": "2026-04-29T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-28T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-29->2026-04-30",
       "open_et": "2026-04-29T18:00:00-04:00",
       "close_et": "2026-04-30T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-29T18:00:00-04:00"
     },
     {
       "globex_day": "2026-04-30->2026-05-01",
       "open_et": "2026-04-30T18:00:00-04:00",
       "close_et": "2026-05-01T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-04-30T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-03->2026-05-04",
       "open_et": "2026-05-03T18:00:00-04:00",
       "close_et": "2026-05-04T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-03T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-04->2026-05-05",
       "open_et": "2026-05-04T18:00:00-04:00",
       "close_et": "2026-05-05T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-04T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-05->2026-05-06",
       "open_et": "2026-05-05T18:00:00-04:00",
       "close_et": "2026-05-06T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-05T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-06->2026-05-07",
       "open_et": "2026-05-06T18:00:00-04:00",
       "close_et": "2026-05-07T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-06T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-07->2026-05-08",
       "open_et": "2026-05-07T18:00:00-04:00",
       "close_et": "2026-05-08T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-07T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-10->2026-05-11",
       "open_et": "2026-05-10T18:00:00-04:00",
       "close_et": "2026-05-11T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-10T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-11->2026-05-12",
       "open_et": "2026-05-11T18:00:00-04:00",
       "close_et": "2026-05-12T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-11T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-12->2026-05-13",
       "open_et": "2026-05-12T18:00:00-04:00",
       "close_et": "2026-05-13T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-12T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-13->2026-05-14",
       "open_et": "2026-05-13T18:00:00-04:00",
       "close_et": "2026-05-14T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-13T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-14->2026-05-15",
       "open_et": "2026-05-14T18:00:00-04:00",
       "close_et": "2026-05-15T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-14T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-17->2026-05-18",
       "open_et": "2026-05-17T18:00:00-04:00",
       "close_et": "2026-05-18T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-17T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-18->2026-05-19",
       "open_et": "2026-05-18T18:00:00-04:00",
       "close_et": "2026-05-19T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-18T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-19->2026-05-20",
       "open_et": "2026-05-19T18:00:00-04:00",
       "close_et": "2026-05-20T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-19T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-20->2026-05-21",
       "open_et": "2026-05-20T18:00:00-04:00",
       "close_et": "2026-05-21T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-20T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-21->2026-05-22",
       "open_et": "2026-05-21T18:00:00-04:00",
       "close_et": "2026-05-22T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-21T18:00:00-04:00"
     },
     {
@@ -2638,63 +2619,63 @@
       "globex_day": "2026-05-25->2026-05-26",
       "open_et": "2026-05-25T18:00:00-04:00",
       "close_et": "2026-05-26T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-25T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-26->2026-05-27",
       "open_et": "2026-05-26T18:00:00-04:00",
       "close_et": "2026-05-27T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-26T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-27->2026-05-28",
       "open_et": "2026-05-27T18:00:00-04:00",
       "close_et": "2026-05-28T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-27T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-28->2026-05-29",
       "open_et": "2026-05-28T18:00:00-04:00",
       "close_et": "2026-05-29T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-28T18:00:00-04:00"
     },
     {
       "globex_day": "2026-05-31->2026-06-01",
       "open_et": "2026-05-31T18:00:00-04:00",
       "close_et": "2026-06-01T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-05-31T18:00:00-04:00"
     },
     {
       "globex_day": "2026-06-01->2026-06-02",
       "open_et": "2026-06-01T18:00:00-04:00",
       "close_et": "2026-06-02T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-06-01T18:00:00-04:00"
     },
     {
       "globex_day": "2026-06-02->2026-06-03",
       "open_et": "2026-06-02T18:00:00-04:00",
       "close_et": "2026-06-03T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-06-02T18:00:00-04:00"
     },
     {
       "globex_day": "2026-06-03->2026-06-04",
       "open_et": "2026-06-03T18:00:00-04:00",
       "close_et": "2026-06-04T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-06-03T18:00:00-04:00"
     },
     {
       "globex_day": "2026-06-04->2026-06-05",
       "open_et": "2026-06-04T18:00:00-04:00",
       "close_et": "2026-06-05T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-06-04T18:00:00-04:00"
     },
     {
@@ -2708,35 +2689,35 @@
       "globex_day": "2026-07-05->2026-07-06",
       "open_et": "2026-07-05T18:00:00-04:00",
       "close_et": "2026-07-06T17:00:00-04:00",
-      "n_source_minutes": 1201,
+      "n_source_minutes": 1260,
       "first_source": "2026-07-05T20:00:00-04:00"
     },
     {
       "globex_day": "2026-07-06->2026-07-07",
       "open_et": "2026-07-06T18:00:00-04:00",
       "close_et": "2026-07-07T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-07-06T18:00:00-04:00"
     },
     {
       "globex_day": "2026-07-07->2026-07-08",
       "open_et": "2026-07-07T18:00:00-04:00",
       "close_et": "2026-07-08T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-07-07T18:00:00-04:00"
     },
     {
       "globex_day": "2026-07-08->2026-07-09",
       "open_et": "2026-07-08T18:00:00-04:00",
       "close_et": "2026-07-09T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-07-08T18:00:00-04:00"
     },
     {
       "globex_day": "2026-07-09->2026-07-10",
       "open_et": "2026-07-09T18:00:00-04:00",
       "close_et": "2026-07-10T17:00:00-04:00",
-      "n_source_minutes": 1321,
+      "n_source_minutes": 1380,
       "first_source": "2026-07-09T18:00:00-04:00"
     },
     {
@@ -2745,6 +2726,239 @@
       "close_et": "2026-07-13T17:00:00-04:00",
       "n_source_minutes": 120,
       "first_source": "2026-07-12T18:00:00-04:00"
+    }
+  ],
+  "trailing_validity_summary": [
+    {
+      "tf": "1m",
+      "horizon_N": 10,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 6541,
+      "null_count": 0,
+      "valid_count": 6541,
+      "first_valid_july_availability_et": "2026-07-06T04:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": ""
+    },
+    {
+      "tf": "1m",
+      "horizon_N": 20,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 6541,
+      "null_count": 0,
+      "valid_count": 6541,
+      "first_valid_july_availability_et": "2026-07-06T04:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": ""
+    },
+    {
+      "tf": "1m",
+      "horizon_N": 40,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 6541,
+      "null_count": 0,
+      "valid_count": 6541,
+      "first_valid_july_availability_et": "2026-07-06T04:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": ""
+    },
+    {
+      "tf": "5m",
+      "horizon_N": 10,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 1309,
+      "null_count": 0,
+      "valid_count": 1309,
+      "first_valid_july_availability_et": "2026-07-06T04:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": ""
+    },
+    {
+      "tf": "5m",
+      "horizon_N": 20,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 1309,
+      "null_count": 0,
+      "valid_count": 1309,
+      "first_valid_july_availability_et": "2026-07-06T04:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": ""
+    },
+    {
+      "tf": "5m",
+      "horizon_N": 40,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 1309,
+      "null_count": 0,
+      "valid_count": 1309,
+      "first_valid_july_availability_et": "2026-07-06T04:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": ""
+    },
+    {
+      "tf": "15m",
+      "horizon_N": 10,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 437,
+      "null_count": 0,
+      "valid_count": 437,
+      "first_valid_july_availability_et": "2026-07-06T04:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": ""
+    },
+    {
+      "tf": "15m",
+      "horizon_N": 20,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 437,
+      "null_count": 5,
+      "valid_count": 432,
+      "first_valid_july_availability_et": "2026-07-06T05:15:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "15m",
+      "horizon_N": 40,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 437,
+      "null_count": 25,
+      "valid_count": 412,
+      "first_valid_july_availability_et": "2026-07-06T10:15:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "30m",
+      "horizon_N": 10,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 219,
+      "null_count": 3,
+      "valid_count": 216,
+      "first_valid_july_availability_et": "2026-07-06T05:30:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "30m",
+      "horizon_N": 20,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 219,
+      "null_count": 13,
+      "valid_count": 206,
+      "first_valid_july_availability_et": "2026-07-06T10:30:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "30m",
+      "horizon_N": 40,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 219,
+      "null_count": 33,
+      "valid_count": 186,
+      "first_valid_july_availability_et": "2026-07-06T20:30:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "1h",
+      "horizon_N": 10,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 110,
+      "null_count": 7,
+      "valid_count": 103,
+      "first_valid_july_availability_et": "2026-07-06T11:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "1h",
+      "horizon_N": 20,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 110,
+      "null_count": 17,
+      "valid_count": 93,
+      "first_valid_july_availability_et": "2026-07-06T21:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "1h",
+      "horizon_N": 40,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 110,
+      "null_count": 37,
+      "valid_count": 73,
+      "first_valid_july_availability_et": "2026-07-07T18:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "4h",
+      "horizon_N": 10,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 30,
+      "null_count": 11,
+      "valid_count": 19,
+      "first_valid_july_availability_et": "2026-07-08T00:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "4h",
+      "horizon_N": 20,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 30,
+      "null_count": 23,
+      "valid_count": 7,
+      "first_valid_july_availability_et": "2026-07-10T00:00:00.000Z",
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "4h",
+      "horizon_N": 40,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 30,
+      "null_count": 30,
+      "valid_count": 0,
+      "first_valid_july_availability_et": null,
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "daily",
+      "horizon_N": 10,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 5,
+      "null_count": 5,
+      "valid_count": 0,
+      "first_valid_july_availability_et": null,
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "daily",
+      "horizon_N": 20,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 5,
+      "null_count": 5,
+      "valid_count": 0,
+      "first_valid_july_availability_et": null,
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
+    },
+    {
+      "tf": "daily",
+      "horizon_N": 40,
+      "param_version": "phase1-v1.0.0",
+      "discovery_candles": 5,
+      "null_count": 5,
+      "valid_count": 0,
+      "first_valid_july_availability_et": null,
+      "discovery_segment_id": 25,
+      "exclusion_reason": "insufficient_same_segment_complete_predecessors"
     }
   ]
 }

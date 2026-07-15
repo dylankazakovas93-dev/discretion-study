@@ -23,6 +23,7 @@
   "midpoint_touch_et":"2026-07-09T14:00:00.000Z",
   "full_fill_et":"2026-07-09T14:00:00.000Z",
   "invalidation_et":"2026-07-09T14:00:00.000Z",
+  "segment_id":25,
   "C_index":8438
  },
  {
@@ -49,6 +50,7 @@
   "midpoint_touch_et":"2026-07-09T14:00:00.000Z",
   "full_fill_et":"2026-07-09T14:00:00.000Z",
   "invalidation_et":"2026-07-09T14:00:00.000Z",
+  "segment_id":25,
   "C_index":8440
  },
  {
@@ -75,6 +77,7 @@
   "midpoint_touch_et":"2026-07-07T08:00:00.000Z",
   "full_fill_et":"2026-07-07T08:00:00.000Z",
   "invalidation_et":"2026-07-07T08:00:00.000Z",
+  "segment_id":25,
   "C_index":8443
  },
  {
@@ -101,6 +104,7 @@
   "midpoint_touch_et":"2026-07-07T18:00:00.000Z",
   "full_fill_et":"2026-07-09T07:00:00.000Z",
   "invalidation_et":"2026-07-09T07:00:00.000Z",
+  "segment_id":25,
   "C_index":8453
  },
  {
@@ -127,6 +131,7 @@
   "midpoint_touch_et":"2026-07-07T17:00:00.000Z",
   "full_fill_et":"2026-07-07T17:00:00.000Z",
   "invalidation_et":"2026-07-07T17:00:00.000Z",
+  "segment_id":25,
   "C_index":8454
  },
  {
@@ -153,6 +158,7 @@
   "midpoint_touch_et":"2026-07-07T19:00:00.000Z",
   "full_fill_et":"2026-07-07T19:00:00.000Z",
   "invalidation_et":"2026-07-07T19:00:00.000Z",
+  "segment_id":25,
   "C_index":8456
  },
  {
@@ -179,6 +185,7 @@
   "midpoint_touch_et":"2026-07-08T01:00:00.000Z",
   "full_fill_et":"2026-07-08T01:00:00.000Z",
   "invalidation_et":"2026-07-08T01:00:00.000Z",
+  "segment_id":25,
   "C_index":8458
  },
  {
@@ -205,6 +212,7 @@
   "midpoint_touch_et":"2026-07-08T03:00:00.000Z",
   "full_fill_et":"2026-07-08T03:00:00.000Z",
   "invalidation_et":"2026-07-08T03:00:00.000Z",
+  "segment_id":25,
   "C_index":8463
  },
  {
@@ -231,6 +239,7 @@
   "midpoint_touch_et":"2026-07-08T18:00:00.000Z",
   "full_fill_et":"2026-07-08T20:00:00.000Z",
   "invalidation_et":"2026-07-08T20:00:00.000Z",
+  "segment_id":25,
   "C_index":8467
  },
  {
@@ -257,6 +266,7 @@
   "midpoint_touch_et":"2026-07-08T08:00:00.000Z",
   "full_fill_et":"2026-07-08T08:00:00.000Z",
   "invalidation_et":"2026-07-08T08:00:00.000Z",
+  "segment_id":25,
   "C_index":8468
  },
  {
@@ -283,6 +293,7 @@
   "midpoint_touch_et":"2026-07-08T13:00:00.000Z",
   "full_fill_et":"2026-07-08T14:00:00.000Z",
   "invalidation_et":"2026-07-08T14:00:00.000Z",
+  "segment_id":25,
   "C_index":8471
  },
  {
@@ -309,6 +320,7 @@
   "midpoint_touch_et":"2026-07-08T16:00:00.000Z",
   "full_fill_et":"2026-07-08T16:00:00.000Z",
   "invalidation_et":"2026-07-08T16:00:00.000Z",
+  "segment_id":25,
   "C_index":8475
  },
  {
@@ -335,6 +347,7 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
+  "segment_id":25,
   "C_index":8479
  },
  {
@@ -361,6 +374,7 @@
   "midpoint_touch_et":"2026-07-09T02:00:00.000Z",
   "full_fill_et":"2026-07-09T02:00:00.000Z",
   "invalidation_et":"2026-07-09T02:00:00.000Z",
+  "segment_id":25,
   "C_index":8485
  },
  {
@@ -387,6 +401,7 @@
   "midpoint_touch_et":"2026-07-09T11:00:00.000Z",
   "full_fill_et":null,
   "invalidation_et":null,
+  "segment_id":25,
   "C_index":8491
  },
  {
@@ -413,6 +428,7 @@
   "midpoint_touch_et":"2026-07-09T14:00:00.000Z",
   "full_fill_et":"2026-07-09T15:00:00.000Z",
   "invalidation_et":"2026-07-09T15:00:00.000Z",
+  "segment_id":25,
   "C_index":8497
  },
  {
@@ -439,6 +455,7 @@
   "midpoint_touch_et":"2026-07-09T20:00:00.000Z",
   "full_fill_et":"2026-07-09T20:00:00.000Z",
   "invalidation_et":"2026-07-09T20:00:00.000Z",
+  "segment_id":25,
   "C_index":8503
  },
  {
@@ -465,6 +482,7 @@
   "midpoint_touch_et":"2026-07-10T14:00:00.000Z",
   "full_fill_et":"2026-07-10T14:00:00.000Z",
   "invalidation_et":"2026-07-10T14:00:00.000Z",
+  "segment_id":25,
   "C_index":8513
  },
  {
@@ -491,6 +509,7 @@
   "midpoint_touch_et":"2026-07-10T12:00:00.000Z",
   "full_fill_et":"2026-07-10T12:00:00.000Z",
   "invalidation_et":"2026-07-10T12:00:00.000Z",
+  "segment_id":25,
   "C_index":8514
  },
  {
@@ -517,6 +536,7 @@
   "midpoint_touch_et":"2026-07-10T11:00:00.000Z",
   "full_fill_et":"2026-07-10T11:00:00.000Z",
   "invalidation_et":"2026-07-10T11:00:00.000Z",
+  "segment_id":25,
   "C_index":8515
  },
  {
@@ -543,6 +563,7 @@
   "midpoint_touch_et":"2026-07-10T13:00:00.000Z",
   "full_fill_et":"2026-07-10T13:00:00.000Z",
   "invalidation_et":"2026-07-10T13:00:00.000Z",
+  "segment_id":25,
   "C_index":8518
  },
  {
@@ -569,6 +590,7 @@
   "midpoint_touch_et":null,
   "full_fill_et":"2026-07-12T23:00:00.000Z",
   "invalidation_et":"2026-07-12T23:00:00.000Z",
+  "segment_id":25,
   "C_index":8525
  }
 ]

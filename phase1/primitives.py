@@ -70,6 +70,8 @@ class Candles:
     l: np.ndarray
     c: np.ndarray
     v: np.ndarray
+    segment_id: np.ndarray   # continuity-segment id per candle
+    complete: np.ndarray     # bool: full interval, single segment (usable as history)
 
     @property
     def n(self):
@@ -77,7 +79,9 @@ class Candles:
 
 
 def make_candles(ledger: pd.DataFrame, tf: str) -> Candles:
-    d = ledger.sort_values("bucket_open_et").reset_index(drop=True)
+    d = ledger.sort_values(["bucket_open_et", "segment_id"]).reset_index(drop=True)
+    comp = d["complete"]
+    comp = comp.fillna(False) if comp.dtype == object else comp
     return Candles(
         tf=tf,
         t_open=d["bucket_open_et"].to_numpy(),
@@ -89,6 +93,8 @@ def make_candles(ledger: pd.DataFrame, tf: str) -> Candles:
         l=d["low"].to_numpy(float),
         c=d["close"].to_numpy(float),
         v=d["volume"].to_numpy(float),
+        segment_id=d["segment_id"].to_numpy(int),
+        complete=d["complete"].astype(bool).to_numpy(),
     )
 
 
@@ -101,6 +107,68 @@ def pct_rank(x: float, hist: np.ndarray) -> float:
     return 100.0 * (less + 0.5 * eq) / len(hist)
 
 
+def _n_same_seg_complete_preds(seg, complete, i, N):
+    cnt, j, si = 0, i - 1, seg[i]
+    while j >= 0 and cnt < N:
+        if seg[j] != si:
+            break
+        if complete[j]:
+            cnt += 1
+        j -= 1
+    return cnt
+
+
+def validity_table(cd: "Candles") -> list:
+    """Per-horizon feature validity for the discovery week: how many discovery
+    candles lack N same-segment complete predecessors, and the first July
+    availability at which the trailing-N feature becomes valid."""
+    d0, d1 = _disc_bounds(cd.t_avail_utc)
+    total = d1 - d0
+    rows = []
+    for N in (10, 20, 40):
+        nnull = 0
+        first_valid = None
+        for i in range(d0, d1):
+            ok = _n_same_seg_complete_preds(cd.segment_id, cd.complete, i, N) >= N
+            if ok and first_valid is None:
+                first_valid = cd.t_avail[i]
+            if not ok:
+                nnull += 1
+        rows.append({
+            "tf": cd.tf, "horizon_N": N, "param_version": PARAM_VERSION,
+            "discovery_candles": int(total),
+            "null_count": int(nnull), "valid_count": int(total - nnull),
+            "first_valid_july_availability_et": first_valid,
+            "discovery_segment_id": int(cd.segment_id[d0]) if total else None,
+            "exclusion_reason": ("insufficient_same_segment_complete_predecessors"
+                                 if nnull else ""),
+        })
+    return rows
+
+
+def seg_hist(values: np.ndarray, seg: np.ndarray, complete: np.ndarray,
+             i: int, N: int):
+    """The N most recent COMPLETE predecessors of i that are IN THE SAME
+    continuity segment. Returns None if fewer than N exist (-> null feature).
+
+    The current candle i is excluded. Scanning stops at the segment boundary:
+    warm-up / prior-contract candles never serve as predecessors across a roll
+    or the seam. Incomplete (boundary) candles are skipped, not counted.
+    """
+    out = []
+    j = i - 1
+    si = seg[i]
+    while j >= 0 and len(out) < N:
+        if seg[j] != si:
+            break
+        if complete[j]:
+            out.append(values[j])
+        j -= 1
+    if len(out) < N:
+        return None
+    return np.asarray(out)
+
+
 # ---------------------------------------------------------------------------
 # 1. FAIR VALUE GAP
 # ---------------------------------------------------------------------------
@@ -111,8 +179,11 @@ def detect_fvgs(cd: Candles) -> pd.DataFrame:
     # detect only where candle A is post-seam (discovery-side, contiguous). This
     # includes Jul-5 evening structures that may convert during the week.
     start = max(2, _postseam_first(cd.t_open_utc) + 2)
+    seg = cd.segment_id
     for i in range(start, cd.n):
         A, B, C = i - 2, i - 1, i
+        if not (seg[A] == seg[B] == seg[C]):  # no structure spans a segment/roll
+            continue
         b_lo, b_hi = min(o[B], c[B]), max(o[B], c[B])
         # ---- bullish ----
         if h[A] < l[C] and c[B] > o[B] and b_lo <= h[A] and b_hi >= l[C]:
@@ -166,6 +237,7 @@ def _fvg_record(cd: Candles, direction, A, B, C, lower, upper):
         "midpoint_touch_et": first_mid,
         "full_fill_et": full_fill,
         "invalidation_et": invalid,
+        "segment_id": int(cd.segment_id[C]),
         "C_index": C,
     }
 
@@ -256,24 +328,25 @@ def detect_liquidity(et: pd.DataFrame) -> pd.DataFrame:
 
     # --- per globex day sessions ---
     for gday, g in et.groupby("globex_day", sort=True):
+        seg_g = int(g["segment_id"].iloc[0]) if "segment_id" in g.columns else 0
         # RTH high/low
         rth = g[g["session"] == "rth"]
         if len(rth):
             rth_hi = rth["high"].max(); rth_lo = rth["low"].min()
             rth_avail = rth["ts_close_et"].max()  # available after last RTH minute
             rows.append(scan(rth_hi, "high", rth_avail, "prev_rth_high", "rth_session",
-                             {"session_globex_day": gday}))
+                             {"session_globex_day": gday, "segment_id": seg_g}))
             rows.append(scan(rth_lo, "low", rth_avail, "prev_rth_low", "rth_session",
-                             {"session_globex_day": gday}))
+                             {"session_globex_day": gday, "segment_id": seg_g}))
         # overnight high/low
         on = g[g["session"] == "overnight"]
         if len(on):
             on_hi = on["high"].max(); on_lo = on["low"].min()
             on_avail = on["ts_close_et"].max()
             rows.append(scan(on_hi, "high", on_avail, "overnight_high", "overnight_session",
-                             {"session_globex_day": gday}))
+                             {"session_globex_day": gday, "segment_id": seg_g}))
             rows.append(scan(on_lo, "low", on_avail, "overnight_low", "overnight_session",
-                             {"session_globex_day": gday}))
+                             {"session_globex_day": gday, "segment_id": seg_g}))
         # specific one-minute candles by ET clock (09:00, 09:30, 10:00)
         for hhmm, label in [(9 * 60, "0900"), (9 * 60 + 30, "0930"), (10 * 60, "1000")]:
             bar = g[g["minutes_of_day"] == hhmm]
@@ -284,9 +357,9 @@ def detect_liquidity(et: pd.DataFrame) -> pd.DataFrame:
                 bh = float(bar["high"].iloc[0]); bl = float(bar["low"].iloc[0])
                 bavail = bar["ts_close_et"].iloc[0]
                 rows.append(scan(bh, "high", bavail, f"candle_{label}_high", "1m",
-                                 {"session_globex_day": gday}))
+                                 {"session_globex_day": gday, "segment_id": seg_g}))
                 rows.append(scan(bl, "low", bavail, f"candle_{label}_low", "1m",
-                                 {"session_globex_day": gday}))
+                                 {"session_globex_day": gday, "segment_id": seg_g}))
     rows = [r for r in rows if r is not None]
     df = pd.DataFrame(rows)
     # emit only references available during discovery week
@@ -320,10 +393,9 @@ def detect_rejection_blocks(cd: Candles) -> pd.DataFrame:
                 wick_hist_full = lower_wick
 
             def pctl(N):
-                lo_idx = max(0, i - N)
-                hist = wick_hist_full[lo_idx:i]  # previous N, current excluded
-                if len(hist) < N:
-                    return np.nan  # insufficient history
+                hist = seg_hist(wick_hist_full, cd.segment_id, cd.complete, i, N)
+                if hist is None:
+                    return np.nan  # insufficient same-segment complete history
                 return pct_rank(dwick, hist)
 
             # ---- later state scan ----
@@ -387,6 +459,8 @@ def detect_rejection_blocks(cd: Candles) -> pd.DataFrame:
                 "invalidation_et": invalid_ts,
                 "still_valid_end_of_data": bool(invalid_ts is None),
                 "untested_through_jul10": untested_j10,
+                "segment_id": int(cd.segment_id[i]),
+                "source_complete": bool(cd.complete[i]),
                 "source_index": i,
             })
     df = pd.DataFrame(rows)
@@ -428,9 +502,8 @@ def detect_displacement(cd: Candles, fvgs: pd.DataFrame) -> pd.DataFrame:
                 def med_body_pctile(N):
                     vals = []
                     for k in idx:
-                        lo_idx = max(0, k - N)
-                        hist = body[lo_idx:k]
-                        if len(hist) < N:
+                        hist = seg_hist(body, cd.segment_id, cd.complete, k, N)
+                        if hist is None:
                             return np.nan
                         vals.append(pct_rank(body[k], hist))
                     return float(np.median(vals)) if vals else np.nan
@@ -470,6 +543,7 @@ def detect_displacement(cd: Candles, fvgs: pd.DataFrame) -> pd.DataFrame:
                     "path_efficiency": path_eff,
                     "total_distance": total_distance,
                     "created_fvg": created_fvg,
+                    "segment_id": int(cd.segment_id[end]),
                     "end_index": end,
                 })
     df = pd.DataFrame(rows)

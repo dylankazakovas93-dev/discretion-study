@@ -27,5 +27,7 @@
   "ifvg_daily": 1,
   "rejection_blocks_daily": 10,
   "displacement_daily": 24,
-  "liquidity": 50
+  "liquidity": 50,
+  "roll_decisions": 377,
+  "continuity_segments": 26
 }

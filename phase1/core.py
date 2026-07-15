@@ -45,37 +45,144 @@ def load_raw(csv_path: str) -> pd.DataFrame:
     return df
 
 
-def load_warmup_continuous(csv_path: str) -> tuple[pd.DataFrame, dict]:
-    """Build a continuous front-month series from the warm-up file.
+def _globex_day_series(et_ts: pd.Series) -> pd.Series:
+    """Globex trading-day date (string) for an ET timestamp series."""
+    h = et_ts.dt.hour
+    date = et_ts.dt.normalize()
+    gday = np.where(h >= 18, (date + pd.Timedelta(days=1)).dt.date, date.dt.date)
+    return pd.Series(gday.astype(str), index=et_ts.index)
 
-    Front month is chosen per UTC calendar date as the OUTRIGHT symbol with the
-    greatest volume that day (standard volume-based roll). Calendar spreads are
-    excluded. The series is UNADJUSTED (raw): contract rolls introduce a price
-    step on roll dates. This is acceptable because the warm-up is used ONLY for
-    RELATIVE trailing size percentiles, never for structural continuity across
-    the seam.
+
+def causal_contract_selection(raw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Select the front-month contract per Globex session WITHOUT intra-session
+    look-ahead.
+
+    The contract used for session S is decided from the PREVIOUS completed
+    session S-1's outright volume (frozen at S-1's close, 17:00 ET). The current
+    session never participates in its own decision. If the previous session's
+    winner is not traded in S (expired across a gap/seam), the decision is a
+    disclosed BOOTSTRAP that falls back to S's own dominant outright (this
+    happens only at the data start and immediately after the seam).
+
+    Returns (continuous_1m_rows, roll_decision_ledger).
     """
-    df = load_raw(csv_path)
-    df["date"] = df["ts_event"].str[:10]
-    out = df[~df["symbol"].str.contains("-", na=False)].copy()
-    vol = out.groupby(["date", "symbol"])["volume"].sum().reset_index()
-    front = vol.loc[vol.groupby("date")["volume"].idxmax()][["date", "symbol"]]
-    frontmap = dict(zip(front["date"], front["symbol"]))
-    out["front"] = out["date"].map(frontmap)
-    sel = out[out["symbol"] == out["front"]].copy()
-    fs = front.sort_values("date")
-    rolls, prev = [], None
-    for _, r in fs.iterrows():
-        if r["symbol"] != prev:
-            rolls.append({"date": r["date"], "symbol": r["symbol"]})
-            prev = r["symbol"]
-    info = {
-        "roll_dates": rolls,
-        "warmup_symbols": sorted(front["symbol"].unique().tolist()),
-        "warmup_rows_selected": int(len(sel)),
-        "warmup_utc_range": [str(sel["ts_event"].min()), str(sel["ts_event"].max())],
-    }
-    return sel, info
+    r = raw.copy()
+    ts = pd.to_datetime(r["ts_event"], utc=True, format="ISO8601")
+    r["ts_utc"] = ts
+    r["_et"] = ts.dt.tz_convert(TZ)
+    out = r[~r["symbol"].str.contains("-", na=False)].copy()  # outrights only
+    out["gday"] = _globex_day_series(out["_et"])
+    vol = out.groupby(["gday", "symbol"])["volume"].sum().reset_index()
+    days = sorted(vol["gday"].unique())
+
+    selmap, ledger = {}, []
+    for i, day in enumerate(days):
+        cur = vol[vol.gday == day]
+        cur_comp = {s: int(v) for s, v in zip(cur.symbol, cur.volume)}
+        if i == 0:
+            sel = cur.loc[cur.volume.idxmax(), "symbol"]
+            ev, boot = None, True
+            ev_comp, sel_vol, dec_ts = {}, None, None
+        else:
+            prev_day = days[i - 1]
+            pv = vol[vol.gday == prev_day]
+            ev_comp = {s: int(v) for s, v in zip(pv.symbol, pv.volume)}
+            cand = pv.loc[pv.volume.idxmax(), "symbol"]
+            dec_ts = (pd.Timestamp(day, tz=TZ) - pd.Timedelta(days=1)
+                      + pd.Timedelta(hours=17))  # S-1 close = 17:00 ET, 1h pre-open
+            if cur_comp.get(cand, 0) > 0:
+                sel, boot = cand, False
+                sel_vol = int(pv[pv.symbol == cand].volume.iloc[0])
+            else:  # winner expired / not trading now -> disclosed bootstrap
+                sel, boot = cur.loc[cur.volume.idxmax(), "symbol"], True
+                sel_vol = None
+            ev = prev_day
+        selmap[day] = sel
+        ledger.append({
+            "instrument": "NQ", "param_version": PARAM_VERSION,
+            "session_globex_day": day, "selected_contract": sel,
+            "evidence_session": ev, "is_bootstrap": boot,
+            "decision_timestamp_et": dec_ts,
+            "selected_evidence_volume": sel_vol,
+            "evidence_session_volumes": ev_comp,
+            "current_session_volumes": cur_comp,
+        })
+    out["selected"] = out["gday"].map(selmap)
+    sel_df = out[out["symbol"] == out["selected"]].copy()
+    return sel_df, pd.DataFrame(ledger)
+
+
+def _gap_is_calendar(a: pd.Timestamp, b: pd.Timestamp) -> bool:
+    """True if every missing minute strictly between a and b is non-tradeable
+    (daily maintenance 17:00-18:00 ET, or the weekend Fri 17:00 -> Sun 18:00)."""
+    rng = pd.date_range(a + pd.Timedelta(minutes=1), b - pd.Timedelta(minutes=1),
+                        freq="1min", tz=TZ)
+    if len(rng) == 0:
+        return True
+    mm = rng.hour * 60 + rng.minute
+    dow = rng.dayofweek
+    maint = (mm >= 17 * 60) & (mm < 18 * 60)
+    weekend = ((dow == 4) & (mm >= 17 * 60)) | (dow == 5) | ((dow == 6) & (mm < 18 * 60))
+    return bool((maint | weekend).all())
+
+
+SEGMENT_GAP_MIN_MINUTES = 60.0  # non-calendar gaps <= this are illiquidity, not
+                                # a continuity break (single no-trade minutes etc.)
+
+
+def assign_segments(sel_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Assign continuity-segment ids to the continuous 1m series.
+
+    A new segment begins after (a) a contract roll, (b) the seam, or (c) a
+    substantial unexplained (non-calendar) data gap exceeding
+    SEGMENT_GAP_MIN_MINUTES. Sub-threshold non-calendar gaps are counted as
+    minor illiquidity gaps but do NOT break continuity (OHLCV omits no-trade
+    minutes; treating each as a boundary would shatter normalization).
+    Returns (frame_with_segment_id, segments_ledger).
+    """
+    s = sel_df.sort_values("_et").reset_index(drop=True)
+    et = s["_et"]
+    sel = s["selected"].to_numpy()
+    seg = np.zeros(len(s), dtype=int)
+    minor = np.zeros(len(s), dtype=bool)
+    boundaries = []
+    cur = 0
+    for i in range(1, len(s)):
+        reason = None
+        gap = (et[i] - et[i - 1]).total_seconds() / 60.0
+        roll = sel[i] != sel[i - 1]
+        noncal = gap > 1.5 and not _gap_is_calendar(et[i - 1], et[i])
+        biggap = noncal and gap > SEGMENT_GAP_MIN_MINUTES
+        if roll and biggap:
+            reason = "contract_roll+data_gap(seam)"
+        elif roll:
+            reason = "contract_roll"
+        elif biggap:
+            reason = "data_gap"
+        elif noncal:
+            minor[i] = True
+        if reason is not None:
+            cur += 1
+            boundaries.append({"start_index": i, "reason": reason,
+                               "boundary_et": et[i],
+                               "prev_contract": sel[i - 1], "new_contract": sel[i],
+                               "gap_minutes": gap})
+        seg[i] = cur
+    s["minor_gap_before"] = minor
+    s["segment_id"] = seg
+    # segments ledger
+    rows = []
+    for sid, g in s.groupby("segment_id"):
+        reason = "data_start" if sid == 0 else boundaries[sid - 1]["reason"]
+        rows.append({
+            "segment_id": int(sid), "instrument": "NQ", "param_version": PARAM_VERSION,
+            "contract": g["selected"].iloc[0],
+            "start_et": g["_et"].iloc[0], "end_et": g["_et"].iloc[-1],
+            "n_bars": int(len(g)), "n_globex_sessions": int(g["gday"].nunique()),
+            "n_minor_illiquidity_gaps": int(g["minor_gap_before"].sum()),
+            "boundary_reason": reason,
+        })
+    return s, pd.DataFrame(rows)
 
 
 def select_front_month(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
@@ -294,25 +401,31 @@ def aggregate_tf(min_bars: pd.DataFrame, tf: TF) -> pd.DataFrame:
     Availability timestamp = bucket_close_et (interval end).
     """
     b = min_bars.copy()
+    if "segment_id" not in b.columns:
+        b["segment_id"] = 0
+
     if tf.name == "1m":
-        b["bucket_open_et"] = b["ts_open_et"]
-        b["bucket_close_et"] = b["ts_close_et"]
-        out = b[["bucket_open_et", "bucket_close_et", "open", "high", "low",
-                 "close", "volume"]].copy()
+        out = b[["ts_open_et", "ts_close_et", "open", "high", "low",
+                 "close", "volume", "segment_id"]].copy()
+        out = out.rename(columns={"ts_open_et": "bucket_open_et",
+                                  "ts_close_et": "bucket_close_et"})
         out.insert(0, "tf", tf.name)
         out["n_source_minutes"] = 1
-        out["source_first_ts"] = b["ts_open_et"]
-        out["source_last_ts"] = b["ts_open_et"]
-        out["availability_et"] = b["ts_close_et"]
+        out["source_first_ts"] = b["ts_open_et"].to_numpy()
+        out["source_last_ts"] = b["ts_open_et"].to_numpy()
+        out["availability_et"] = b["ts_close_et"].to_numpy()
         out["complete"] = True
+        out["spans_segment_boundary"] = False
         return out.reset_index(drop=True)
 
     if tf.name == "daily":
-        # A daily candle covers the Globex day 18:00 ET -> 17:00 ET (overnight +
-        # RTH; the 17:00-18:00 maintenance break is the gap BETWEEN days).
-        gb = b[b["session"].isin(["overnight", "rth"])].copy()
+        # A daily candle covers the Globex day 18:00 ET -> 17:00 ET. Include all
+        # tradeable minutes of the session (overnight + RTH + post-RTH to 16:59);
+        # only the 17:00-18:00 maintenance break is excluded. Grouped per
+        # (globex_day, segment_id) so no candle spans a segment boundary.
+        gb = b[b["session"] != "maintenance"].copy()
         gb = gb.sort_values("ts_open_et")
-        agg = (gb.groupby("globex_day", sort=True)
+        agg = (gb.groupby(["globex_day", "segment_id"], sort=True)
                  .agg(open=("open", "first"), high=("high", "max"),
                       low=("low", "min"), close=("close", "last"),
                       volume=("volume", "sum"), n_source_minutes=("open", "size"),
@@ -324,16 +437,22 @@ def aggregate_tf(min_bars: pd.DataFrame, tf: TF) -> pd.DataFrame:
         agg["bucket_close_et"] = day_date + pd.Timedelta(hours=17)
         agg["availability_et"] = agg["bucket_close_et"]
         agg["tf"] = "daily"
-        agg["complete"] = None
+        # complete iff session starts at 18:00 and last tradeable minute is 16:59
+        first_ok = agg["source_first_ts"].dt.strftime("%H:%M") == "18:00"
+        last_ok = agg["source_last_ts"].dt.strftime("%H:%M") == "16:59"
+        # a globex_day appearing in >1 segment means a boundary split it
+        dup = agg["globex_day"].duplicated(keep=False)
+        agg["spans_segment_boundary"] = dup
+        agg["complete"] = first_ok & last_ok & (~dup)
         return agg.reset_index(drop=True)
 
-    # intraday HTF (vectorized)
+    # intraday HTF (vectorized, per (bucket, segment_id))
     midnight = b["ts_open_et"].dt.normalize()
     mins = (b["ts_open_et"] - midnight).dt.total_seconds() / 60.0
     bstart_min = (mins // tf.minutes).astype("int64") * tf.minutes
     b = b.assign(bucket_open_et=midnight + pd.to_timedelta(bstart_min, unit="m"))
     b = b.sort_values("ts_open_et")
-    agg = (b.groupby("bucket_open_et", sort=True)
+    agg = (b.groupby(["bucket_open_et", "segment_id"], sort=True)
              .agg(open=("open", "first"), high=("high", "max"),
                   low=("low", "min"), close=("close", "last"),
                   volume=("volume", "sum"), n_source_minutes=("open", "size"),
@@ -343,7 +462,9 @@ def aggregate_tf(min_bars: pd.DataFrame, tf: TF) -> pd.DataFrame:
     agg["bucket_close_et"] = agg["bucket_open_et"] + pd.Timedelta(minutes=tf.minutes)
     agg["availability_et"] = agg["bucket_close_et"]
     agg["tf"] = tf.name
-    agg["complete"] = agg["n_source_minutes"] == tf.minutes
+    dup = agg["bucket_open_et"].duplicated(keep=False)
+    agg["spans_segment_boundary"] = dup
+    agg["complete"] = (agg["n_source_minutes"] == tf.minutes) & (~dup)
     return agg.reset_index(drop=True)
 
 
@@ -365,51 +486,70 @@ BASE_COLS = ["ts_event", "rtype", "publisher_id", "instrument_id",
 
 def build_combined(discovery_csv: str, warmup_csv: str,
                    discovery_hash_path: str, warmup_hash_path: str):
-    """Discovery (NQU6) spliced onto a continuous front-month warm-up series.
+    """Discovery + warm-up combined with CAUSAL contract selection and explicit
+    continuity segments.
 
-    Returns the combined ET frame plus an extended audit that keeps the
-    discovery-file data-quality report intact and adds warm-up + seam metadata.
+    Returns (et_frame, audit, tf_ledgers, roll_ledger, segments_ledger). The
+    et_frame carries segment_id per bar. HTF construction and trailing
+    normalization respect segment boundaries; the warm-up never serves as an
+    immediate predecessor across the seam.
     """
     raw_d = load_raw(discovery_csv)
-    sel_d, sel_info = select_front_month(raw_d)
-    sel_w, roll_info = load_warmup_continuous(warmup_csv)
+    raw_w = load_raw(warmup_csv)
+    raw = pd.concat([raw_w, raw_d], ignore_index=True)
 
-    comb = pd.concat([sel_w[BASE_COLS], sel_d[BASE_COLS]], ignore_index=True)
-    et = to_et(comb)
+    # causal contract decision (no intra-session look-ahead) + segments
+    sel_df, roll_ledger = causal_contract_selection(raw)
+    seg_df, seg_ledger = assign_segments(sel_df)
+
+    # build the ET minute frame directly from the segmented continuous series
+    et = seg_df.rename(columns={"_et": "ts_open_et"}).copy()
+    et["ts_close_et"] = et["ts_open_et"] + pd.Timedelta(minutes=1)
+    et = et.sort_values("ts_open_et").reset_index(drop=True)
     tags = et_session_tag(et["ts_open_et"])
-    et = pd.concat([et, tags], axis=1)
+    et = pd.concat([et.drop(columns=[c for c in ("globex_day", "session",
+                    "minutes_of_day") if c in et.columns]), tags], axis=1)
 
-    # discovery-only audit (unchanged, authoritative for the study week)
+    # discovery-only data-quality audit (authoritative for the study week)
+    sel_d, sel_info = select_front_month(raw_d)
     et_d = to_et(sel_d)
     et_d = pd.concat([et_d, et_session_tag(et_d["ts_open_et"])], axis=1)
     audit = data_audit(raw_d, et_d, discovery_hash_path)
     audit["instrument_selection"] = sel_info
 
-    # seam: last warm-up bar -> first discovery bar
-    warm_last = et[et["ts_open_et"] < pd.Timestamp("2026-06-30", tz=TZ)]["ts_open_et"].max()
-    disc_first = et[et["ts_open_et"] >= pd.Timestamp("2026-06-30", tz=TZ)]["ts_open_et"].min()
+    # discovery continuity segment = the post-seam NQU6 segment
+    disc_mask = et["ts_open_et"] >= pd.Timestamp("2026-07-05 00:00", tz=TZ)
+    disc_seg = int(et.loc[disc_mask, "segment_id"].min()) if disc_mask.any() else None
+    warm_last = et.loc[et["segment_id"] < disc_seg, "ts_open_et"].max()
+    disc_first = et.loc[et["segment_id"] == disc_seg, "ts_open_et"].min()
+
     audit["warmup"] = {
         "hash_path": warmup_hash_path,
         "file_sha256": sha256_file(warmup_hash_path),
-        "rows_selected_continuous": roll_info["warmup_rows_selected"],
-        "symbols_used": roll_info["warmup_symbols"],
-        "roll_dates": roll_info["roll_dates"],
-        "utc_range": roll_info["warmup_utc_range"],
-        "warmup_globex_sessions": int(et[et["ts_open_et"] < pd.Timestamp("2026-06-30", tz=TZ)]["globex_day"].nunique()),
-        "seam_gap": {
-            "last_warmup_bar_et": str(warm_last),
+        "rows_selected_continuous": int(len(sel_df)),
+        "symbols_used": sorted(seg_ledger["contract"].unique().tolist()),
+        "warmup_globex_sessions": int(seg_df.loc[seg_df["segment_id"] < disc_seg, "gday"].nunique()),
+        "n_segments": int(seg_ledger["segment_id"].max() + 1),
+        "discovery_segment_id": disc_seg,
+        "seam": {
+            "last_pre_discovery_bar_et": str(warm_last),
             "first_discovery_bar_et": str(disc_first),
             "gap_days": float((disc_first - warm_last).total_seconds() / 86400.0),
-            "note": ("Warm-up ends on NQM6; discovery is NQU6. The seam carries "
-                     "both a ~1-month calendar gap and a contract change. Warm-up "
-                     "is therefore used ONLY for relative trailing size "
-                     "percentiles; structural detection is confined to the "
-                     "post-seam discovery series."),
+            "note": ("Warm-up ends on NQM6; discovery is NQU6. The seam is a new "
+                     "continuity segment (contract change + ~28-day gap). Trailing "
+                     "10/20/40 statistics require that many completed candles FROM "
+                     "THE DISCOVERY SEGMENT; warm-up observations are NOT used as "
+                     "immediate predecessors of July. Older observations existing "
+                     "does NOT make daily/4h histories available in July."),
         },
-        "requirement_met": bool(int(et[et["ts_open_et"] < pd.Timestamp("2026-06-30", tz=TZ)]["globex_day"].nunique()) >= 40),
+        "nominal_sessions_before_discovery": int(seg_df.loc[seg_df["segment_id"] < disc_seg, "gday"].nunique()),
+        "requirement_note": ("Nominal >=40 pre-July sessions exist, but they are in "
+                             "prior segments; per-segment continuity governs feature "
+                             "validity, so daily/4h 40-candle histories remain "
+                             "unavailable in the July week."),
     }
     tf_ledgers = {tf.name: aggregate_tf(et, tf) for tf in TIMEFRAMES}
-    return et, audit, tf_ledgers
+    return et, audit, tf_ledgers, roll_ledger, seg_ledger
 
 
 if __name__ == "__main__":

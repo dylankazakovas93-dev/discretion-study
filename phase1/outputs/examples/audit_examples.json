@@ -27,7 +27,8 @@
       "midpoint_touch_et": "2026-07-06 00:07:00-04:00",
       "full_fill_et": "2026-07-06 00:10:00-04:00",
       "invalidation_et": "2026-07-06 00:10:00-04:00",
-      "C_index": 504912
+      "segment_id": 25,
+      "C_index": 504911
     }
   },
   {
@@ -58,7 +59,8 @@
       "midpoint_touch_et": "2026-07-06 01:08:00-04:00",
       "full_fill_et": "2026-07-06 01:08:00-04:00",
       "invalidation_et": "2026-07-06 01:08:00-04:00",
-      "C_index": 504969
+      "segment_id": 25,
+      "C_index": 504968
     }
   },
   {
@@ -89,6 +91,7 @@
       "midpoint_touch_et": "2026-07-06 01:35:00-04:00",
       "full_fill_et": "2026-07-06 21:30:00-04:00",
       "invalidation_et": "2026-07-06 21:30:00-04:00",
+      "segment_id": 25,
       "C_index": 100992
     }
   },
@@ -120,6 +123,7 @@
       "midpoint_touch_et": "2026-07-06 01:45:00-04:00",
       "full_fill_et": "2026-07-06 02:05:00-04:00",
       "invalidation_et": "2026-07-06 02:05:00-04:00",
+      "segment_id": 25,
       "C_index": 101006
     }
   },
@@ -151,6 +155,7 @@
       "midpoint_touch_et": "2026-07-06 01:45:00-04:00",
       "full_fill_et": "2026-07-06 21:30:00-04:00",
       "invalidation_et": "2026-07-06 21:30:00-04:00",
+      "segment_id": 25,
       "C_index": 33664
     }
   },
@@ -182,6 +187,7 @@
       "midpoint_touch_et": "2026-07-06 04:45:00-04:00",
       "full_fill_et": "2026-07-06 04:45:00-04:00",
       "invalidation_et": "2026-07-06 04:45:00-04:00",
+      "segment_id": 25,
       "C_index": 33680
     }
   },
@@ -213,6 +219,7 @@
       "midpoint_touch_et": "2026-07-06 04:30:00-04:00",
       "full_fill_et": "2026-07-06 04:30:00-04:00",
       "invalidation_et": "2026-07-06 04:30:00-04:00",
+      "segment_id": 25,
       "C_index": 16840
     }
   },
@@ -244,6 +251,7 @@
       "midpoint_touch_et": "2026-07-06 14:30:00-04:00",
       "full_fill_et": "2026-07-06 14:30:00-04:00",
       "invalidation_et": "2026-07-06 14:30:00-04:00",
+      "segment_id": 25,
       "C_index": 16861
     }
   },
@@ -275,6 +283,7 @@
       "midpoint_touch_et": "2026-07-07 15:00:00-04:00",
       "full_fill_et": "2026-07-07 15:00:00-04:00",
       "invalidation_et": "2026-07-07 15:00:00-04:00",
+      "segment_id": 25,
       "C_index": 8456
     }
   },
@@ -306,6 +315,7 @@
       "midpoint_touch_et": "2026-07-09 10:00:00-04:00",
       "full_fill_et": "2026-07-09 10:00:00-04:00",
       "invalidation_et": "2026-07-09 10:00:00-04:00",
+      "segment_id": 25,
       "C_index": 8438
     }
   },
@@ -337,7 +347,8 @@
       "midpoint_touch_et": "2026-07-10 04:00:00-04:00",
       "full_fill_et": "2026-07-10 08:00:00-04:00",
       "invalidation_et": "2026-07-10 08:00:00-04:00",
-      "C_index": 2307
+      "segment_id": 25,
+      "C_index": 2313
     }
   },
   {
@@ -368,7 +379,8 @@
       "midpoint_touch_et": "2026-07-09 12:00:00-04:00",
       "full_fill_et": "2026-07-09 12:00:00-04:00",
       "invalidation_et": "2026-07-09 12:00:00-04:00",
-      "C_index": 2292
+      "segment_id": 25,
+      "C_index": 2298
     }
   },
   {
@@ -389,7 +401,7 @@
       "C_high": 30077.75,
       "C_low": 29675.0,
       "B_open": 29412.0,
-      "B_close": 29951.5,
+      "B_close": 29931.25,
       "lower_boundary": 29558.75,
       "upper_boundary": 29675.0,
       "midpoint": 29616.875,
@@ -399,7 +411,8 @@
       "midpoint_touch_et": null,
       "full_fill_et": null,
       "invalidation_et": null,
-      "C_index": 375
+      "segment_id": 25,
+      "C_index": 376
     }
   },
   {
@@ -420,7 +433,7 @@
       "C_high": 29558.75,
       "C_low": 28909.75,
       "B_open": 29960.0,
-      "B_close": 29408.25,
+      "B_close": 29419.5,
       "lower_boundary": 29558.75,
       "upper_boundary": 29683.0,
       "midpoint": 29620.875,
@@ -430,7 +443,8 @@
       "midpoint_touch_et": "2026-07-09 17:00:00-04:00",
       "full_fill_et": "2026-07-09 17:00:00-04:00",
       "invalidation_et": "2026-07-09 17:00:00-04:00",
-      "C_index": 373
+      "segment_id": 25,
+      "C_index": 374
     }
   },
   {
@@ -487,7 +501,8 @@
       "first_wick_passage_et": "2026-07-06 09:35:00-04:00",
       "sweep_et": "2026-07-06 09:35:00-04:00",
       "unswept_through_end": false,
-      "session_globex_day": "2026-07-06"
+      "session_globex_day": "2026-07-06",
+      "segment_id": 25
     }
   },
   {
@@ -506,7 +521,8 @@
       "first_wick_passage_et": "2026-07-06 09:02:00-04:00",
       "sweep_et": "2026-07-06 09:02:00-04:00",
       "unswept_through_end": false,
-      "session_globex_day": "2026-07-06"
+      "session_globex_day": "2026-07-06",
+      "segment_id": 25
     }
   },
   {
@@ -525,7 +541,8 @@
       "first_wick_passage_et": "2026-07-06 09:32:00-04:00",
       "sweep_et": "2026-07-06 09:32:00-04:00",
       "unswept_through_end": false,
-      "session_globex_day": "2026-07-06"
+      "session_globex_day": "2026-07-06",
+      "segment_id": 25
     }
   },
   {
@@ -544,7 +561,8 @@
       "first_wick_passage_et": "2026-07-06 21:22:00-04:00",
       "sweep_et": "2026-07-06 21:22:00-04:00",
       "unswept_through_end": false,
-      "session_globex_day": "2026-07-06"
+      "session_globex_day": "2026-07-06",
+      "segment_id": 25
     }
   },
   {
@@ -563,7 +581,8 @@
       "first_wick_passage_et": "2026-07-06 10:02:00-04:00",
       "sweep_et": "2026-07-06 10:02:00-04:00",
       "unswept_through_end": false,
-      "session_globex_day": "2026-07-06"
+      "session_globex_day": "2026-07-06",
+      "segment_id": 25
     }
   },
   {
@@ -582,7 +601,8 @@
       "first_wick_passage_et": "2026-07-06 13:43:00-04:00",
       "sweep_et": "2026-07-06 13:43:00-04:00",
       "unswept_through_end": false,
-      "session_globex_day": "2026-07-06"
+      "session_globex_day": "2026-07-06",
+      "segment_id": 25
     }
   },
   {
@@ -601,7 +621,8 @@
       "first_wick_passage_et": "2026-07-06 09:52:00-04:00",
       "sweep_et": "2026-07-06 09:52:00-04:00",
       "unswept_through_end": false,
-      "session_globex_day": "2026-07-06"
+      "session_globex_day": "2026-07-06",
+      "segment_id": 25
     }
   },
   {
@@ -620,7 +641,8 @@
       "first_wick_passage_et": "2026-07-06 23:30:00-04:00",
       "sweep_et": "2026-07-06 23:30:00-04:00",
       "unswept_through_end": false,
-      "session_globex_day": "2026-07-06"
+      "session_globex_day": "2026-07-06",
+      "segment_id": 25
     }
   },
   {
@@ -639,7 +661,8 @@
       "first_wick_passage_et": null,
       "sweep_et": null,
       "unswept_through_end": true,
-      "session_globex_day": "2026-07-08"
+      "session_globex_day": "2026-07-08",
+      "segment_id": 25
     }
   },
   {
@@ -658,7 +681,8 @@
       "first_wick_passage_et": "2026-07-09 03:48:00-04:00",
       "sweep_et": "2026-07-09 03:48:00-04:00",
       "unswept_through_end": false,
-      "session_globex_day": "2026-07-07"
+      "session_globex_day": "2026-07-07",
+      "segment_id": 25
     }
   },
   {
@@ -677,7 +701,8 @@
       "first_wick_passage_et": null,
       "sweep_et": null,
       "unswept_through_end": true,
-      "session_globex_day": "2026-07-06"
+      "session_globex_day": "2026-07-06",
+      "segment_id": 25
     }
   },
   {
@@ -696,7 +721,8 @@
       "first_wick_passage_et": "2026-07-06 21:22:00-04:00",
       "sweep_et": "2026-07-06 21:22:00-04:00",
       "unswept_through_end": false,
-      "session_globex_day": "2026-07-06"
+      "session_globex_day": "2026-07-06",
+      "segment_id": 25
     }
   },
   {
@@ -715,7 +741,8 @@
       "first_wick_passage_et": null,
       "sweep_et": null,
       "unswept_through_end": true,
-      "session_globex_day": "2026-07-08"
+      "session_globex_day": "2026-07-08",
+      "segment_id": 25
     }
   },
   {
@@ -752,6 +779,8 @@
       "invalidation_et": null,
       "still_valid_end_of_data": true,
       "untested_through_jul10": false,
+      "segment_id": 25,
+      "source_complete": true,
       "source_index": 101740,
       "rank_metric": 0.8301886792452831
     }
@@ -790,7 +819,9 @@
       "invalidation_et": null,
       "still_valid_end_of_data": true,
       "untested_through_jul10": false,
-      "source_index": 509010,
+      "segment_id": 25,
+      "source_complete": true,
+      "source_index": 509009,
       "rank_metric": 0.7454545454545455
     }
   },
@@ -812,14 +843,14 @@
       "far_boundary": 28909.75,
       "near_boundary": 29373.75,
       "directional_wick_len": 464.0,
-      "opposite_wick_len": 115.75,
-      "body_len": 69.25,
+      "opposite_wick_len": 167.5,
+      "body_len": 17.5,
       "total_range": 649.0,
-      "dwick_body_ratio": 6.700361010830325,
+      "dwick_body_ratio": 26.51428571428572,
       "dwick_range_ratio": 0.7149460708782742,
-      "dwick_pctile_prev10": 100.0,
-      "dwick_pctile_prev20": 100.0,
-      "dwick_pctile_prev40": 100.0,
+      "dwick_pctile_prev10": null,
+      "dwick_pctile_prev20": null,
+      "dwick_pctile_prev40": null,
       "first_partial_wick_entry_et": null,
       "first_body_overlap_et": null,
       "first_complete_traversal_et": null,
@@ -828,7 +859,9 @@
       "invalidation_et": null,
       "still_valid_end_of_data": true,
       "untested_through_jul10": true,
-      "source_index": 373,
+      "segment_id": 25,
+      "source_complete": true,
+      "source_index": 374,
       "rank_metric": 0.7149460708782742
     }
   },
@@ -864,7 +897,9 @@
       "invalidation_et": "2026-07-06T00:01:00-04:00",
       "still_valid_end_of_data": false,
       "untested_through_jul10": false,
-      "source_index": 504906
+      "segment_id": 25,
+      "source_complete": true,
+      "source_index": 504905
     }
   },
   {
@@ -899,7 +934,9 @@
       "invalidation_et": "2026-07-06T00:07:00-04:00",
       "still_valid_end_of_data": false,
       "untested_through_jul10": false,
-      "source_index": 504912
+      "segment_id": 25,
+      "source_complete": true,
+      "source_index": 504911
     }
   },
   {
@@ -910,25 +947,26 @@
     "record": {
       "instrument": "NQ",
       "tf": "1m",
-      "direction": "bear",
+      "direction": "bull",
       "leg_len": 3,
       "param_version": "phase1-v1.0.0",
-      "start_open_et": "2026-07-10 00:26:00-04:00",
-      "end_open_et": "2026-07-10 00:28:00-04:00",
-      "availability_et": "2026-07-10 00:29:00-04:00",
-      "net_directional_move": -7.75,
+      "start_open_et": "2026-07-08 05:11:00-04:00",
+      "end_open_et": "2026-07-08 05:13:00-04:00",
+      "availability_et": "2026-07-08 05:14:00-04:00",
+      "net_directional_move": -8.25,
       "n_bodies_aligned": 0,
       "prop_bodies_aligned": 0.0,
       "median_aligned_body": 0.0,
-      "median_body_pctile_prev10": 35.0,
-      "median_body_pctile_prev20": 42.5,
-      "median_body_pctile_prev40": 48.75,
-      "adjacent_overlap": 2.125,
-      "terminal_close_location": 0.0,
-      "path_efficiency": 0.5344827586206896,
-      "total_distance": 14.5,
+      "median_body_pctile_prev10": 10.0,
+      "median_body_pctile_prev20": 15.0,
+      "median_body_pctile_prev40": 15.0,
+      "adjacent_overlap": 12.5,
+      "terminal_close_location": 0.3076923076923077,
+      "path_efficiency": 0.1341463414634146,
+      "total_distance": 61.5,
       "created_fvg": false,
-      "end_index": 510455,
+      "segment_id": 25,
+      "end_index": 507979,
       "qual": 0.0
     }
   },
@@ -943,23 +981,24 @@
       "direction": "bull",
       "leg_len": 3,
       "param_version": "phase1-v1.0.0",
-      "start_open_et": "2026-07-07 16:11:00-04:00",
-      "end_open_et": "2026-07-07 16:13:00-04:00",
-      "availability_et": "2026-07-07 16:14:00-04:00",
-      "net_directional_move": -5.0,
+      "start_open_et": "2026-07-09 01:13:00-04:00",
+      "end_open_et": "2026-07-09 01:15:00-04:00",
+      "availability_et": "2026-07-09 01:16:00-04:00",
+      "net_directional_move": -10.75,
       "n_bodies_aligned": 1,
       "prop_bodies_aligned": 0.3333333333333333,
-      "median_aligned_body": 6.75,
-      "median_body_pctile_prev10": 70.0,
-      "median_body_pctile_prev20": 55.0,
-      "median_body_pctile_prev40": 45.0,
-      "adjacent_overlap": 5.75,
-      "terminal_close_location": 0.1944444444444444,
-      "path_efficiency": 0.1904761904761904,
-      "total_distance": 26.25,
+      "median_aligned_body": 4.25,
+      "median_body_pctile_prev10": 20.0,
+      "median_body_pctile_prev20": 45.0,
+      "median_body_pctile_prev40": 48.75,
+      "adjacent_overlap": 7.625,
+      "terminal_close_location": 0.265625,
+      "path_efficiency": 0.233695652173913,
+      "total_distance": 46.0,
       "created_fvg": false,
-      "end_index": 507260,
-      "qual": 0.03492063492063491
+      "segment_id": 25,
+      "end_index": 509121,
+      "qual": 0.03505434782608695
     }
   },
   {
@@ -988,7 +1027,8 @@
       "path_efficiency": 0.9151785714285714,
       "total_distance": 56.0,
       "created_fvg": true,
-      "end_index": 506378,
+      "segment_id": 25,
+      "end_index": 506377,
       "qual": 0.8694196428571428
     }
   }
