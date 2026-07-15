@@ -27,7 +27,7 @@
       "midpoint_touch_et": "2026-07-06 00:07:00-04:00",
       "full_fill_et": "2026-07-06 00:10:00-04:00",
       "invalidation_et": "2026-07-06 00:10:00-04:00",
-      "C_index": 245
+      "C_index": 504912
     }
   },
   {
@@ -58,7 +58,7 @@
       "midpoint_touch_et": "2026-07-06 01:08:00-04:00",
       "full_fill_et": "2026-07-06 01:08:00-04:00",
       "invalidation_et": "2026-07-06 01:08:00-04:00",
-      "C_index": 302
+      "C_index": 504969
     }
   },
   {
@@ -89,7 +89,7 @@
       "midpoint_touch_et": "2026-07-06 01:35:00-04:00",
       "full_fill_et": "2026-07-06 21:30:00-04:00",
       "invalidation_et": "2026-07-06 21:30:00-04:00",
-      "C_index": 51
+      "C_index": 100992
     }
   },
   {
@@ -120,7 +120,7 @@
       "midpoint_touch_et": "2026-07-06 01:45:00-04:00",
       "full_fill_et": "2026-07-06 02:05:00-04:00",
       "invalidation_et": "2026-07-06 02:05:00-04:00",
-      "C_index": 65
+      "C_index": 101006
     }
   },
   {
@@ -151,7 +151,7 @@
       "midpoint_touch_et": "2026-07-06 01:45:00-04:00",
       "full_fill_et": "2026-07-06 21:30:00-04:00",
       "invalidation_et": "2026-07-06 21:30:00-04:00",
-      "C_index": 17
+      "C_index": 33664
     }
   },
   {
@@ -182,7 +182,7 @@
       "midpoint_touch_et": "2026-07-06 04:45:00-04:00",
       "full_fill_et": "2026-07-06 04:45:00-04:00",
       "invalidation_et": "2026-07-06 04:45:00-04:00",
-      "C_index": 33
+      "C_index": 33680
     }
   },
   {
@@ -213,7 +213,7 @@
       "midpoint_touch_et": "2026-07-06 04:30:00-04:00",
       "full_fill_et": "2026-07-06 04:30:00-04:00",
       "invalidation_et": "2026-07-06 04:30:00-04:00",
-      "C_index": 14
+      "C_index": 16840
     }
   },
   {
@@ -244,7 +244,7 @@
       "midpoint_touch_et": "2026-07-06 14:30:00-04:00",
       "full_fill_et": "2026-07-06 14:30:00-04:00",
       "invalidation_et": "2026-07-06 14:30:00-04:00",
-      "C_index": 35
+      "C_index": 16861
     }
   },
   {
@@ -275,7 +275,7 @@
       "midpoint_touch_et": "2026-07-07 15:00:00-04:00",
       "full_fill_et": "2026-07-07 15:00:00-04:00",
       "invalidation_et": "2026-07-07 15:00:00-04:00",
-      "C_index": 40
+      "C_index": 8456
     }
   },
   {
@@ -306,7 +306,7 @@
       "midpoint_touch_et": "2026-07-09 10:00:00-04:00",
       "full_fill_et": "2026-07-09 10:00:00-04:00",
       "invalidation_et": "2026-07-09 10:00:00-04:00",
-      "C_index": 22
+      "C_index": 8438
     }
   },
   {
@@ -337,7 +337,7 @@
       "midpoint_touch_et": "2026-07-10 04:00:00-04:00",
       "full_fill_et": "2026-07-10 08:00:00-04:00",
       "invalidation_et": "2026-07-10 08:00:00-04:00",
-      "C_index": 22
+      "C_index": 2307
     }
   },
   {
@@ -368,7 +368,7 @@
       "midpoint_touch_et": "2026-07-09 12:00:00-04:00",
       "full_fill_et": "2026-07-09 12:00:00-04:00",
       "invalidation_et": "2026-07-09 12:00:00-04:00",
-      "C_index": 7
+      "C_index": 2292
     }
   },
   {
@@ -399,7 +399,7 @@
       "midpoint_touch_et": null,
       "full_fill_et": null,
       "invalidation_et": null,
-      "C_index": 4
+      "C_index": 375
     }
   },
   {
@@ -430,7 +430,7 @@
       "midpoint_touch_et": "2026-07-09 17:00:00-04:00",
       "full_fill_et": "2026-07-09 17:00:00-04:00",
       "invalidation_et": "2026-07-09 17:00:00-04:00",
-      "C_index": 2
+      "C_index": 373
     }
   },
   {
@@ -752,7 +752,7 @@
       "invalidation_et": null,
       "still_valid_end_of_data": true,
       "untested_through_jul10": false,
-      "source_index": 799,
+      "source_index": 101740,
       "rank_metric": 0.8301886792452831
     }
   },
@@ -790,7 +790,7 @@
       "invalidation_et": null,
       "still_valid_end_of_data": true,
       "untested_through_jul10": false,
-      "source_index": 4343,
+      "source_index": 509010,
       "rank_metric": 0.7454545454545455
     }
   },
@@ -817,9 +817,9 @@
       "total_range": 649.0,
       "dwick_body_ratio": 6.700361010830325,
       "dwick_range_ratio": 0.7149460708782742,
-      "dwick_pctile_prev10": null,
-      "dwick_pctile_prev20": null,
-      "dwick_pctile_prev40": null,
+      "dwick_pctile_prev10": 100.0,
+      "dwick_pctile_prev20": 100.0,
+      "dwick_pctile_prev40": 100.0,
       "first_partial_wick_entry_et": null,
       "first_body_overlap_et": null,
       "first_complete_traversal_et": null,
@@ -828,7 +828,7 @@
       "invalidation_et": null,
       "still_valid_end_of_data": true,
       "untested_through_jul10": true,
-      "source_index": 2,
+      "source_index": 373,
       "rank_metric": 0.7149460708782742
     }
   },
@@ -864,7 +864,7 @@
       "invalidation_et": "2026-07-06T00:01:00-04:00",
       "still_valid_end_of_data": false,
       "untested_through_jul10": false,
-      "source_index": 239
+      "source_index": 504906
     }
   },
   {
@@ -899,7 +899,7 @@
       "invalidation_et": "2026-07-06T00:07:00-04:00",
       "still_valid_end_of_data": false,
       "untested_through_jul10": false,
-      "source_index": 245
+      "source_index": 504912
     }
   },
   {
@@ -913,22 +913,22 @@
       "direction": "bear",
       "leg_len": 3,
       "param_version": "phase1-v1.0.0",
-      "start_open_et": "2026-07-06 15:09:00-04:00",
-      "end_open_et": "2026-07-06 15:11:00-04:00",
-      "availability_et": "2026-07-06 15:12:00-04:00",
-      "net_directional_move": -14.5,
+      "start_open_et": "2026-07-10 00:26:00-04:00",
+      "end_open_et": "2026-07-10 00:28:00-04:00",
+      "availability_et": "2026-07-10 00:29:00-04:00",
+      "net_directional_move": -7.75,
       "n_bodies_aligned": 0,
       "prop_bodies_aligned": 0.0,
       "median_aligned_body": 0.0,
-      "median_body_pctile_prev10": 50.0,
-      "median_body_pctile_prev20": 67.5,
-      "median_body_pctile_prev40": 56.25,
-      "adjacent_overlap": 6.875,
-      "terminal_close_location": 0.1320754716981132,
-      "path_efficiency": 0.4566929133858268,
-      "total_distance": 31.75,
+      "median_body_pctile_prev10": 35.0,
+      "median_body_pctile_prev20": 42.5,
+      "median_body_pctile_prev40": 48.75,
+      "adjacent_overlap": 2.125,
+      "terminal_close_location": 0.0,
+      "path_efficiency": 0.5344827586206896,
+      "total_distance": 14.5,
       "created_fvg": false,
-      "end_index": 1151,
+      "end_index": 510455,
       "qual": 0.0
     }
   },
@@ -943,23 +943,23 @@
       "direction": "bull",
       "leg_len": 3,
       "param_version": "phase1-v1.0.0",
-      "start_open_et": "2026-07-09 01:13:00-04:00",
-      "end_open_et": "2026-07-09 01:15:00-04:00",
-      "availability_et": "2026-07-09 01:16:00-04:00",
-      "net_directional_move": -10.75,
+      "start_open_et": "2026-07-07 16:11:00-04:00",
+      "end_open_et": "2026-07-07 16:13:00-04:00",
+      "availability_et": "2026-07-07 16:14:00-04:00",
+      "net_directional_move": -5.0,
       "n_bodies_aligned": 1,
       "prop_bodies_aligned": 0.3333333333333333,
-      "median_aligned_body": 4.25,
-      "median_body_pctile_prev10": 20.0,
-      "median_body_pctile_prev20": 45.0,
-      "median_body_pctile_prev40": 48.75,
-      "adjacent_overlap": 7.625,
-      "terminal_close_location": 0.265625,
-      "path_efficiency": 0.233695652173913,
-      "total_distance": 46.0,
+      "median_aligned_body": 6.75,
+      "median_body_pctile_prev10": 70.0,
+      "median_body_pctile_prev20": 55.0,
+      "median_body_pctile_prev40": 45.0,
+      "adjacent_overlap": 5.75,
+      "terminal_close_location": 0.1944444444444444,
+      "path_efficiency": 0.1904761904761904,
+      "total_distance": 26.25,
       "created_fvg": false,
-      "end_index": 4455,
-      "qual": 0.03505434782608695
+      "end_index": 507260,
+      "qual": 0.03492063492063491
     }
   },
   {
@@ -988,7 +988,7 @@
       "path_efficiency": 0.9151785714285714,
       "total_distance": 56.0,
       "created_fvg": true,
-      "end_index": 1711,
+      "end_index": 506378,
       "qual": 0.8694196428571428
     }
   }

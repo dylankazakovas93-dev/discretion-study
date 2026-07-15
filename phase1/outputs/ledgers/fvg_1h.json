@@ -23,7 +23,7 @@
   "midpoint_touch_et":"2026-07-09T14:00:00.000Z",
   "full_fill_et":"2026-07-09T14:00:00.000Z",
   "invalidation_et":"2026-07-09T14:00:00.000Z",
-  "C_index":22
+  "C_index":8438
  },
  {
   "id":"FVG-1h-bear-20260706T2100",
@@ -49,7 +49,7 @@
   "midpoint_touch_et":"2026-07-09T14:00:00.000Z",
   "full_fill_et":"2026-07-09T14:00:00.000Z",
   "invalidation_et":"2026-07-09T14:00:00.000Z",
-  "C_index":24
+  "C_index":8440
  },
  {
   "id":"FVG-1h-bear-20260707T0000",
@@ -75,7 +75,7 @@
   "midpoint_touch_et":"2026-07-07T08:00:00.000Z",
   "full_fill_et":"2026-07-07T08:00:00.000Z",
   "invalidation_et":"2026-07-07T08:00:00.000Z",
-  "C_index":27
+  "C_index":8443
  },
  {
   "id":"FVG-1h-bear-20260707T1000",
@@ -101,7 +101,7 @@
   "midpoint_touch_et":"2026-07-07T18:00:00.000Z",
   "full_fill_et":"2026-07-09T07:00:00.000Z",
   "invalidation_et":"2026-07-09T07:00:00.000Z",
-  "C_index":37
+  "C_index":8453
  },
  {
   "id":"FVG-1h-bear-20260707T1100",
@@ -127,7 +127,7 @@
   "midpoint_touch_et":"2026-07-07T17:00:00.000Z",
   "full_fill_et":"2026-07-07T17:00:00.000Z",
   "invalidation_et":"2026-07-07T17:00:00.000Z",
-  "C_index":38
+  "C_index":8454
  },
  {
   "id":"FVG-1h-bull-20260707T1300",
@@ -153,7 +153,7 @@
   "midpoint_touch_et":"2026-07-07T19:00:00.000Z",
   "full_fill_et":"2026-07-07T19:00:00.000Z",
   "invalidation_et":"2026-07-07T19:00:00.000Z",
-  "C_index":40
+  "C_index":8456
  },
  {
   "id":"FVG-1h-bear-20260707T1500",
@@ -179,7 +179,7 @@
   "midpoint_touch_et":"2026-07-08T01:00:00.000Z",
   "full_fill_et":"2026-07-08T01:00:00.000Z",
   "invalidation_et":"2026-07-08T01:00:00.000Z",
-  "C_index":42
+  "C_index":8458
  },
  {
   "id":"FVG-1h-bull-20260707T2100",
@@ -205,7 +205,7 @@
   "midpoint_touch_et":"2026-07-08T03:00:00.000Z",
   "full_fill_et":"2026-07-08T03:00:00.000Z",
   "invalidation_et":"2026-07-08T03:00:00.000Z",
-  "C_index":47
+  "C_index":8463
  },
  {
   "id":"FVG-1h-bear-20260708T0100",
@@ -231,7 +231,7 @@
   "midpoint_touch_et":"2026-07-08T18:00:00.000Z",
   "full_fill_et":"2026-07-08T20:00:00.000Z",
   "invalidation_et":"2026-07-08T20:00:00.000Z",
-  "C_index":51
+  "C_index":8467
  },
  {
   "id":"FVG-1h-bear-20260708T0200",
@@ -257,7 +257,7 @@
   "midpoint_touch_et":"2026-07-08T08:00:00.000Z",
   "full_fill_et":"2026-07-08T08:00:00.000Z",
   "invalidation_et":"2026-07-08T08:00:00.000Z",
-  "C_index":52
+  "C_index":8468
  },
  {
   "id":"FVG-1h-bear-20260708T0500",
@@ -283,7 +283,7 @@
   "midpoint_touch_et":"2026-07-08T13:00:00.000Z",
   "full_fill_et":"2026-07-08T14:00:00.000Z",
   "invalidation_et":"2026-07-08T14:00:00.000Z",
-  "C_index":55
+  "C_index":8471
  },
  {
   "id":"FVG-1h-bull-20260708T0900",
@@ -309,7 +309,7 @@
   "midpoint_touch_et":"2026-07-08T16:00:00.000Z",
   "full_fill_et":"2026-07-08T16:00:00.000Z",
   "invalidation_et":"2026-07-08T16:00:00.000Z",
-  "C_index":59
+  "C_index":8475
  },
  {
   "id":"FVG-1h-bull-20260708T1300",
@@ -335,7 +335,7 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
-  "C_index":63
+  "C_index":8479
  },
  {
   "id":"FVG-1h-bull-20260708T2000",
@@ -361,7 +361,7 @@
   "midpoint_touch_et":"2026-07-09T02:00:00.000Z",
   "full_fill_et":"2026-07-09T02:00:00.000Z",
   "invalidation_et":"2026-07-09T02:00:00.000Z",
-  "C_index":69
+  "C_index":8485
  },
  {
   "id":"FVG-1h-bull-20260709T0200",
@@ -387,7 +387,7 @@
   "midpoint_touch_et":"2026-07-09T11:00:00.000Z",
   "full_fill_et":null,
   "invalidation_et":null,
-  "C_index":75
+  "C_index":8491
  },
  {
   "id":"FVG-1h-bull-20260709T0800",
@@ -413,7 +413,7 @@
   "midpoint_touch_et":"2026-07-09T14:00:00.000Z",
   "full_fill_et":"2026-07-09T15:00:00.000Z",
   "invalidation_et":"2026-07-09T15:00:00.000Z",
-  "C_index":81
+  "C_index":8497
  },
  {
   "id":"FVG-1h-bull-20260709T1400",
@@ -439,7 +439,7 @@
   "midpoint_touch_et":"2026-07-09T20:00:00.000Z",
   "full_fill_et":"2026-07-09T20:00:00.000Z",
   "invalidation_et":"2026-07-09T20:00:00.000Z",
-  "C_index":87
+  "C_index":8503
  },
  {
   "id":"FVG-1h-bear-20260710T0100",
@@ -465,7 +465,7 @@
   "midpoint_touch_et":"2026-07-10T14:00:00.000Z",
   "full_fill_et":"2026-07-10T14:00:00.000Z",
   "invalidation_et":"2026-07-10T14:00:00.000Z",
-  "C_index":97
+  "C_index":8513
  },
  {
   "id":"FVG-1h-bear-20260710T0200",
@@ -491,7 +491,7 @@
   "midpoint_touch_et":"2026-07-10T12:00:00.000Z",
   "full_fill_et":"2026-07-10T12:00:00.000Z",
   "invalidation_et":"2026-07-10T12:00:00.000Z",
-  "C_index":98
+  "C_index":8514
  },
  {
   "id":"FVG-1h-bear-20260710T0300",
@@ -517,7 +517,7 @@
   "midpoint_touch_et":"2026-07-10T11:00:00.000Z",
   "full_fill_et":"2026-07-10T11:00:00.000Z",
   "invalidation_et":"2026-07-10T11:00:00.000Z",
-  "C_index":99
+  "C_index":8515
  },
  {
   "id":"FVG-1h-bull-20260710T0600",
@@ -543,7 +543,7 @@
   "midpoint_touch_et":"2026-07-10T13:00:00.000Z",
   "full_fill_et":"2026-07-10T13:00:00.000Z",
   "invalidation_et":"2026-07-10T13:00:00.000Z",
-  "C_index":102
+  "C_index":8518
  },
  {
   "id":"FVG-1h-bull-20260710T1300",
@@ -569,6 +569,6 @@
   "midpoint_touch_et":null,
   "full_fill_et":"2026-07-12T23:00:00.000Z",
   "invalidation_et":"2026-07-12T23:00:00.000Z",
-  "C_index":109
+  "C_index":8525
  }
 ]

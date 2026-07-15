@@ -23,7 +23,7 @@
   "midpoint_touch_et":"2026-07-06T08:30:00.000Z",
   "full_fill_et":"2026-07-06T08:30:00.000Z",
   "invalidation_et":"2026-07-06T08:30:00.000Z",
-  "C_index":14
+  "C_index":16840
  },
  {
   "id":"FVG-30m-bear-20260706T1330",
@@ -49,7 +49,7 @@
   "midpoint_touch_et":"2026-07-06T18:30:00.000Z",
   "full_fill_et":"2026-07-06T18:30:00.000Z",
   "invalidation_et":"2026-07-06T18:30:00.000Z",
-  "C_index":35
+  "C_index":16861
  },
  {
   "id":"FVG-30m-bear-20260706T1600",
@@ -75,7 +75,7 @@
   "midpoint_touch_et":"2026-07-09T17:30:00.000Z",
   "full_fill_et":"2026-07-09T17:30:00.000Z",
   "invalidation_et":"2026-07-09T17:30:00.000Z",
-  "C_index":40
+  "C_index":16866
  },
  {
   "id":"FVG-30m-bear-20260706T1900",
@@ -101,7 +101,7 @@
   "midpoint_touch_et":"2026-07-09T17:30:00.000Z",
   "full_fill_et":"2026-07-09T17:30:00.000Z",
   "invalidation_et":"2026-07-09T17:30:00.000Z",
-  "C_index":44
+  "C_index":16870
  },
  {
   "id":"FVG-30m-bear-20260706T2330",
@@ -127,7 +127,7 @@
   "midpoint_touch_et":"2026-07-07T07:30:00.000Z",
   "full_fill_et":"2026-07-07T07:30:00.000Z",
   "invalidation_et":"2026-07-07T07:30:00.000Z",
-  "C_index":53
+  "C_index":16879
  },
  {
   "id":"FVG-30m-bull-20260707T0200",
@@ -153,7 +153,7 @@
   "midpoint_touch_et":"2026-07-07T10:00:00.000Z",
   "full_fill_et":"2026-07-07T10:00:00.000Z",
   "invalidation_et":"2026-07-07T10:00:00.000Z",
-  "C_index":58
+  "C_index":16884
  },
  {
   "id":"FVG-30m-bear-20260707T1000",
@@ -179,7 +179,7 @@
   "midpoint_touch_et":"2026-07-07T16:30:00.000Z",
   "full_fill_et":"2026-07-07T17:30:00.000Z",
   "invalidation_et":"2026-07-07T17:30:00.000Z",
-  "C_index":74
+  "C_index":16900
  },
  {
   "id":"FVG-30m-bear-20260707T1030",
@@ -205,7 +205,7 @@
   "midpoint_touch_et":"2026-07-07T16:00:00.000Z",
   "full_fill_et":"2026-07-07T16:30:00.000Z",
   "invalidation_et":"2026-07-07T16:30:00.000Z",
-  "C_index":75
+  "C_index":16901
  },
  {
   "id":"FVG-30m-bull-20260707T1200",
@@ -231,7 +231,7 @@
   "midpoint_touch_et":"2026-07-07T19:30:00.000Z",
   "full_fill_et":"2026-07-07T19:30:00.000Z",
   "invalidation_et":"2026-07-07T19:30:00.000Z",
-  "C_index":78
+  "C_index":16904
  },
  {
   "id":"FVG-30m-bull-20260707T1230",
@@ -257,7 +257,7 @@
   "midpoint_touch_et":"2026-07-07T19:00:00.000Z",
   "full_fill_et":"2026-07-07T19:00:00.000Z",
   "invalidation_et":"2026-07-07T19:00:00.000Z",
-  "C_index":79
+  "C_index":16905
  },
  {
   "id":"FVG-30m-bear-20260707T1500",
@@ -283,7 +283,7 @@
   "midpoint_touch_et":"2026-07-08T00:30:00.000Z",
   "full_fill_et":"2026-07-08T01:00:00.000Z",
   "invalidation_et":"2026-07-08T01:00:00.000Z",
-  "C_index":84
+  "C_index":16910
  },
  {
   "id":"FVG-30m-bull-20260707T1630",
@@ -309,7 +309,7 @@
   "midpoint_touch_et":null,
   "full_fill_et":"2026-07-07T22:30:00.000Z",
   "invalidation_et":"2026-07-07T22:30:00.000Z",
-  "C_index":87
+  "C_index":16913
  },
  {
   "id":"FVG-30m-bull-20260707T2030",
@@ -335,7 +335,7 @@
   "midpoint_touch_et":"2026-07-08T02:30:00.000Z",
   "full_fill_et":"2026-07-08T02:30:00.000Z",
   "invalidation_et":"2026-07-08T02:30:00.000Z",
-  "C_index":93
+  "C_index":16919
  },
  {
   "id":"FVG-30m-bull-20260707T2100",
@@ -361,7 +361,7 @@
   "midpoint_touch_et":"2026-07-08T02:00:00.000Z",
   "full_fill_et":"2026-07-08T02:00:00.000Z",
   "invalidation_et":"2026-07-08T02:00:00.000Z",
-  "C_index":94
+  "C_index":16920
  },
  {
   "id":"FVG-30m-bear-20260707T2200",
@@ -387,7 +387,7 @@
   "midpoint_touch_et":"2026-07-08T03:00:00.000Z",
   "full_fill_et":"2026-07-08T03:30:00.000Z",
   "invalidation_et":"2026-07-08T03:30:00.000Z",
-  "C_index":96
+  "C_index":16922
  },
  {
   "id":"FVG-30m-bull-20260707T2300",
@@ -413,7 +413,7 @@
   "midpoint_touch_et":"2026-07-08T04:30:00.000Z",
   "full_fill_et":"2026-07-08T04:30:00.000Z",
   "invalidation_et":"2026-07-08T04:30:00.000Z",
-  "C_index":98
+  "C_index":16924
  },
  {
   "id":"FVG-30m-bear-20260708T0030",
@@ -439,7 +439,7 @@
   "midpoint_touch_et":"2026-07-08T18:00:00.000Z",
   "full_fill_et":"2026-07-08T20:00:00.000Z",
   "invalidation_et":"2026-07-08T20:00:00.000Z",
-  "C_index":101
+  "C_index":16927
  },
  {
   "id":"FVG-30m-bear-20260708T0200",
@@ -465,7 +465,7 @@
   "midpoint_touch_et":"2026-07-08T08:00:00.000Z",
   "full_fill_et":"2026-07-08T08:00:00.000Z",
   "invalidation_et":"2026-07-08T08:00:00.000Z",
-  "C_index":104
+  "C_index":16930
  },
  {
   "id":"FVG-30m-bear-20260708T0430",
@@ -491,7 +491,7 @@
   "midpoint_touch_et":"2026-07-08T13:00:00.000Z",
   "full_fill_et":"2026-07-08T14:00:00.000Z",
   "invalidation_et":"2026-07-08T14:00:00.000Z",
-  "C_index":109
+  "C_index":16935
  },
  {
   "id":"FVG-30m-bear-20260708T0500",
@@ -517,7 +517,7 @@
   "midpoint_touch_et":"2026-07-08T11:00:00.000Z",
   "full_fill_et":"2026-07-08T12:00:00.000Z",
   "invalidation_et":"2026-07-08T12:00:00.000Z",
-  "C_index":110
+  "C_index":16936
  },
  {
   "id":"FVG-30m-bull-20260708T0800",
@@ -543,7 +543,7 @@
   "midpoint_touch_et":"2026-07-08T15:30:00.000Z",
   "full_fill_et":null,
   "invalidation_et":null,
-  "C_index":116
+  "C_index":16942
  },
  {
   "id":"FVG-30m-bull-20260708T0830",
@@ -569,7 +569,7 @@
   "midpoint_touch_et":"2026-07-08T15:30:00.000Z",
   "full_fill_et":"2026-07-08T15:30:00.000Z",
   "invalidation_et":"2026-07-08T15:30:00.000Z",
-  "C_index":117
+  "C_index":16943
  },
  {
   "id":"FVG-30m-bull-20260708T1000",
@@ -595,7 +595,7 @@
   "midpoint_touch_et":"2026-07-08T15:00:00.000Z",
   "full_fill_et":"2026-07-08T15:00:00.000Z",
   "invalidation_et":"2026-07-08T15:00:00.000Z",
-  "C_index":120
+  "C_index":16946
  },
  {
   "id":"FVG-30m-bear-20260708T1100",
@@ -621,7 +621,7 @@
   "midpoint_touch_et":"2026-07-08T16:30:00.000Z",
   "full_fill_et":"2026-07-08T16:30:00.000Z",
   "invalidation_et":"2026-07-08T16:30:00.000Z",
-  "C_index":122
+  "C_index":16948
  },
  {
   "id":"FVG-30m-bull-20260708T1230",
@@ -647,7 +647,7 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
-  "C_index":125
+  "C_index":16951
  },
  {
   "id":"FVG-30m-bull-20260708T1300",
@@ -673,7 +673,7 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
-  "C_index":126
+  "C_index":16952
  },
  {
   "id":"FVG-30m-bull-20260708T2000",
@@ -699,7 +699,7 @@
   "midpoint_touch_et":"2026-07-09T01:30:00.000Z",
   "full_fill_et":"2026-07-09T02:00:00.000Z",
   "invalidation_et":"2026-07-09T02:00:00.000Z",
-  "C_index":138
+  "C_index":16964
  },
  {
   "id":"FVG-30m-bull-20260709T0330",
@@ -725,7 +725,7 @@
   "midpoint_touch_et":"2026-07-09T09:30:00.000Z",
   "full_fill_et":"2026-07-09T09:30:00.000Z",
   "invalidation_et":"2026-07-09T09:30:00.000Z",
-  "C_index":153
+  "C_index":16979
  },
  {
   "id":"FVG-30m-bull-20260709T0800",
@@ -751,7 +751,7 @@
   "midpoint_touch_et":"2026-07-09T14:30:00.000Z",
   "full_fill_et":"2026-07-09T14:30:00.000Z",
   "invalidation_et":"2026-07-09T14:30:00.000Z",
-  "C_index":162
+  "C_index":16988
  },
  {
   "id":"FVG-30m-bull-20260709T1130",
@@ -777,7 +777,7 @@
   "midpoint_touch_et":"2026-07-10T00:30:00.000Z",
   "full_fill_et":"2026-07-10T00:30:00.000Z",
   "invalidation_et":"2026-07-10T00:30:00.000Z",
-  "C_index":169
+  "C_index":16995
  },
  {
   "id":"FVG-30m-bull-20260709T1330",
@@ -803,7 +803,7 @@
   "midpoint_touch_et":"2026-07-09T19:00:00.000Z",
   "full_fill_et":"2026-07-09T19:30:00.000Z",
   "invalidation_et":"2026-07-09T19:30:00.000Z",
-  "C_index":173
+  "C_index":16999
  },
  {
   "id":"FVG-30m-bear-20260709T2030",
@@ -829,7 +829,7 @@
   "midpoint_touch_et":"2026-07-10T02:00:00.000Z",
   "full_fill_et":"2026-07-10T03:00:00.000Z",
   "invalidation_et":"2026-07-10T03:00:00.000Z",
-  "C_index":185
+  "C_index":17011
  },
  {
   "id":"FVG-30m-bull-20260709T2300",
@@ -855,7 +855,7 @@
   "midpoint_touch_et":"2026-07-10T05:00:00.000Z",
   "full_fill_et":"2026-07-10T05:00:00.000Z",
   "invalidation_et":"2026-07-10T05:00:00.000Z",
-  "C_index":190
+  "C_index":17016
  },
  {
   "id":"FVG-30m-bear-20260710T0100",
@@ -881,7 +881,7 @@
   "midpoint_touch_et":"2026-07-10T14:00:00.000Z",
   "full_fill_et":"2026-07-10T14:00:00.000Z",
   "invalidation_et":"2026-07-10T14:00:00.000Z",
-  "C_index":194
+  "C_index":17020
  },
  {
   "id":"FVG-30m-bear-20260710T0200",
@@ -907,7 +907,7 @@
   "midpoint_touch_et":"2026-07-10T11:00:00.000Z",
   "full_fill_et":"2026-07-10T11:30:00.000Z",
   "invalidation_et":"2026-07-10T11:30:00.000Z",
-  "C_index":196
+  "C_index":17022
  },
  {
   "id":"FVG-30m-bear-20260710T0230",
@@ -933,7 +933,7 @@
   "midpoint_touch_et":"2026-07-10T10:30:00.000Z",
   "full_fill_et":"2026-07-10T10:30:00.000Z",
   "invalidation_et":"2026-07-10T10:30:00.000Z",
-  "C_index":197
+  "C_index":17023
  },
  {
   "id":"FVG-30m-bull-20260710T0530",
@@ -959,7 +959,7 @@
   "midpoint_touch_et":"2026-07-10T12:30:00.000Z",
   "full_fill_et":"2026-07-10T12:30:00.000Z",
   "invalidation_et":"2026-07-10T12:30:00.000Z",
-  "C_index":203
+  "C_index":17029
  },
  {
   "id":"FVG-30m-bull-20260710T0630",
@@ -985,7 +985,7 @@
   "midpoint_touch_et":"2026-07-10T12:00:00.000Z",
   "full_fill_et":"2026-07-10T12:00:00.000Z",
   "invalidation_et":"2026-07-10T12:00:00.000Z",
-  "C_index":205
+  "C_index":17031
  },
  {
   "id":"FVG-30m-bull-20260710T0700",
@@ -1011,7 +1011,7 @@
   "midpoint_touch_et":"2026-07-10T12:00:00.000Z",
   "full_fill_et":"2026-07-10T12:00:00.000Z",
   "invalidation_et":"2026-07-10T12:00:00.000Z",
-  "C_index":206
+  "C_index":17032
  },
  {
   "id":"FVG-30m-bull-20260710T1230",
@@ -1037,6 +1037,6 @@
   "midpoint_touch_et":"2026-07-10T17:30:00.000Z",
   "full_fill_et":"2026-07-12T22:30:00.000Z",
   "invalidation_et":"2026-07-12T22:30:00.000Z",
-  "C_index":217
+  "C_index":17043
  }
 ]

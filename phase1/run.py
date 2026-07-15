@@ -33,9 +33,12 @@ def write_ledger(df: pd.DataFrame, name: str):
     return len(df)
 
 
-def main(csv_path, orig_path):
+def main(csv_path, orig_path, warmup_csv=None, warmup_orig=None):
     os.makedirs(LED, exist_ok=True)
-    et, audit, tf_ledgers = core.build_all(csv_path, orig_path)
+    if warmup_csv:
+        et, audit, tf_ledgers = core.build_combined(csv_path, warmup_csv, orig_path, warmup_orig)
+    else:
+        et, audit, tf_ledgers = core.build_all(csv_path, orig_path)
 
     # daily completeness note: first globex day misses 18:00-20:00 ET warm-up
     daily = tf_ledgers["daily"]
@@ -47,13 +50,21 @@ def main(csv_path, orig_path):
         "first_source": pd.Timestamp(r.source_first_ts).isoformat(),
     } for r in daily.itertuples()]
 
-    # persist the ET-normalized minute frame + HTF ledgers
-    et_out = et.copy()
+    # persist context CSVs. The full combined frame spans 2025-2026; to keep
+    # deliverables small we persist the ET-normalized minutes and the fast
+    # intraday HTF candles only from 2026-07-04 (discovery-relevant), and keep
+    # daily/4h/1h fully for higher-timeframe chart context.
+    ctx_start = pd.Timestamp("2026-07-04", tz="America/New_York")
+    et_out = et[et["ts_open_et"] >= ctx_start].copy()
     for col in ["ts_utc", "ts_open_et", "ts_close_et"]:
         et_out[col] = et_out[col].astype(str)
     et_out.to_csv(os.path.join(OUT, "nq_1m_et_normalized.csv"), index=False)
+    FULL_TFS = {"1h", "4h", "daily"}
     for name, led in tf_ledgers.items():
         l2 = led.copy()
+        if name not in FULL_TFS:
+            l2 = l2[l2["bucket_open_et"] >= ctx_start]
+        l2 = l2.copy()
         for col in l2.columns:
             if pd.api.types.is_datetime64_any_dtype(l2[col]) or l2[col].dtype == object:
                 try:
@@ -98,4 +109,6 @@ def main(csv_path, orig_path):
 if __name__ == "__main__":
     csv_path = sys.argv[1]
     orig_path = sys.argv[2]
-    main(csv_path, orig_path)
+    warmup_csv = sys.argv[3] if len(sys.argv) > 3 else None
+    warmup_orig = sys.argv[4] if len(sys.argv) > 4 else None
+    main(csv_path, orig_path, warmup_csv, warmup_orig)

@@ -14,24 +14,25 @@ python3 charts.py                                         # deterministic audit 
 
 ---
 
-## 0. BLOCKING DATA-REQUIREMENT FINDING (read first)
+## 0. WARM-UP STATUS (resolved) + SEAM CAVEAT (read first)
 
-The task requires **≥ 40 completed trading sessions before 2026-07-06 as warm-up**. **The attached dataset does not contain them.**
+The warm-up requirement — **≥ 40 completed sessions before 2026-07-06** — is now **MET**. A second file (`nq2025.zip` → `glbx-mdp3-20250101-20260607.ohlcv-1m.csv.zst`, SHA-256 verified against its manifest) supplies **371 Globex sessions** (2025-01-01 → 2026-06-07).
 
 | Requirement | Delivered |
 |---|---|
-| ≥ 40 sessions before Jul 6 | **1 partial session** (Sun Jul 5, 20:00–24:00 ET; 240 minutes) |
+| ≥ 40 sessions before Jul 6 | **371 sessions** ✅ |
 | Discovery week Jul 6–10 | ✅ present and complete |
-| Data range (ET) | 2026-07-05 20:00 → 2026-07-12 19:59 |
+| Combined series | 511,567 one-minute bars (warm-up + discovery) |
 
-**Consequences (handled honestly, not fabricated):**
+**Contract handling.** Across 2025–26 the front month rolls quarterly (NQH5→NQM5→NQU5→NQZ5→NQH6→NQM6; 6 roll dates). The warm-up is stitched into a **continuous front-month series** by choosing, per UTC day, the outright with the greatest volume. The series is **unadjusted** (raw roll steps). The discovery week is pure **NQU6**.
 
-1. **Trailing percentiles (N = 10/20/40)** for early bars have insufficient history. These are written as **`null`** with an implicit insufficient-history flag rather than computed on a short window. Example: 260 / 17,302 rejection-block rows have a `null` `prev40` percentile.
-2. **"Previous completed RTH high/low"** for the Jul 6 RTH session cannot be sourced (no Jul 2/3 data). The first usable *previous-RTH* reference is Jul 6's own RTH, available at its close and used from Jul 7 onward.
-3. The **first daily (Globex) candle** (globex day ending 2026-07-06) is **incomplete**: it is missing its first two hours (18:00–20:00 ET Sun Jul 5). It has 1201 source minutes vs. 1321 for full days. It is retained but flagged `incomplete`.
-4. HTF context and "structures that existed before July 6" can only be seeded from the ~4h of Sunday-evening warm-up, not 40 sessions.
+**Seam caveat.** The warm-up ends **2026-06-07 (NQM6)** and the discovery series begins **2026-07-05 20:00 ET (NQU6)** — a seam carrying both a **~28-day calendar gap** and a **contract change**. To keep this sound, the warm-up is used **only for relative trailing size percentiles**; **structural detection (FVG triples, iFVG conversions, liquidity sweeps, invalidations) is confined to the post-seam discovery series** so no June NQM6 structure spuriously interacts with July NQU6 prices across the gap.
 
-**This does not invalidate the Phase 1 implementation** — the primitives are fully implemented and the discovery-week ledgers are complete — but the warm-up-dependent statistics are under-supported and must be regenerated once ≥ 40 warm-up sessions are supplied. This is the top unresolved item.
+**Effect of adding warm-up:**
+
+1. **Trailing percentiles (N = 10/20/40)** are now **fully populated — 0 null across all 17,302 rejection-block rows and all 51,894 displacement legs** (previously null on higher timeframes for lack of history).
+2. Discovery-week **structure counts are unchanged** vs. the warm-up-free run (e.g. `fvg_1m` = 1136), confirming warm-up affected only relative statistics, not what was detected.
+3. **Still open:** the first daily (Globex) candle of the discovery week (ending 2026-07-06) is missing its first two hours (18:00–20:00 ET Sun Jul 5), so it is flagged incomplete; and a **contiguous** "previous completed RTH" for Jul 6 morning still does not exist (June RTH is stale across the seam) — the first usable previous-RTH remains Jul 6's own, used from Jul 7.
 
 ---
 
@@ -61,6 +62,8 @@ Full machine version: `outputs/data_quality_report.json`.
 
 **Instrument selection:** `NQU6` 2,445,469 vol vs `NQZ6` 4,500 vol (outrights); `NQU6-NQZ6` (1,522) is a spread and excluded from the study instrument.
 
+**Warm-up file** (`glbx-mdp3-20250101-20260607.ohlcv-1m.csv.zst`): SHA-256 `4a56638d…7dc7cad` — **matches** its manifest ✅. Range 2025-01-01 → 2026-06-07 UTC; continuous front-month series 200,941 bars after per-day volume roll; 371 Globex sessions; 6 contract rolls (see manifest `warmup.roll_dates`). Same `GLBX.MDP3 / ohlcv-1m / NQ.FUT` query as discovery.
+
 ---
 
 ## 2. Time Conventions Applied
@@ -70,7 +73,7 @@ Full machine version: `outputs/data_quality_report.json`.
 * HTF fixed ET clock boundaries — 5m `min%5==0`, 15m `min%15==0`, 30m `{00,30}`, 1h clock hour, 4h `{00,04,08,12,16,20}`, daily = one Globex day.
 * A HTF candle becomes **available only when its full interval has ended** (`availability_et = bucket_close_et`).
 
-Completed-candle counts (whole sample): 1m 6900 · 5m 1380 · 15m 460 · 30m 230 · 1h 115 · 4h 31 · daily 6.
+Combined series: 511,567 one-minute bars. Discovery-week (Jul 6–10) completed-candle counts: 1m 6540 · 5m 1308 · 15m 436 · 30m 218 · 1h 109 · 4h 29 · daily 4.
 
 ---
 
@@ -110,9 +113,9 @@ These are **complete ledgers, not selected examples.**
 
 ## 5. Cases the Implementation Could Not Classify Without Additional Rules
 
-1. **Warm-up percentiles.** With < N prior same-timeframe candles, `prev10/20/40` percentiles are undefined. Left `null` (no short-window substitution). Fully resolvable only with the missing warm-up data.
+1. **Warm-up percentiles — RESOLVED.** With the warm-up file, all `prev10/20/40` percentiles are now computable and fully populated (0 null). The only residual is philosophical: the trailing window for the very first discovery bars reaches across the seam (gap + contract change); because these are *relative size* measures this is acceptable, and it is documented rather than hidden.
 2. **First daily candle completeness.** The Globex day ending Jul 6 is missing 18:00–20:00 ET. Emitted but flagged incomplete; whether an incomplete HTF candle should participate in FVG/displacement detection is a definitional choice (currently: it participates, flagged).
-3. **First-RTH liquidity reference.** No "previous RTH" exists for Jul 6; that reference is simply absent, not imputed.
+3. **First-RTH liquidity reference.** No *contiguous* "previous RTH" exists for Jul 6 (June RTH is stale across the 28-day seam); that reference is absent, not imputed. First usable previous-RTH is Jul 6's own.
 4. **Wick-passage vs sweep under OHLCV.** Bar ordering inside a minute is unknown, so "first wick passage" and "sweep" cannot be distinguished from OHLCV alone; they are recorded as coincident. A tick/quote feed would be needed to separate them.
 5. **Zero-body candles (dojis) in ratio denominators.** `dwick/body` is `null` when body = 0 (division guarded), rather than assigned ∞.
 
@@ -120,7 +123,7 @@ These are **complete ledgers, not selected examples.**
 
 ## 6. Unresolved Definition Decisions (for human freeze)
 
-1. **Warm-up window** — dataset must be extended to ≥ 40 sessions before Jul 6 before warm-up-dependent statistics are trusted. *(Blocking.)*
+1. **Warm-up seam handling** — *(resolved for statistics; one decision remains.)* Warm-up now supplies 371 sessions, but it ends Jun 7 on NQM6 while discovery is NQU6, with a 28-day gap between. Current policy: warm-up feeds only relative trailing percentiles; structural continuity does not cross the seam. Confirm this policy, and confirm the unadjusted (raw-roll) continuous-contract choice vs. a back-adjusted series. Ideally the warm-up would be extended to be contiguous through Jul 5 on NQU6.
 2. **Rejection-block "prominence" threshold** — deliberately **not** frozen. Candidates are ranked, not certified. Needs a human-frozen percentile/ratio cutoff.
 3. **Displacement classification threshold** — raw measurements preserved; no single label assigned. Needs human freeze.
 4. **FVG "full fill" vs "invalidation" semantics** — currently invalidation = full fill (gap fully retraced). If partial mitigation should invalidate, redefine.
@@ -137,10 +140,12 @@ These are **complete ledgers, not selected examples.**
 
 Full machine version: `outputs/reproducibility_manifest.json`.
 
-* **Input file SHA-256:** `1d0aac62e1acbcbb341bcac0ab1b672d4948a3d27e5b67068e218c87f91cf007` — **matches** the delivery manifest. ✅
+* **Discovery file SHA-256:** `1d0aac62…f91cf007` — **matches** its delivery manifest ✅
+* **Warm-up file SHA-256:** `4a56638d…b7dc7cad` — **matches** its delivery manifest ✅
 * **Param version:** `phase1-v1.0.0`
 * **Code SHA-256:** `core.py`, `primitives.py`, `run.py`, `charts.py` (hashes in manifest).
 * **Environment:** Python 3.11.15 · pandas 3.0.3 · numpy 2.4.6 · Linux.
+* **Reproduce:** `python3 run.py data.csv <discovery.zst> warmup.csv <warmup.zst> && python3 charts.py`
 * **Timezone rules / session definitions / HTF boundaries / causality rules:** as in §2 and the manifest.
 * **Determinism:** no randomness, no seeds; identical inputs → identical outputs.
 

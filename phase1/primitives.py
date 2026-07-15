@@ -24,10 +24,34 @@ TZ = "America/New_York"
 DISC_START = pd.Timestamp("2026-07-06 00:00", tz=TZ)
 DISC_END = pd.Timestamp("2026-07-11 00:00", tz=TZ)   # exclusive
 JUL10_END = pd.Timestamp("2026-07-10 23:59", tz=TZ)  # "end of July 10"
+# Seam between the warm-up series (ends 2026-06-07, NQM6) and the discovery
+# series (starts 2026-07-05 20:00 ET, NQU6). Structural detection (FVG triples,
+# displacement legs) must not straddle this seam; only trailing SIZE percentiles
+# may reach across it. Any candle at/after POST_SEAM is on the discovery side.
+POST_SEAM = pd.Timestamp("2026-07-01 00:00", tz=TZ)
 
 
 def in_discovery(ts) -> bool:
+    ts = pd.Timestamp(ts)
+    if ts.tzinfo is None:
+        ts = ts.tz_localize("UTC")
     return DISC_START <= ts < DISC_END
+
+
+def _np_utc(ts_aware) -> np.datetime64:
+    return np.datetime64(ts_aware.tz_convert("UTC").tz_localize(None))
+
+
+def _disc_bounds(t_avail: np.ndarray) -> tuple[int, int]:
+    """[start, end) index range of candles whose availability is in discovery."""
+    lo, hi = _np_utc(DISC_START), _np_utc(DISC_END)
+    idx = np.where((t_avail >= lo) & (t_avail < hi))[0]
+    return (int(idx[0]), int(idx[-1] + 1)) if len(idx) else (0, 0)
+
+
+def _postseam_first(t_open: np.ndarray) -> int:
+    idx = np.where(t_open >= _np_utc(POST_SEAM))[0]
+    return int(idx[0]) if len(idx) else len(t_open)
 
 
 # ---------------------------------------------------------------------------
@@ -37,8 +61,10 @@ def in_discovery(ts) -> bool:
 @dataclass
 class Candles:
     tf: str
-    t_open: np.ndarray   # tz-aware Timestamps (bar interval start)
-    t_avail: np.ndarray  # availability = interval end
+    t_open: np.ndarray       # tz-aware Timestamps (bar interval start), for output
+    t_avail: np.ndarray      # tz-aware availability = interval end, for output
+    t_open_utc: np.ndarray   # datetime64[ns] UTC, for fast vectorized bounds
+    t_avail_utc: np.ndarray  # datetime64[ns] UTC, for fast vectorized bounds
     o: np.ndarray
     h: np.ndarray
     l: np.ndarray
@@ -56,6 +82,8 @@ def make_candles(ledger: pd.DataFrame, tf: str) -> Candles:
         tf=tf,
         t_open=d["bucket_open_et"].to_numpy(),
         t_avail=d["availability_et"].to_numpy(),
+        t_open_utc=d["bucket_open_et"].dt.tz_convert("UTC").dt.tz_localize(None).to_numpy(),
+        t_avail_utc=d["availability_et"].dt.tz_convert("UTC").dt.tz_localize(None).to_numpy(),
         o=d["open"].to_numpy(float),
         h=d["high"].to_numpy(float),
         l=d["low"].to_numpy(float),
@@ -80,7 +108,10 @@ def pct_rank(x: float, hist: np.ndarray) -> float:
 def detect_fvgs(cd: Candles) -> pd.DataFrame:
     rows = []
     o, h, l, c = cd.o, cd.h, cd.l, cd.c
-    for i in range(2, cd.n):
+    # detect only where candle A is post-seam (discovery-side, contiguous). This
+    # includes Jul-5 evening structures that may convert during the week.
+    start = max(2, _postseam_first(cd.t_open_utc) + 2)
+    for i in range(start, cd.n):
         A, B, C = i - 2, i - 1, i
         b_lo, b_hi = min(o[B], c[B]), max(o[B], c[B])
         # ---- bullish ----
@@ -193,6 +224,8 @@ def detect_liquidity(et: pd.DataFrame) -> pd.DataFrame:
 
     def scan(extreme, side, avail, source, tf, meta):
         """First exact touch / first wick passage / sweep after availability."""
+        if not in_discovery(avail):   # emit + scan only discovery-week refs
+            return None
         first_touch = first_wick = sweep = None
         start = np.searchsorted(tclose, avail)  # first bar available strictly after
         # ensure strictly-later availability
@@ -254,6 +287,7 @@ def detect_liquidity(et: pd.DataFrame) -> pd.DataFrame:
                                  {"session_globex_day": gday}))
                 rows.append(scan(bl, "low", bavail, f"candle_{label}_low", "1m",
                                  {"session_globex_day": gday}))
+    rows = [r for r in rows if r is not None]
     df = pd.DataFrame(rows)
     # emit only references available during discovery week
     df = df[df["availability_et"].apply(in_discovery)].reset_index(drop=True)
@@ -271,7 +305,8 @@ def detect_rejection_blocks(cd: Candles) -> pd.DataFrame:
     body = np.abs(c - o)
     rng = h - l
     rows = []
-    for i in range(cd.n):
+    d0, d1 = _disc_bounds(cd.t_avail_utc)  # emit only discovery-week candidates;
+    for i in range(d0, d1):             # history uses full array, scans use tail
         for direction in ("bear", "bull"):
             if direction == "bear":
                 dwick = upper_wick[i]; owick = lower_wick[i]
@@ -372,10 +407,12 @@ def detect_displacement(cd: Candles, fvgs: pd.DataFrame) -> pd.DataFrame:
         for _, f in fvgs.iterrows():
             fvg_by_C.setdefault(f["direction"], set()).add(int(f["C_index"]))
     rows = []
-    for end in range(cd.n):
+    d0, d1 = _disc_bounds(cd.t_avail_utc)
+    seam0 = _postseam_first(cd.t_open_utc)
+    for end in range(d0, d1):
         for L in (1, 2, 3):
             start = end - L + 1
-            if start < 0:
+            if start < seam0:  # leg must not straddle the seam
                 continue
             for direction in ("bull", "bear"):
                 idx = list(range(start, end + 1))

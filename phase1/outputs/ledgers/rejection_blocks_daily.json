@@ -16,9 +16,9 @@
   "total_range":411.0,
   "dwick_body_ratio":2.6898734177,
   "dwick_range_ratio":0.2585158151,
-  "dwick_pctile_prev10":null,
-  "dwick_pctile_prev20":null,
-  "dwick_pctile_prev40":null,
+  "dwick_pctile_prev10":60.0,
+  "dwick_pctile_prev20":70.0,
+  "dwick_pctile_prev40":77.5,
   "first_partial_wick_entry_et":"2026-07-09T21:00:00.000Z",
   "first_body_overlap_et":"2026-07-10T21:00:00.000Z",
   "first_complete_traversal_et":null,
@@ -27,7 +27,7 @@
   "invalidation_et":"2026-07-10T21:00:00.000Z",
   "still_valid_end_of_data":false,
   "untested_through_jul10":false,
-  "source_index":0
+  "source_index":371
  },
  {
   "instrument":"NQ",
@@ -46,9 +46,9 @@
   "total_range":411.0,
   "dwick_body_ratio":6.7151898734,
   "dwick_range_ratio":0.645377129,
-  "dwick_pctile_prev10":null,
-  "dwick_pctile_prev20":null,
-  "dwick_pctile_prev40":null,
+  "dwick_pctile_prev10":80.0,
+  "dwick_pctile_prev20":80.0,
+  "dwick_pctile_prev40":90.0,
   "first_partial_wick_entry_et":"2026-07-07T21:00:00.000Z",
   "first_body_overlap_et":"2026-07-07T21:00:00.000Z",
   "first_complete_traversal_et":"2026-07-07T21:00:00.000Z",
@@ -57,7 +57,7 @@
   "invalidation_et":"2026-07-07T21:00:00.000Z",
   "still_valid_end_of_data":false,
   "untested_through_jul10":false,
-  "source_index":0
+  "source_index":371
  },
  {
   "instrument":"NQ",
@@ -76,9 +76,9 @@
   "total_range":763.75,
   "dwick_body_ratio":0.0249207068,
   "dwick_range_ratio":0.0180032733,
-  "dwick_pctile_prev10":null,
-  "dwick_pctile_prev20":null,
-  "dwick_pctile_prev40":null,
+  "dwick_pctile_prev10":10.0,
+  "dwick_pctile_prev20":5.0,
+  "dwick_pctile_prev40":5.0,
   "first_partial_wick_entry_et":"2026-07-09T21:00:00.000Z",
   "first_body_overlap_et":null,
   "first_complete_traversal_et":"2026-07-09T21:00:00.000Z",
@@ -87,7 +87,7 @@
   "invalidation_et":"2026-07-09T21:00:00.000Z",
   "still_valid_end_of_data":false,
   "untested_through_jul10":false,
-  "source_index":1
+  "source_index":372
  },
  {
   "instrument":"NQ",
@@ -106,9 +106,9 @@
   "total_range":763.75,
   "dwick_body_ratio":0.3593112823,
   "dwick_range_ratio":0.2595744681,
-  "dwick_pctile_prev10":null,
-  "dwick_pctile_prev20":null,
-  "dwick_pctile_prev40":null,
+  "dwick_pctile_prev10":60.0,
+  "dwick_pctile_prev20":65.0,
+  "dwick_pctile_prev40":77.5,
   "first_partial_wick_entry_et":"2026-07-08T21:00:00.000Z",
   "first_body_overlap_et":"2026-07-08T21:00:00.000Z",
   "first_complete_traversal_et":"2026-07-08T21:00:00.000Z",
@@ -117,7 +117,7 @@
   "invalidation_et":"2026-07-08T21:00:00.000Z",
   "still_valid_end_of_data":false,
   "untested_through_jul10":false,
-  "source_index":1
+  "source_index":372
  },
  {
   "instrument":"NQ",
@@ -136,9 +136,9 @@
   "total_range":649.0,
   "dwick_body_ratio":1.6714801444,
   "dwick_range_ratio":0.1783513097,
-  "dwick_pctile_prev10":null,
-  "dwick_pctile_prev20":null,
-  "dwick_pctile_prev40":null,
+  "dwick_pctile_prev10":70.0,
+  "dwick_pctile_prev20":70.0,
+  "dwick_pctile_prev40":80.0,
   "first_partial_wick_entry_et":"2026-07-09T21:00:00.000Z",
   "first_body_overlap_et":"2026-07-09T21:00:00.000Z",
   "first_complete_traversal_et":"2026-07-09T21:00:00.000Z",
@@ -147,7 +147,7 @@
   "invalidation_et":"2026-07-09T21:00:00.000Z",
   "still_valid_end_of_data":false,
   "untested_through_jul10":false,
-  "source_index":2
+  "source_index":373
  },
  {
   "instrument":"NQ",
@@ -166,9 +166,9 @@
   "total_range":649.0,
   "dwick_body_ratio":6.7003610108,
   "dwick_range_ratio":0.7149460709,
-  "dwick_pctile_prev10":null,
-  "dwick_pctile_prev20":null,
-  "dwick_pctile_prev40":null,
+  "dwick_pctile_prev10":100.0,
+  "dwick_pctile_prev20":100.0,
+  "dwick_pctile_prev40":100.0,
   "first_partial_wick_entry_et":null,
   "first_body_overlap_et":null,
   "first_complete_traversal_et":null,
@@ -177,7 +177,7 @@
   "invalidation_et":null,
   "still_valid_end_of_data":true,
   "untested_through_jul10":true,
-  "source_index":2
+  "source_index":373
  },
  {
   "instrument":"NQ",
@@ -196,9 +196,9 @@
   "total_range":598.5,
   "dwick_body_ratio":0.077849861,
   "dwick_range_ratio":0.0701754386,
-  "dwick_pctile_prev10":null,
-  "dwick_pctile_prev20":null,
-  "dwick_pctile_prev40":null,
+  "dwick_pctile_prev10":40.0,
+  "dwick_pctile_prev20":30.0,
+  "dwick_pctile_prev40":30.0,
   "first_partial_wick_entry_et":"2026-07-10T21:00:00.000Z",
   "first_body_overlap_et":"2026-07-10T21:00:00.000Z",
   "first_complete_traversal_et":"2026-07-10T21:00:00.000Z",
@@ -207,7 +207,7 @@
   "invalidation_et":"2026-07-10T21:00:00.000Z",
   "still_valid_end_of_data":false,
   "untested_through_jul10":false,
-  "source_index":3
+  "source_index":374
  },
  {
   "instrument":"NQ",
@@ -226,9 +226,9 @@
   "total_range":598.5,
   "dwick_body_ratio":0.031510658,
   "dwick_range_ratio":0.0284043442,
-  "dwick_pctile_prev10":null,
-  "dwick_pctile_prev20":null,
-  "dwick_pctile_prev40":null,
+  "dwick_pctile_prev10":0.0,
+  "dwick_pctile_prev20":10.0,
+  "dwick_pctile_prev40":12.5,
   "first_partial_wick_entry_et":null,
   "first_body_overlap_et":null,
   "first_complete_traversal_et":null,
@@ -237,7 +237,7 @@
   "invalidation_et":null,
   "still_valid_end_of_data":true,
   "untested_through_jul10":true,
-  "source_index":3
+  "source_index":374
  },
  {
   "instrument":"NQ",
@@ -256,9 +256,9 @@
   "total_range":402.75,
   "dwick_body_ratio":0.2584269663,
   "dwick_range_ratio":0.0713842334,
-  "dwick_pctile_prev10":null,
-  "dwick_pctile_prev20":null,
-  "dwick_pctile_prev40":null,
+  "dwick_pctile_prev10":40.0,
+  "dwick_pctile_prev20":25.0,
+  "dwick_pctile_prev40":22.5,
   "first_partial_wick_entry_et":null,
   "first_body_overlap_et":null,
   "first_complete_traversal_et":null,
@@ -267,7 +267,7 @@
   "invalidation_et":null,
   "still_valid_end_of_data":true,
   "untested_through_jul10":true,
-  "source_index":4
+  "source_index":375
  },
  {
   "instrument":"NQ",
@@ -286,9 +286,9 @@
   "total_range":402.75,
   "dwick_body_ratio":2.3617977528,
   "dwick_range_ratio":0.65238982,
-  "dwick_pctile_prev10":null,
-  "dwick_pctile_prev20":null,
-  "dwick_pctile_prev40":null,
+  "dwick_pctile_prev10":70.0,
+  "dwick_pctile_prev20":75.0,
+  "dwick_pctile_prev40":85.0,
   "first_partial_wick_entry_et":"2026-07-13T21:00:00.000Z",
   "first_body_overlap_et":"2026-07-13T21:00:00.000Z",
   "first_complete_traversal_et":null,
@@ -297,6 +297,6 @@
   "invalidation_et":"2026-07-13T21:00:00.000Z",
   "still_valid_end_of_data":false,
   "untested_through_jul10":true,
-  "source_index":4
+  "source_index":375
  }
 ]

@@ -1,30 +1,75 @@
 {
   "phase": "Phase 1 primitive-definition & implementation audit",
   "param_version": "phase1-v1.0.0",
-  "instrument": "NQ front-month outright (NQU6, instrument_id 42004177), selected by total volume",
-  "input_file": {
-    "name": "glbx-mdp3-20260706-20260712.ohlcv-1m.csv.zst",
-    "sha256": "1d0aac62e1acbcbb341bcac0ab1b672d4948a3d27e5b67068e218c87f91cf007",
-    "manifest_declared_sha256": "1d0aac62e1acbcbb341bcac0ab1b672d4948a3d27e5b67068e218c87f91cf007",
-    "hash_match": true
+  "instrument": "NQ front-month outright; discovery=NQU6 (id 42004177); warm-up=continuous front-month via per-day volume roll",
+  "input_files": {
+    "discovery": {
+      "name": "glbx-mdp3-20260706-20260712.ohlcv-1m.csv.zst",
+      "sha256": "1d0aac62e1acbcbb341bcac0ab1b672d4948a3d27e5b67068e218c87f91cf007",
+      "manifest_declared_sha256": "1d0aac62e1acbcbb341bcac0ab1b672d4948a3d27e5b67068e218c87f91cf007",
+      "hash_match": true
+    },
+    "warmup_zst": {
+      "name": "glbx-mdp3-20250101-20260607.ohlcv-1m.csv.zst",
+      "sha256": "4a56638dad7a79c8d0d42a28da2a2bab58273fb0b8274f47bf54da05b7dc7cad",
+      "manifest_declared_sha256": "4a56638dad7a79c8d0d42a28da2a2bab58273fb0b8274f47bf54da05b7dc7cad",
+      "hash_match": true
+    },
+    "warmup_zip_container": {
+      "name": "nq2025.zip",
+      "sha256": "b4fcf58ff5db70d2a8d45d605ce5a2742ab003a1cf694ef2721a04562b6608e2"
+    }
   },
   "dataset": {
     "schema": "ohlcv-1m",
     "dataset_id": "GLBX.MDP3",
-    "rows_raw": 9057,
-    "rows_selected_instrument": 6900,
-    "range_utc": [
-      "2026-07-06T00:00:00Z",
-      "2026-07-12T23:59:00Z"
-    ],
-    "range_et": [
+    "discovery_range_et": [
       "2026-07-05T20:00:00-04:00",
       "2026-07-12T19:59:00-04:00"
-    ]
+    ],
+    "warmup_range_utc": [
+      "2025-01-01T23:00:00.000000000Z",
+      "2026-06-07T23:59:00.000000000Z"
+    ],
+    "combined_series_rows": 511567,
+    "warmup_globex_sessions": 371,
+    "warmup_requirement_met": true,
+    "warmup_roll_dates": [
+      {
+        "date": "2025-01-01",
+        "symbol": "NQH5"
+      },
+      {
+        "date": "2025-03-18",
+        "symbol": "NQM5"
+      },
+      {
+        "date": "2025-06-16",
+        "symbol": "NQU5"
+      },
+      {
+        "date": "2025-09-15",
+        "symbol": "NQZ5"
+      },
+      {
+        "date": "2025-12-15",
+        "symbol": "NQH6"
+      },
+      {
+        "date": "2026-03-16",
+        "symbol": "NQM6"
+      }
+    ],
+    "seam_gap": {
+      "last_warmup_bar_et": "2026-06-07 19:59:00-04:00",
+      "first_discovery_bar_et": "2026-07-05 20:00:00-04:00",
+      "gap_days": 28.000694444444445,
+      "note": "Warm-up ends on NQM6; discovery is NQU6. The seam carries both a ~1-month calendar gap and a contract change. Warm-up is therefore used ONLY for relative trailing size percentiles; structural detection is confined to the post-seam discovery series."
+    }
   },
   "timezone_rules": {
     "iana": "America/New_York",
-    "dst": "handled via zoneinfo/pytz (EDT UTC-4 across sample)",
+    "dst": "handled via zoneinfo (EDT UTC-4 across discovery; full DST across warm-up)",
     "ts_event_marks": "bar OPENING (interval start)",
     "availability": "interval end = open + tf length",
     "globex_day": "18:00 ET -> 17:00 ET next day",
@@ -47,10 +92,11 @@
     "no future look-back to mark structures earlier",
     "boundaries never retrospectively moved",
     "availability timestamp stored per structure",
-    "no intrabar ordering inferred from OHLCV"
+    "no intrabar ordering inferred from OHLCV",
+    "structural detection confined to post-seam discovery series; warm-up used ONLY for relative trailing size percentiles"
   ],
   "primitives_params": {
-    "fvg": "3 consecutive completed candles; body-containment enforced; available after C close",
+    "fvg": "3 consecutive completed candles; body-containment enforced; available after C close; A must be post-seam",
     "ifvg": "conversion only on later candle CLOSE beyond opposite boundary (wick/inside insufficient)",
     "liquidity_sources": [
       "prev_rth_high/low",
@@ -61,7 +107,8 @@
     ],
     "liquidity_sweep": "strict penetration; exact touch != sweep",
     "rejection_block": "wick-only zone; percentiles vs prev 10/20/40 same-tf same-direction wick; invalidation = first body-overlap OR complete wick traversal beyond far boundary",
-    "displacement": "legs len 1/2/3 both directions; trailing N=10/20/40; raw measurements preserved; NO outcome-based classification threshold"
+    "displacement": "legs len 1/2/3 both directions; trailing N=10/20/40; raw measurements preserved; NO outcome-based classification threshold",
+    "trailing_context": "prev-N histories draw from the continuous warm-up series; all prev10/20/40 now fully populated (0 null)"
   },
   "environment": {
     "python": "3.11.15",
@@ -70,19 +117,20 @@
     "platform": "Linux-6.18.5-x86_64-with-glibc2.39"
   },
   "code_sha256": {
-    "core.py": "4df8d4366a9d210d3cf0f6c3cf5ca579d5c44affa68316965870c1c23197995d",
-    "primitives.py": "aa536e90546e6fd5a00cff46698545106721911610ab5fbe6a84d23a1b625584",
-    "run.py": "672c68c5b314d2071e933dac4de0bd3c87353d88ff3845aeea060a589b7d982c",
+    "core.py": "be4396614acb5e05d64f26c4a4f8337ae8e54e2ddbbab18ecc4bb3890207d140",
+    "primitives.py": "92a35a49141a42fc87df237d10e7c9a2a4889c2a346f1f5bb11a791cd4d71c4b",
+    "run.py": "ff70e2b117a14aecfd34d6c878c2643cac2c7e8eaea3385bd61a29071d5f4776",
     "charts.py": "0aa22b666f26d2b62bdea94f9531814c7413a5d9e2af7e0307b7f8a452a0048a"
   },
-  "git_commit_at_build": "14f2a4ad2aa13d8ef0140abd70c5dacfacd09fc3",
+  "git_commit_at_build": "93f68fc1e7021c772d60d54ffc07c1ce6341b560",
   "outputs": {
-    "ledgers": "outputs/ledgers/*.csv|json",
+    "ledgers": "outputs/ledgers/*.csv (+ JSON for <=5000 rows)",
     "htf_candles": "outputs/htf_candles_*.csv",
-    "normalized_minutes": "outputs/nq_1m_et_normalized.csv",
+    "normalized_minutes": "outputs/nq_1m_et_normalized.csv (discovery-context slice)",
     "charts": "outputs/charts/*.png",
     "examples": "outputs/examples/audit_examples.json",
     "data_quality": "outputs/data_quality_report.json"
   },
-  "determinism": "no randomness; no seeds required; identical inputs reproduce identical outputs"
+  "determinism": "no randomness; no seeds required; identical inputs reproduce identical outputs",
+  "reproduce_cmd": "python3 run.py data.csv <discovery.zst> warmup.csv <warmup.zst>  && python3 charts.py"
 }

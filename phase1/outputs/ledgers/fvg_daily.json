@@ -23,7 +23,7 @@
   "midpoint_touch_et":"2026-07-09T21:00:00.000Z",
   "full_fill_et":"2026-07-09T21:00:00.000Z",
   "invalidation_et":"2026-07-09T21:00:00.000Z",
-  "C_index":2
+  "C_index":373
  },
  {
   "id":"FVG-daily-bull-20260709T1800",
@@ -49,6 +49,6 @@
   "midpoint_touch_et":null,
   "full_fill_et":null,
   "invalidation_et":null,
-  "C_index":4
+  "C_index":375
  }
 ]

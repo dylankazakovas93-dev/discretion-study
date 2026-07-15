@@ -45,6 +45,39 @@ def load_raw(csv_path: str) -> pd.DataFrame:
     return df
 
 
+def load_warmup_continuous(csv_path: str) -> tuple[pd.DataFrame, dict]:
+    """Build a continuous front-month series from the warm-up file.
+
+    Front month is chosen per UTC calendar date as the OUTRIGHT symbol with the
+    greatest volume that day (standard volume-based roll). Calendar spreads are
+    excluded. The series is UNADJUSTED (raw): contract rolls introduce a price
+    step on roll dates. This is acceptable because the warm-up is used ONLY for
+    RELATIVE trailing size percentiles, never for structural continuity across
+    the seam.
+    """
+    df = load_raw(csv_path)
+    df["date"] = df["ts_event"].str[:10]
+    out = df[~df["symbol"].str.contains("-", na=False)].copy()
+    vol = out.groupby(["date", "symbol"])["volume"].sum().reset_index()
+    front = vol.loc[vol.groupby("date")["volume"].idxmax()][["date", "symbol"]]
+    frontmap = dict(zip(front["date"], front["symbol"]))
+    out["front"] = out["date"].map(frontmap)
+    sel = out[out["symbol"] == out["front"]].copy()
+    fs = front.sort_values("date")
+    rolls, prev = [], None
+    for _, r in fs.iterrows():
+        if r["symbol"] != prev:
+            rolls.append({"date": r["date"], "symbol": r["symbol"]})
+            prev = r["symbol"]
+    info = {
+        "roll_dates": rolls,
+        "warmup_symbols": sorted(front["symbol"].unique().tolist()),
+        "warmup_rows_selected": int(len(sel)),
+        "warmup_utc_range": [str(sel["ts_event"].min()), str(sel["ts_event"].max())],
+    }
+    return sel, info
+
+
 def select_front_month(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     """Select the outright front-month contract by total traded volume.
 
@@ -275,62 +308,43 @@ def aggregate_tf(min_bars: pd.DataFrame, tf: TF) -> pd.DataFrame:
         return out.reset_index(drop=True)
 
     if tf.name == "daily":
-        # Globex day already tagged; a daily candle covers 18:00 ET -> 17:00 ET.
-        # Exclude maintenance minutes (they are outside the OHLC day per spec:
-        # 18:00-17:00 spans overnight+rth; the 17:00-18:00 break is the gap
-        # BETWEEN days). Group by globex_day but only session in overnight/rth.
+        # A daily candle covers the Globex day 18:00 ET -> 17:00 ET (overnight +
+        # RTH; the 17:00-18:00 maintenance break is the gap BETWEEN days).
         gb = b[b["session"].isin(["overnight", "rth"])].copy()
-        grp = gb.groupby("globex_day", sort=True)
-        rows = []
-        for day, g in grp:
-            g = g.sort_values("ts_open_et")
-            # availability = end of the RTH/overnight span = last source close,
-            # but formally the Globex day ends at 17:00 ET of the calendar day
-            # equal to `day`.
-            day_date = pd.Timestamp(day, tz=TZ)
-            bucket_open = day_date - pd.Timedelta(days=1) + pd.Timedelta(hours=18)
-            bucket_close = day_date + pd.Timedelta(hours=17)
-            rows.append({
-                "tf": "daily",
-                "bucket_open_et": bucket_open,
-                "bucket_close_et": bucket_close,
-                "open": g["open"].iloc[0],
-                "high": g["high"].max(),
-                "low": g["low"].min(),
-                "close": g["close"].iloc[-1],
-                "volume": g["volume"].sum(),
-                "n_source_minutes": len(g),
-                "source_first_ts": g["ts_open_et"].iloc[0],
-                "source_last_ts": g["ts_open_et"].iloc[-1],
-                "availability_et": bucket_close,
-                "complete": None,  # completeness judged externally
-            })
-        return pd.DataFrame(rows).reset_index(drop=True)
+        gb = gb.sort_values("ts_open_et")
+        agg = (gb.groupby("globex_day", sort=True)
+                 .agg(open=("open", "first"), high=("high", "max"),
+                      low=("low", "min"), close=("close", "last"),
+                      volume=("volume", "sum"), n_source_minutes=("open", "size"),
+                      source_first_ts=("ts_open_et", "first"),
+                      source_last_ts=("ts_open_et", "last"))
+                 .reset_index())
+        day_date = pd.to_datetime(agg["globex_day"]).dt.tz_localize(TZ)
+        agg["bucket_open_et"] = day_date - pd.Timedelta(days=1) + pd.Timedelta(hours=18)
+        agg["bucket_close_et"] = day_date + pd.Timedelta(hours=17)
+        agg["availability_et"] = agg["bucket_close_et"]
+        agg["tf"] = "daily"
+        agg["complete"] = None
+        return agg.reset_index(drop=True)
 
-    # intraday HTF
-    starts = b["ts_open_et"].apply(lambda t: _bucket_start_intraday(t, tf.minutes))
-    b["bucket_open_et"] = starts
-    b["bucket_close_et"] = b["bucket_open_et"] + pd.Timedelta(minutes=tf.minutes)
-    rows = []
-    for bstart, g in b.groupby("bucket_open_et", sort=True):
-        g = g.sort_values("ts_open_et")
-        bclose = bstart + pd.Timedelta(minutes=tf.minutes)
-        rows.append({
-            "tf": tf.name,
-            "bucket_open_et": bstart,
-            "bucket_close_et": bclose,
-            "open": g["open"].iloc[0],
-            "high": g["high"].max(),
-            "low": g["low"].min(),
-            "close": g["close"].iloc[-1],
-            "volume": g["volume"].sum(),
-            "n_source_minutes": len(g),
-            "source_first_ts": g["ts_open_et"].iloc[0],
-            "source_last_ts": g["ts_open_et"].iloc[-1],
-            "availability_et": bclose,
-            "complete": len(g) == tf.minutes,
-        })
-    return pd.DataFrame(rows).reset_index(drop=True)
+    # intraday HTF (vectorized)
+    midnight = b["ts_open_et"].dt.normalize()
+    mins = (b["ts_open_et"] - midnight).dt.total_seconds() / 60.0
+    bstart_min = (mins // tf.minutes).astype("int64") * tf.minutes
+    b = b.assign(bucket_open_et=midnight + pd.to_timedelta(bstart_min, unit="m"))
+    b = b.sort_values("ts_open_et")
+    agg = (b.groupby("bucket_open_et", sort=True)
+             .agg(open=("open", "first"), high=("high", "max"),
+                  low=("low", "min"), close=("close", "last"),
+                  volume=("volume", "sum"), n_source_minutes=("open", "size"),
+                  source_first_ts=("ts_open_et", "first"),
+                  source_last_ts=("ts_open_et", "last"))
+             .reset_index())
+    agg["bucket_close_et"] = agg["bucket_open_et"] + pd.Timedelta(minutes=tf.minutes)
+    agg["availability_et"] = agg["bucket_close_et"]
+    agg["tf"] = tf.name
+    agg["complete"] = agg["n_source_minutes"] == tf.minutes
+    return agg.reset_index(drop=True)
 
 
 def build_all(csv_path: str, file_path_for_hash: str):
@@ -341,6 +355,59 @@ def build_all(csv_path: str, file_path_for_hash: str):
     et = pd.concat([et, tags], axis=1)
     audit = data_audit(raw, et, file_path_for_hash)
     audit.update({"instrument_selection": sel_info})
+    tf_ledgers = {tf.name: aggregate_tf(et, tf) for tf in TIMEFRAMES}
+    return et, audit, tf_ledgers
+
+
+BASE_COLS = ["ts_event", "rtype", "publisher_id", "instrument_id",
+             "open", "high", "low", "close", "volume", "symbol"]
+
+
+def build_combined(discovery_csv: str, warmup_csv: str,
+                   discovery_hash_path: str, warmup_hash_path: str):
+    """Discovery (NQU6) spliced onto a continuous front-month warm-up series.
+
+    Returns the combined ET frame plus an extended audit that keeps the
+    discovery-file data-quality report intact and adds warm-up + seam metadata.
+    """
+    raw_d = load_raw(discovery_csv)
+    sel_d, sel_info = select_front_month(raw_d)
+    sel_w, roll_info = load_warmup_continuous(warmup_csv)
+
+    comb = pd.concat([sel_w[BASE_COLS], sel_d[BASE_COLS]], ignore_index=True)
+    et = to_et(comb)
+    tags = et_session_tag(et["ts_open_et"])
+    et = pd.concat([et, tags], axis=1)
+
+    # discovery-only audit (unchanged, authoritative for the study week)
+    et_d = to_et(sel_d)
+    et_d = pd.concat([et_d, et_session_tag(et_d["ts_open_et"])], axis=1)
+    audit = data_audit(raw_d, et_d, discovery_hash_path)
+    audit["instrument_selection"] = sel_info
+
+    # seam: last warm-up bar -> first discovery bar
+    warm_last = et[et["ts_open_et"] < pd.Timestamp("2026-06-30", tz=TZ)]["ts_open_et"].max()
+    disc_first = et[et["ts_open_et"] >= pd.Timestamp("2026-06-30", tz=TZ)]["ts_open_et"].min()
+    audit["warmup"] = {
+        "hash_path": warmup_hash_path,
+        "file_sha256": sha256_file(warmup_hash_path),
+        "rows_selected_continuous": roll_info["warmup_rows_selected"],
+        "symbols_used": roll_info["warmup_symbols"],
+        "roll_dates": roll_info["roll_dates"],
+        "utc_range": roll_info["warmup_utc_range"],
+        "warmup_globex_sessions": int(et[et["ts_open_et"] < pd.Timestamp("2026-06-30", tz=TZ)]["globex_day"].nunique()),
+        "seam_gap": {
+            "last_warmup_bar_et": str(warm_last),
+            "first_discovery_bar_et": str(disc_first),
+            "gap_days": float((disc_first - warm_last).total_seconds() / 86400.0),
+            "note": ("Warm-up ends on NQM6; discovery is NQU6. The seam carries "
+                     "both a ~1-month calendar gap and a contract change. Warm-up "
+                     "is therefore used ONLY for relative trailing size "
+                     "percentiles; structural detection is confined to the "
+                     "post-seam discovery series."),
+        },
+        "requirement_met": bool(int(et[et["ts_open_et"] < pd.Timestamp("2026-06-30", tz=TZ)]["globex_day"].nunique()) >= 40),
+    }
     tf_ledgers = {tf.name: aggregate_tf(et, tf) for tf in TIMEFRAMES}
     return et, audit, tf_ledgers
 
