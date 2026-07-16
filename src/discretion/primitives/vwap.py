@@ -115,7 +115,7 @@ def build_vwap_sessions(bars: list[Bar], reg: IdRegistry) -> list[VWAPSession]:
             if consec_above == 2:
                 cur.add_event("ACCEPTANCE_ABOVE", i, bar.ts_utc, price=bar.close,
                               note="vwap")
-            if consec_above >= 3:
+            if consec_above == 3:
                 cur.add_event("CONTINUATION", i, bar.ts_utc, price=bar.close,
                               note="vwap_above")
         elif side < 0:
@@ -124,7 +124,7 @@ def build_vwap_sessions(bars: list[Bar], reg: IdRegistry) -> list[VWAPSession]:
             if consec_below == 2:
                 cur.add_event("ACCEPTANCE_BELOW", i, bar.ts_utc, price=bar.close,
                               note="vwap")
-            if consec_below >= 3:
+            if consec_below == 3:
                 cur.add_event("CONTINUATION", i, bar.ts_utc, price=bar.close,
                               note="vwap_below")
         prev_side = side if side != 0 else prev_side

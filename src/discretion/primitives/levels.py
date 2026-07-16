@@ -235,7 +235,7 @@ def track_level_interactions(levels: list[Level], bars: list[Bar],
                     lv.broken_side = 1
                 if lv.consec_above == 2:
                     lv.add_event("ACCEPTANCE_ABOVE", i, bar.ts_utc, price=bar.close)
-                if lv.consec_above >= 3:
+                if lv.consec_above == 3:
                     lv.add_event("CONTINUATION", i, bar.ts_utc, price=bar.close)
             elif bar.close < P:
                 lv.consec_below += 1
@@ -249,7 +249,7 @@ def track_level_interactions(levels: list[Level], bars: list[Bar],
                     lv.broken_side = -1
                 if lv.consec_below == 2:
                     lv.add_event("ACCEPTANCE_BELOW", i, bar.ts_utc, price=bar.close)
-                if lv.consec_below >= 3:
+                if lv.consec_below == 3:
                     lv.add_event("CONTINUATION", i, bar.ts_utc, price=bar.close)
             if bar.close != P:
                 prev_side[lv.id] = 1 if bar.close > P else -1

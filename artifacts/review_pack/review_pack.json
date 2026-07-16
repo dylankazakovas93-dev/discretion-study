@@ -1,0 +1,743 @@
+[
+  {
+    "category": "01_bullish_fvg",
+    "kind": "primitive",
+    "example": {
+      "primitive_id": "FVG-000020",
+      "family": "fvg",
+      "subtype": "bullish",
+      "timestamp_et": "2025-07-06 19:11:00-04:00",
+      "zone_lo": 22974.75,
+      "zone_hi": 22987.0,
+      "events": [
+        "FORMED",
+        "FIRST_TOUCH",
+        "FIRST_FILL",
+        "REVISIT",
+        "REVISIT",
+        "REVISIT",
+        "REVISIT",
+        "REVISIT",
+        "MIDPOINT",
+        "REVISIT",
+        "REVISIT",
+        "REVISIT"
+      ]
+    },
+    "chart": "../charts/01_bullish_fvg.png"
+  },
+  {
+    "category": "02_bearish_fvg",
+    "kind": "primitive",
+    "example": {
+      "primitive_id": "FVG-000017",
+      "family": "fvg",
+      "subtype": "bearish",
+      "timestamp_et": "2025-07-06 18:59:00-04:00",
+      "zone_lo": 22984.75,
+      "zone_hi": 22989.25,
+      "events": [
+        "FORMED",
+        "FIRST_TOUCH",
+        "FIRST_FILL",
+        "MIDPOINT",
+        "REVISIT",
+        "FULL_FILL",
+        "REVISIT",
+        "FAILURE"
+      ]
+    },
+    "chart": "../charts/02_bearish_fvg.png"
+  },
+  {
+    "category": "03_bullish_ifvg",
+    "kind": "primitive",
+    "example": {
+      "primitive_id": "IFVG-000014",
+      "family": "ifvg",
+      "subtype": "bullish",
+      "timestamp_et": "2025-07-06 19:10:00-04:00",
+      "zone_lo": 22977.75,
+      "zone_hi": 22983.75,
+      "events": [
+        "CONFIRMED",
+        "FIRST_TOUCH",
+        "REJECTION",
+        "REVISIT",
+        "REJECTION",
+        "REVISIT",
+        "REVISIT",
+        "REJECTION",
+        "REVISIT",
+        "REVISIT",
+        "REJECTION",
+        "REVISIT"
+      ]
+    },
+    "chart": "../charts/03_bullish_ifvg.png"
+  },
+  {
+    "category": "04_bearish_ifvg",
+    "kind": "primitive",
+    "example": {
+      "primitive_id": "IFVG-000013",
+      "family": "ifvg",
+      "subtype": "bearish",
+      "timestamp_et": "2025-07-06 18:59:00-04:00",
+      "zone_lo": 22983.5,
+      "zone_hi": 22986.75,
+      "events": [
+        "CONFIRMED",
+        "FIRST_TOUCH",
+        "REINVERSION"
+      ]
+    },
+    "chart": "../charts/04_bearish_ifvg.png"
+  },
+  {
+    "category": "05_bullish_rb",
+    "kind": "primitive",
+    "example": {
+      "primitive_id": "RB-000002",
+      "family": "rejection_block",
+      "subtype": "bullish",
+      "timestamp_et": "2025-07-06 18:51:00-04:00",
+      "zone_lo": 22986.0,
+      "zone_hi": 22989.0,
+      "events": [
+        "FORMED",
+        "CONFIRMED",
+        "FIRST_TOUCH",
+        "REVISIT",
+        "REVISIT",
+        "REVISIT",
+        "REJECTION",
+        "REVISIT",
+        "INVALIDATION"
+      ]
+    },
+    "chart": "../charts/05_bullish_rb.png"
+  },
+  {
+    "category": "06_bearish_rb",
+    "kind": "primitive",
+    "example": {
+      "primitive_id": "RB-000005",
+      "family": "rejection_block",
+      "subtype": "bearish",
+      "timestamp_et": "2025-07-06 19:23:00-04:00",
+      "zone_lo": 23001.75,
+      "zone_hi": 23005.0,
+      "events": [
+        "FORMED",
+        "CONFIRMED",
+        "FIRST_TOUCH",
+        "EXACT_TOUCH",
+        "REJECTION",
+        "REVISIT",
+        "REVISIT",
+        "REJECTION",
+        "EXPIRY"
+      ]
+    },
+    "chart": "../charts/06_bearish_rb.png"
+  },
+  {
+    "category": "07_good_displacement",
+    "kind": "primitive",
+    "example": {
+      "primitive_id": "DISP-000007",
+      "family": "displacement",
+      "subtype": "good",
+      "timestamp_et": "2025-07-06 18:53:00-04:00",
+      "zone_lo": 22985.0,
+      "zone_hi": 22991.75,
+      "events": [
+        "FORMED"
+      ]
+    },
+    "chart": "../charts/07_good_displacement.png"
+  },
+  {
+    "category": "08_bad_displacement",
+    "kind": "primitive",
+    "example": {
+      "primitive_id": "DISP-000012",
+      "family": "displacement",
+      "subtype": "bad",
+      "timestamp_et": "2025-07-06 19:00:00-04:00",
+      "zone_lo": 22964.5,
+      "zone_hi": 22977.75,
+      "events": [
+        "FORMED",
+        "CONTINUATION"
+      ]
+    },
+    "chart": "../charts/08_bad_displacement.png"
+  },
+  {
+    "category": "09_fvg_formation_continuation",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-000003",
+      "timestamp_et": "2025-07-06 19:17:00-04:00",
+      "direction": "long",
+      "graph": "fvg:bullish:formed -> formation_close -> continuation",
+      "entry_mode": "formation_close",
+      "path_family": "formation_continuation",
+      "continuation_or_fade": "continuation",
+      "origin_family": "fvg",
+      "primitive_ids": [
+        "FVG-000021"
+      ],
+      "context_conditions": [
+        "fvg_fresh",
+        "good_displacement"
+      ],
+      "entry": 22991.75,
+      "natural_structural_stop": 22988.25,
+      "natural_structural_target": 22994.25,
+      "natural_rr": 0.7143,
+      "executed_target": 22994.25,
+      "executed_rr": 0.7143,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": true,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "WIN"
+    },
+    "chart": "../charts/09_fvg_formation_continuation.png"
+  },
+  {
+    "category": "10_fvg_fill_continuation",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-000757",
+      "timestamp_et": "2025-07-06 19:10:00-04:00",
+      "direction": "short",
+      "graph": "fvg:bearish:formed -> first_touch -> continuation",
+      "entry_mode": "first_touch",
+      "path_family": "retracement_continuation",
+      "continuation_or_fade": "continuation",
+      "origin_family": "fvg",
+      "primitive_ids": [
+        "FVG-000017"
+      ],
+      "context_conditions": [
+        "fvg_fresh",
+        "first_touch"
+      ],
+      "entry": 22984.75,
+      "natural_structural_stop": 22989.75,
+      "natural_structural_target": 22981.5,
+      "natural_rr": 0.65,
+      "executed_target": 22981.5,
+      "executed_rr": 0.65,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": true,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "LOSS"
+    },
+    "chart": "../charts/10_fvg_fill_continuation.png"
+  },
+  {
+    "category": "11_ifvg_immediate",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-001533",
+      "timestamp_et": "2025-07-06 19:49:00-04:00",
+      "direction": "short",
+      "graph": "ifvg:bearish:formation_close (from FVG-000028)",
+      "entry_mode": "formation_close",
+      "path_family": "fade",
+      "continuation_or_fade": "fade",
+      "origin_family": "ifvg",
+      "primitive_ids": [
+        "IFVG-000025",
+        "FVG-000028"
+      ],
+      "context_conditions": [
+        "ifvg_activation"
+      ],
+      "entry": 22987.0,
+      "natural_structural_stop": 22990.5,
+      "natural_structural_target": 22985.25,
+      "natural_rr": 0.5,
+      "executed_target": 22985.25,
+      "executed_rr": 0.5,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": true,
+      "has_ifvg": true,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "WIN"
+    },
+    "chart": "../charts/11_ifvg_immediate.png"
+  },
+  {
+    "category": "12_ifvg_retest",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-002203",
+      "timestamp_et": "2025-07-06 19:10:00-04:00",
+      "direction": "short",
+      "graph": "ifvg:bearish:retest (from FVG-000011)",
+      "entry_mode": "retest",
+      "path_family": "fade",
+      "continuation_or_fade": "fade",
+      "origin_family": "ifvg",
+      "primitive_ids": [
+        "IFVG-000013",
+        "FVG-000011"
+      ],
+      "context_conditions": [
+        "ifvg_retest"
+      ],
+      "entry": 22983.5,
+      "natural_structural_stop": 22987.25,
+      "natural_structural_target": 22981.5,
+      "natural_rr": 0.5333,
+      "executed_target": 22981.5,
+      "executed_rr": 0.5333,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": true,
+      "has_ifvg": true,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "LOSS"
+    },
+    "chart": "../charts/12_ifvg_retest.png"
+  },
+  {
+    "category": "13_time_anchor_no_fvg",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-003934",
+      "timestamp_et": "2025-07-06 20:22:00-04:00",
+      "direction": "short",
+      "graph": "time_anchor:asia_open:break -> accept -> retest -> continuation",
+      "entry_mode": "retest",
+      "path_family": "retracement_continuation",
+      "continuation_or_fade": "continuation",
+      "origin_family": "time_anchor",
+      "primitive_ids": [
+        "LVL-000001"
+      ],
+      "context_conditions": [
+        "time_anchor_accepted"
+      ],
+      "entry": 22983.75,
+      "natural_structural_stop": 22985.25,
+      "natural_structural_target": 22981.5,
+      "natural_rr": 1.5,
+      "executed_target": 22982.25,
+      "executed_rr": 1.0,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "WIN"
+    },
+    "chart": "../charts/13_time_anchor_no_fvg.png"
+  },
+  {
+    "category": "14_hist_level_continuation",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-004112",
+      "timestamp_et": "2025-07-07 09:52:00-04:00",
+      "direction": "short",
+      "graph": "hist_level:hl_0930_high:break -> accept -> retest -> continuation",
+      "entry_mode": "retest",
+      "path_family": "retracement_continuation",
+      "continuation_or_fade": "continuation",
+      "origin_family": "hist_level",
+      "primitive_ids": [
+        "LVL-000009"
+      ],
+      "context_conditions": [
+        "hist_level_accepted"
+      ],
+      "entry": 22975.75,
+      "natural_structural_stop": 22977.25,
+      "natural_structural_target": 22975.0,
+      "natural_rr": 0.5,
+      "executed_target": 22975.0,
+      "executed_rr": 0.5,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "WIN"
+    },
+    "chart": "../charts/14_hist_level_continuation.png"
+  },
+  {
+    "category": "15_hist_level_fade",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-004123",
+      "timestamp_et": "2025-07-08 02:16:00-04:00",
+      "direction": "short",
+      "graph": "hist_level:hl_0930_low:sweep -> reject -> fade",
+      "entry_mode": "formation_close",
+      "path_family": "fade",
+      "continuation_or_fade": "fade",
+      "origin_family": "hist_level",
+      "primitive_ids": [
+        "LVL-000010"
+      ],
+      "context_conditions": [
+        "hist_level_sweep"
+      ],
+      "entry": 22940.25,
+      "natural_structural_stop": 22942.5,
+      "natural_structural_target": 22939.0,
+      "natural_rr": 0.5556,
+      "executed_target": 22939.0,
+      "executed_rr": 0.5556,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": true,
+      "outcome_shown_separately": "LOSS"
+    },
+    "chart": "../charts/15_hist_level_fade.png"
+  },
+  {
+    "category": "16_vwap_continuation",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-041416",
+      "timestamp_et": "2025-07-06 18:11:00-04:00",
+      "direction": "short",
+      "graph": "vwap:bounce -> continuation",
+      "entry_mode": "first_touch",
+      "path_family": "retracement_continuation",
+      "continuation_or_fade": "continuation",
+      "origin_family": "vwap",
+      "primitive_ids": [
+        "VWAP-000001"
+      ],
+      "context_conditions": [
+        "vwap_bounce"
+      ],
+      "entry": 22992.25,
+      "natural_structural_stop": 23003.75,
+      "natural_structural_target": 22977.0,
+      "natural_rr": 1.3261,
+      "executed_target": 22980.75,
+      "executed_rr": 1.0,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "LOSS"
+    },
+    "chart": "../charts/16_vwap_continuation.png"
+  },
+  {
+    "category": "17_vwap_fade",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-041413",
+      "timestamp_et": "2025-07-06 18:05:00-04:00",
+      "direction": "short",
+      "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
+      "entry_mode": "formation_close",
+      "path_family": "fade",
+      "continuation_or_fade": "fade",
+      "origin_family": "vwap",
+      "primitive_ids": [
+        "VWAP-000001"
+      ],
+      "context_conditions": [
+        "band_rejection"
+      ],
+      "entry": 23008.5,
+      "natural_structural_stop": 23011.5,
+      "natural_structural_target": 22993.340270460132,
+      "natural_rr": 5.0532,
+      "executed_target": 23005.5,
+      "executed_rr": 1.0,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "WIN"
+    },
+    "chart": "../charts/17_vwap_fade.png"
+  },
+  {
+    "category": "18_compression_to_expansion",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-042544",
+      "timestamp_et": "2025-07-07 01:20:00-04:00",
+      "direction": "short",
+      "graph": "compression -> expansion -> continuation",
+      "entry_mode": "next_bar",
+      "path_family": "formation_continuation",
+      "continuation_or_fade": "continuation",
+      "origin_family": "structure",
+      "primitive_ids": [
+        "STRUCT-000006"
+      ],
+      "context_conditions": [
+        "compression_break"
+      ],
+      "entry": 22934.0,
+      "natural_structural_stop": 22942.5,
+      "natural_structural_target": 22914.5,
+      "natural_rr": 2.2941,
+      "executed_target": 22925.5,
+      "executed_rr": 1.0,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "LOSS"
+    },
+    "chart": "../charts/18_compression_to_expansion.png"
+  },
+  {
+    "category": "19_capped_1R",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-041413",
+      "timestamp_et": "2025-07-06 18:05:00-04:00",
+      "direction": "short",
+      "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
+      "entry_mode": "formation_close",
+      "path_family": "fade",
+      "continuation_or_fade": "fade",
+      "origin_family": "vwap",
+      "primitive_ids": [
+        "VWAP-000001"
+      ],
+      "context_conditions": [
+        "band_rejection"
+      ],
+      "entry": 23008.5,
+      "natural_structural_stop": 23011.5,
+      "natural_structural_target": 22993.340270460132,
+      "natural_rr": 5.0532,
+      "executed_target": 23005.5,
+      "executed_rr": 1.0,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "WIN"
+    },
+    "chart": "../charts/19_capped_1R.png"
+  },
+  {
+    "category": "20_natural_half_to_1R",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-041414",
+      "timestamp_et": "2025-07-06 18:06:00-04:00",
+      "direction": "short",
+      "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
+      "entry_mode": "formation_close",
+      "path_family": "fade",
+      "continuation_or_fade": "fade",
+      "origin_family": "vwap",
+      "primitive_ids": [
+        "VWAP-000001"
+      ],
+      "context_conditions": [
+        "band_rejection"
+      ],
+      "entry": 23000.0,
+      "natural_structural_stop": 23011.5,
+      "natural_structural_target": 22993.7548146904,
+      "natural_rr": 0.5431,
+      "executed_target": 22993.7548146904,
+      "executed_rr": 0.5431,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "AMBIGUOUS"
+    },
+    "chart": "../charts/20_natural_half_to_1R.png"
+  },
+  {
+    "category": "21_rejected_below_half_R",
+    "kind": "rejected",
+    "example": {
+      "setup_id": "SETUP-041411",
+      "timestamp_et": "2025-07-06 18:01:00-04:00",
+      "direction": "short",
+      "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
+      "entry_mode": "formation_close",
+      "path_family": "fade",
+      "continuation_or_fade": "fade",
+      "origin_family": "vwap",
+      "primitive_ids": [
+        "VWAP-000001"
+      ],
+      "context_conditions": [
+        "band_rejection"
+      ],
+      "entry": 23001.5,
+      "natural_structural_stop": 23029.0,
+      "natural_structural_target": 22991.97164750958,
+      "natural_rr": 0.3465,
+      "executed_target": 0.0,
+      "executed_rr": 0.0,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "UNEVALUATED"
+    },
+    "chart": "../charts/21_rejected_below_half_R.png"
+  },
+  {
+    "category": "22_continuation_setup",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-041416",
+      "timestamp_et": "2025-07-06 18:11:00-04:00",
+      "direction": "short",
+      "graph": "vwap:bounce -> continuation",
+      "entry_mode": "first_touch",
+      "path_family": "retracement_continuation",
+      "continuation_or_fade": "continuation",
+      "origin_family": "vwap",
+      "primitive_ids": [
+        "VWAP-000001"
+      ],
+      "context_conditions": [
+        "vwap_bounce"
+      ],
+      "entry": 22992.25,
+      "natural_structural_stop": 23003.75,
+      "natural_structural_target": 22977.0,
+      "natural_rr": 1.3261,
+      "executed_target": 22980.75,
+      "executed_rr": 1.0,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "LOSS"
+    },
+    "chart": "../charts/22_continuation_setup.png"
+  },
+  {
+    "category": "23_fade_setup",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-041413",
+      "timestamp_et": "2025-07-06 18:05:00-04:00",
+      "direction": "short",
+      "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
+      "entry_mode": "formation_close",
+      "path_family": "fade",
+      "continuation_or_fade": "fade",
+      "origin_family": "vwap",
+      "primitive_ids": [
+        "VWAP-000001"
+      ],
+      "context_conditions": [
+        "band_rejection"
+      ],
+      "entry": 23008.5,
+      "natural_structural_stop": 23011.5,
+      "natural_structural_target": 22993.340270460132,
+      "natural_rr": 5.0532,
+      "executed_target": 23005.5,
+      "executed_rr": 1.0,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "WIN"
+    },
+    "chart": "../charts/23_fade_setup.png"
+  },
+  {
+    "category": "24_no_fvg_no_ifvg",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-041413",
+      "timestamp_et": "2025-07-06 18:05:00-04:00",
+      "direction": "short",
+      "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
+      "entry_mode": "formation_close",
+      "path_family": "fade",
+      "continuation_or_fade": "fade",
+      "origin_family": "vwap",
+      "primitive_ids": [
+        "VWAP-000001"
+      ],
+      "context_conditions": [
+        "band_rejection"
+      ],
+      "entry": 23008.5,
+      "natural_structural_stop": 23011.5,
+      "natural_structural_target": 22993.340270460132,
+      "natural_rr": 5.0532,
+      "executed_target": 23005.5,
+      "executed_rr": 1.0,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "WIN"
+    },
+    "chart": "../charts/24_no_fvg_no_ifvg.png"
+  },
+  {
+    "category": "25_no_liquidity_sweep",
+    "kind": "setup",
+    "example": {
+      "setup_id": "SETUP-041413",
+      "timestamp_et": "2025-07-06 18:05:00-04:00",
+      "direction": "short",
+      "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
+      "entry_mode": "formation_close",
+      "path_family": "fade",
+      "continuation_or_fade": "fade",
+      "origin_family": "vwap",
+      "primitive_ids": [
+        "VWAP-000001"
+      ],
+      "context_conditions": [
+        "band_rejection"
+      ],
+      "entry": 23008.5,
+      "natural_structural_stop": 23011.5,
+      "natural_structural_target": 22993.340270460132,
+      "natural_rr": 5.0532,
+      "executed_target": 23005.5,
+      "executed_rr": 1.0,
+      "expiry_rule": "120_bars_or_segment_end",
+      "has_fvg": false,
+      "has_ifvg": false,
+      "has_rb": false,
+      "has_sweep": false,
+      "outcome_shown_separately": "WIN"
+    },
+    "chart": "../charts/25_no_liquidity_sweep.png"
+  }
+]

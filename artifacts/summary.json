@@ -1,0 +1,89 @@
+{
+  "data": {
+    "file": "glbx-mdp3-20250101-20260607.ohlcv-1m.csv.zst",
+    "start_utc": "2025-07-06",
+    "end_utc_exclusive": "2025-07-11",
+    "n_bars": 5638,
+    "contracts": [
+      "NQU5"
+    ],
+    "segments": [
+      0
+    ],
+    "first_bar_utc": "2025-07-06 22:00:00+00:00",
+    "last_bar_utc": "2025-07-10 23:59:00+00:00"
+  },
+  "primitive_counts": {
+    "fvg": 1286,
+    "ifvg": 1197,
+    "rejection_block": 634,
+    "displacement": 2310,
+    "time_anchor": 52,
+    "session_level": 17,
+    "swing": 1695,
+    "equal_level": 283,
+    "vwap_session": 9,
+    "structure": 455
+  },
+  "candidate_counts": {
+    "raw": 77953,
+    "eligible_deduplicated": 4290,
+    "rejected": 71091
+  },
+  "rejection_reasons": {
+    "INSUFFICIENT_NATURAL_RR": 71043,
+    "DEGENERATE_STOP": 1,
+    "TARGET_WRONG_SIDE": 47
+  },
+  "counts_by_origin_family": {
+    "vwap": 493,
+    "structure": 4,
+    "liquidity": 3392,
+    "rejection_block": 74,
+    "displacement": 39,
+    "fvg": 153,
+    "ifvg": 67,
+    "time_anchor": 26,
+    "hist_level": 42
+  },
+  "counts_by_path_family": {
+    "fade": 3213,
+    "retracement_continuation": 924,
+    "formation_continuation": 153
+  },
+  "counts_by_entry_mode": {
+    "formation_close": 3246,
+    "first_touch": 132,
+    "retest": 751,
+    "midpoint": 100,
+    "next_bar": 43,
+    "full_fill": 18
+  },
+  "counts_by_continuation_vs_fade": {
+    "fade": 3213,
+    "continuation": 1077
+  },
+  "with_fvg": 220,
+  "without_fvg": 4070,
+  "with_ifvg": 67,
+  "with_rb": 74,
+  "with_sweep": 2737,
+  "without_sweep": 1553,
+  "natural_rr_distribution_executed": {
+    "0.5-0.6": 1553,
+    "0.6-0.7": 775,
+    "0.7-0.8": 312,
+    "0.8-0.9": 304,
+    "0.9-<1.0": 67,
+    "=1.0": 1279
+  },
+  "n_capped_to_1R": 1279,
+  "n_accepted_0p5_to_1R": 3011,
+  "n_rejected_below_0p5R": 71043,
+  "outcomes_diagnostic_only": {
+    "WIN": 1836,
+    "AMBIGUOUS": 977,
+    "LOSS": 1476,
+    "OPEN": 1
+  }
+}
