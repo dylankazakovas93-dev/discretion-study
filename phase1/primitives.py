@@ -73,30 +73,59 @@ class Candles:
     segment_id: np.ndarray       # ABSOLUTE segment (resets at roll+outage)
     norm_segment_id: np.ndarray  # NORMALIZATION segment (resets at outage only)
     complete: np.ndarray         # bool: full interval, single segment (usable history)
+    atr: np.ndarray              # frozen causal ATR (period ATR_PERIOD); NaN if short
+    atr_avail: np.ndarray        # tz-aware availability of each ATR value (candle open)
 
     @property
     def n(self):
         return len(self.o)
 
 
+ATR_PERIOD = 14  # frozen ATR lookback (completed same-tf candles)
+
+
+def compute_atr(o, h, l, c, seg_abs, seg_norm, complete, t_open, period=ATR_PERIOD):
+    """Frozen causal ATR. True range uses the previous candle's close only when
+    it is in the SAME ABSOLUTE segment (so a roll gap never inflates TR); at an
+    absolute boundary TR falls back to high-low. ATR at candle i is the mean TR
+    over the previous `period` COMPLETE candles inside the same NORMALIZATION
+    segment (current candle excluded). It is knowable at candle i's open, which
+    is stored as its availability. NaN when fewer than `period` predecessors."""
+    n = len(o)
+    tr = np.empty(n)
+    for i in range(n):
+        if i > 0 and seg_abs[i] == seg_abs[i - 1]:
+            pc = c[i - 1]
+            tr[i] = max(h[i] - l[i], abs(h[i] - pc), abs(l[i] - pc))
+        else:
+            tr[i] = h[i] - l[i]
+    atr = np.full(n, np.nan)
+    for i in range(n):
+        vals = seg_hist(tr, seg_norm, complete, i, period)
+        if vals is not None:
+            atr[i] = float(vals.mean())
+    return atr, t_open.copy()
+
+
 def make_candles(ledger: pd.DataFrame, tf: str) -> Candles:
     d = ledger.sort_values(["bucket_open_et", "segment_id"]).reset_index(drop=True)
     comp = d["complete"]
     comp = comp.fillna(False) if comp.dtype == object else comp
+    o = d["open"].to_numpy(float); h = d["high"].to_numpy(float)
+    l = d["low"].to_numpy(float); c = d["close"].to_numpy(float)
+    seg_abs = d["segment_id"].to_numpy(int); seg_norm = d["norm_segment_id"].to_numpy(int)
+    complete = d["complete"].astype(bool).to_numpy()
+    t_open = d["bucket_open_et"].to_numpy()
+    atr, atr_avail = compute_atr(o, h, l, c, seg_abs, seg_norm, complete, t_open)
     return Candles(
         tf=tf,
-        t_open=d["bucket_open_et"].to_numpy(),
+        t_open=t_open,
         t_avail=d["availability_et"].to_numpy(),
         t_open_utc=d["bucket_open_et"].dt.tz_convert("UTC").dt.tz_localize(None).to_numpy(),
         t_avail_utc=d["availability_et"].dt.tz_convert("UTC").dt.tz_localize(None).to_numpy(),
-        o=d["open"].to_numpy(float),
-        h=d["high"].to_numpy(float),
-        l=d["low"].to_numpy(float),
-        c=d["close"].to_numpy(float),
-        v=d["volume"].to_numpy(float),
-        segment_id=d["segment_id"].to_numpy(int),
-        norm_segment_id=d["norm_segment_id"].to_numpy(int),
-        complete=d["complete"].astype(bool).to_numpy(),
+        o=o, h=h, l=l, c=c, v=d["volume"].to_numpy(float),
+        segment_id=seg_abs, norm_segment_id=seg_norm, complete=complete,
+        atr=atr, atr_avail=atr_avail,
     )
 
 
@@ -239,6 +268,10 @@ def _fvg_record(cd: Candles, direction, A, B, C, lower, upper):
         "A_high": h[A], "A_low": l[A], "C_high": h[C], "C_low": l[C],
         "B_open": o[B], "B_close": c[B],
         "lower_boundary": lower, "upper_boundary": upper, "midpoint": mid,
+        "fvg_width": upper - lower,
+        "atr_at_C": cd.atr[C],
+        "atr_availability_et": cd.atr_avail[C],
+        "fvg_width_atr": ((upper - lower) / cd.atr[C]) if cd.atr[C] and cd.atr[C] > 0 else np.nan,
         "availability_et": avail,
         "first_wick_entry_et": first_wick,
         "first_body_overlap_et": first_body,
@@ -458,6 +491,11 @@ def detect_rejection_blocks(cd: Candles) -> pd.DataFrame:
                 "body_len": body[i], "total_range": rng[i],
                 "dwick_body_ratio": (dwick / body[i]) if body[i] > 0 else np.nan,
                 "dwick_range_ratio": (dwick / rng[i]) if rng[i] > 0 else np.nan,
+                "atr_value": cd.atr[i],
+                "atr_availability_et": cd.atr_avail[i],
+                "body_atr": (body[i] / cd.atr[i]) if cd.atr[i] and cd.atr[i] > 0 else np.nan,
+                "range_atr": (rng[i] / cd.atr[i]) if cd.atr[i] and cd.atr[i] > 0 else np.nan,
+                "dwick_atr": (dwick / cd.atr[i]) if cd.atr[i] and cd.atr[i] > 0 else np.nan,
                 "dwick_pctile_prev10": pctl(10),
                 "dwick_pctile_prev20": pctl(20),
                 "dwick_pctile_prev40": pctl(40),
@@ -552,6 +590,10 @@ def detect_displacement(cd: Candles, fvgs: pd.DataFrame) -> pd.DataFrame:
                     "terminal_close_location": term_loc,
                     "path_efficiency": path_eff,
                     "total_distance": total_distance,
+                    "atr_value": cd.atr[end],
+                    "atr_availability_et": cd.atr_avail[end],
+                    "net_move_atr": (abs(net) / cd.atr[end]) if cd.atr[end] and cd.atr[end] > 0 else np.nan,
+                    "total_distance_atr": (total_distance / cd.atr[end]) if cd.atr[end] and cd.atr[end] > 0 else np.nan,
                     "created_fvg": created_fvg,
                     "segment_id": int(cd.segment_id[end]),
                     "end_index": end,

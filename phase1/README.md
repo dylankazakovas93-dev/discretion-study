@@ -13,7 +13,9 @@ primitives.py   FVG, iFVG, liquidity refs, rejection-block candidates,
                 displacement; norm-segment trailing percentiles + validity
 run.py          driver -> all ledgers + roll_schedule/segments/validity + report
 charts.py       deterministic human-audit examples + annotated PNG charts
-tests.py        119 invariant checks (frozen roll, dual segments, counts)
+setups.py       Phase 1B: frozen ATR helpers + observational candidate setups (CG-1)
+audit_pack.py   Phase 1B: builds outputs/AUDIT_PACK.md + extra example charts
+tests.py        150 invariant checks (frozen roll, dual segments, ATR, setups)
 REPORT.md       human-readable Phase-1 report (read this first)
 outputs/
   data_quality_report.json         includes warmup, seam, validity summary
@@ -54,5 +56,18 @@ Deterministic: no randomness, no seeds. Identical inputs → identical outputs.
   cross contracts — the whole history is one norm segment (id 0).
 - **Every trailing 10/20/40 percentile is valid in July** (0 null, incl. daily
   prev40) — see `trailing_validity_table.csv`.
+
+## Phase 1B (see `REPORT.md` §8, `outputs/AUDIT_PACK.md`)
+
+- **Frozen causal ATR14 normalization** (body/ATR, range/ATR, wick/ATR,
+  displacement/ATR, FVG-width/ATR): mean TR over the previous 14 complete
+  same-tf candles, current excluded, inside the normalization segment; roll
+  gaps never inflate TR; ATR availability stored.
+- **NQU6 initial state:** post-June-15-roll NQU6 structures are causally
+  available into July; no pre-July outcome used for selection.
+- **7 observational candidate setups** (frozen grammar CG-1, chronological, not
+  ranked by outcome; losers kept): 2 win · 1 loss · 2 ambiguous · 2 incomplete.
+  Ledger `candidate_setups.csv`, charts in `candidate_setups/`. **Not evidence
+  of edge.**
 
 See `REPORT.md` §0. Parameter version: `phase1-v1.0.0`.

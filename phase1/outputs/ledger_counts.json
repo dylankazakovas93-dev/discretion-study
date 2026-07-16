@@ -29,5 +29,6 @@
   "displacement_daily": 30,
   "liquidity": 50,
   "roll_schedule": 9,
-  "continuity_segments": 7
+  "continuity_segments": 7,
+  "candidate_setups": 7
 }

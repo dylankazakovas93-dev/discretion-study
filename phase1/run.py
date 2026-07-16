@@ -111,6 +111,25 @@ def main(csv_path, orig_path, extra_csvs=None, extra_origs=None):
     write_ledger(vt, "trailing_validity_table")
     audit["trailing_validity_summary"] = json.loads(vt.to_json(orient="records", date_format="iso"))
 
+    # ---- Phase 1B: observational candidate setups (frozen grammar CG-1) ----
+    if roll_ledger is not None:
+        import setups as S
+        disc_abs = int(audit["segments"]["discovery_absolute_segment_id"])
+        liq_pool = S.build_liquidity_pool(et, disc_abs)
+        all_setups = []
+        for tf in ("5m", "15m", "30m"):
+            all_setups += S.observe(tf, tf_candles[tf], all_fvgs[tf], liq_pool)
+        all_setups.sort(key=lambda d: pd.Timestamp(d["trigger_ts_et"]))
+        chosen = all_setups[:10]   # first up to 10 chronologically (NOT by outcome)
+        sdf = pd.DataFrame(chosen)
+        if not sdf.empty:
+            sdf.insert(0, "instrument", "NQ")
+            sdf["param_version"] = P.PARAM_VERSION
+            sdf.to_csv(os.path.join(OUT, "candidate_setups", "candidate_setups.csv"), index=False)
+            S.chart_all(chosen)
+        counts["candidate_setups"] = len(chosen)
+        audit["candidate_setups"] = json.loads(sdf.to_json(orient="records", date_format="iso")) if not sdf.empty else []
+
     with open(os.path.join(OUT, "data_quality_report.json"), "w") as f:
         json.dump(audit, f, indent=2, default=jdefault)
 

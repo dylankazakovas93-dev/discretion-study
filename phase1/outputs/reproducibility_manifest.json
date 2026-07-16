@@ -1,5 +1,5 @@
 {
-  "phase": "Phase 1 audit \u2014 frozen quarterly roll + dual (absolute/normalization) segments",
+  "phase": "Phase 1 + 1B \u2014 frozen roll, dual segments, ATR normalization, observational candidate setups",
   "param_version": "phase1-v1.0.0",
   "instrument": "NQ front-month; discovery=NQU6; continuous series by FROZEN quarterly roll",
   "input_files": {
@@ -68,13 +68,44 @@
   },
   "code_sha256": {
     "core.py": "525132c76d10e33377df0f3e98c4a67bd5dcd477f571d44b69cf219728f77dcc",
-    "primitives.py": "f20628f8d913ee5cd3c143211a5d6af87b5bfd21c9cc6392627cffc8a0c7f29b",
-    "run.py": "513efc109e10bc94be0a79a8d9292e792c865a27053e0640dd55c5d46266c8d4",
+    "primitives.py": "23969e4ed973c6ec1f0b6bf20bca9242a6cb4cdc2fce24284755af8483b36b3c",
+    "run.py": "ea2bd05d270086b2501f371202a70313b68d28e3283a44d5156519744d7adb38",
     "charts.py": "0aa22b666f26d2b62bdea94f9531814c7413a5d9e2af7e0307b7f8a452a0048a",
-    "tests.py": "5d9b08a5d8fb535f0c881a9d521eafab54f112cfa1661101474cc03507dc46e7"
+    "tests.py": "b78b449f127effefecd0ecd205830296d7802345209e06bb09d912609a82ca2e",
+    "setups.py": "c6142144082c29393dae03dd62467950e87f9a8e2752502d56f0b4dc047ecd50",
+    "audit_pack.py": "178c87385f197eccae484884286a162cc3f87d0c534bca4e199b8e59126840bd"
   },
   "git_commit_at_build": "46812299ae787240a94a046c4855d402f3bbba06",
-  "tests": "tests.py -> 119/119 invariant checks pass",
+  "tests": "tests.py -> 150/150 invariant checks pass",
   "determinism": "no randomness; no seeds; identical inputs reproduce identical outputs",
-  "reproduce_cmd": "python3 run.py disc.csv <disc.zst> warmup.csv <warmup.zst> gap.csv <gap.zst> && python3 charts.py && python3 tests.py"
+  "reproduce_cmd": "python3 run.py disc.csv <disc.zst> warmup.csv <warmup.zst> gap.csv <gap.zst> && python3 charts.py && python3 audit_pack.py && python3 tests.py",
+  "atr_normalization": {
+    "definition": "ATR14 = simple mean of True Range over the previous 14 COMPLETE same-timeframe candles (current candle EXCLUDED), taken inside the NORMALIZATION continuity segment (crosses contract rolls, breaks only at a >4-day outage).",
+    "true_range": "TR = max(H-L, |H-Cprev|, |L-Cprev|) where Cprev is the previous candle's close ONLY if it is in the same ABSOLUTE segment; at an absolute (roll/outage) boundary TR = H-L, so a roll gap never inflates ATR.",
+    "period": 14,
+    "availability": "ATR at candle i is knowable at candle i's OPEN (all inputs completed before i); stored as atr_availability_et. The ATR-normalized feature (e.g. body/ATR) is knowable at the candle's close.",
+    "null_rule": "NaN when fewer than 14 complete same-norm-segment predecessors exist (none in July \u2014 all valid).",
+    "normalized_features": [
+      "body/ATR (rejection)",
+      "range/ATR (rejection)",
+      "directional wick/ATR (rejection)",
+      "displacement net distance/ATR",
+      "displacement total distance/ATR",
+      "FVG width/ATR"
+    ]
+  },
+  "candidate_setups": {
+    "status": "OBSERVATIONAL ONLY \u2014 not evidence of edge. Chronological selection (first up to 10 valid triggers), never by outcome; losers kept; nothing optimized or altered after the outcome was seen.",
+    "grammar_id": "CG-1",
+    "grammar": "liquidity sweep -> opposite-direction displacement FVG reversal (frozen); R=5 reversal window, E=20 entry-expiry, H=60 resolution horizon; entry = FVG proximal boundary, structural stop = swept extreme, structural target = nearest opposite frozen liquidity level; coherent geometry required.",
+    "initial_state": "NQU6 structures formed after the frozen 2026-06-15 roll are causally-available initial state into July; no pre-July outcome or interaction is used for selection.",
+    "timeframes": [
+      "5m",
+      "15m",
+      "30m"
+    ],
+    "ledger": "outputs/candidate_setups/candidate_setups.csv",
+    "charts": "outputs/candidate_setups/*.png",
+    "audit_pack": "outputs/AUDIT_PACK.md"
+  }
 }

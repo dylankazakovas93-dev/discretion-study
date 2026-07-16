@@ -1,15 +1,17 @@
-# Phase 1 — NQ 1-Minute OHLCV Primitive-Definition & Implementation Audit
+# Phase 1 + 1B — NQ 1-Minute OHLCV Primitive Audit & Observational Setups
 
 **Parameter version:** `phase1-v1.0.0`
-**Instrument:** NQ front-month; discovery week = **NQU6**; warm-up = continuous front-month via **causal** (previous-session) volume roll.
-**Scope:** Primitive definition + implementation audit only. **No setup discovery, no trade evaluation, no profitability, no selection/grading.**
+**Instrument:** NQ front-month; discovery week = **NQU6**; continuous series by **frozen quarterly roll**.
+**Scope:** Primitive definition + implementation audit, ATR normalization, and **observational** candidate setups (Phase 1B). **No profitability claims, no ranking by outcome, no optimization.**
 
-All numbers were produced by executing code against the two attached datasets (every row inspected). Reproduce:
+> **Phase 1B additions (see §8):** frozen causal **ATR normalization** of sizes; pre-July NQU6 structures allowed as causally-available **initial state**; a **compact audit pack** (`outputs/AUDIT_PACK.md`); and **7 observational candidate setups** under a frozen grammar with honestly-reported outcomes.
+
+Reproduce:
 
 ```
-python3 run.py  data.csv <discovery.zst>  warmup.csv <warmup.zst>
-python3 charts.py
-python3 tests.py        # 114/114 invariant checks
+python3 run.py  disc.csv <disc.zst>  warmup.csv <warmup.zst>  gap.csv <gap.zst>
+python3 charts.py && python3 audit_pack.py
+python3 tests.py        # 150/150 invariant checks
 ```
 
 ---
@@ -134,4 +136,42 @@ Full: `outputs/reproducibility_manifest.json`.
 - **Roll schedule and continuity-segment ledgers included** ✅ (`roll_schedule.csv`, `continuity_segments.csv`).
 - **Every trailing 10/20/40 percentile valid in July** ✅ (incl. daily prev40; 0 null).
 
-**Phase 1 stops here** — no setup discovery, selection, grading, or profitability.
+---
+
+## 8. Phase 1B — ATR normalization, initial state & observational setups
+
+### 8.1 Frozen causal ATR normalization
+Cross-contract size normalization now uses **ATR ratios** rather than raw points.
+
+- **ATR14** = simple mean of True Range over the **previous 14 complete same-timeframe candles**, *current candle excluded*, taken **inside the normalization continuity segment** (crosses the roll; breaks only at a >4-day outage).
+- **True Range** = `max(H−L, |H−Cprev|, |L−Cprev|)`, using `Cprev` only when the previous candle is in the **same absolute segment**; at a roll/outage boundary `TR = H−L`, so a roll gap never inflates ATR.
+- **Availability:** the ATR value is knowable at the candle's **open** (all inputs completed before it) and stored as `atr_availability_et`; the ratio (e.g. body/ATR) is knowable at the candle's close. `atr_availability_et < availability_et` is tested.
+- **Null rule:** NaN when < 14 complete same-norm-segment predecessors (none in July — all valid).
+- **Normalized features added to the ledgers:** `body_atr`, `range_atr`, `dwick_atr` (rejection blocks); `net_move_atr`, `total_distance_atr` (displacement); `fvg_width_atr` (FVG).
+
+### 8.2 NQU6 initial state
+Structures formed on NQU6 **after the frozen 2026-06-15 roll** (June 15 → July 5) are treated as **causally-available initial state** into the July week — e.g. pre-existing FVGs that convert or get retested during July. No pre-July outcome or interaction is used for setup selection.
+
+### 8.3 Compact audit pack
+`outputs/AUDIT_PACK.md` assembles deterministic examples: bull/bear FVG, bull/bear iFVG, **bull/bear rejection block**, swept & unswept liquidity, good/mixed/bad displacement across timeframes, and **object invalidation + exact-boundary-touch** cases. 40 primitive charts + 7 setup charts.
+
+### 8.4 Observational candidate setups (frozen grammar CG-1)
+**Observational only — not evidence of edge.** Grammar, entry, structural stop/target and expiry are fixed *before* any outcome is seen; selection is **chronological (first ≤10 valid triggers), never by outcome**; losers are kept; nothing is optimized or altered after the outcome.
+
+**CG-1 — "liquidity sweep → opposite displacement FVG reversal":** a completed candle strictly sweeps a frozen liquidity level; within R=5 bars an opposite-direction FVG forms (the displacement); entry = FVG proximal boundary; structural stop = the swept extreme; structural target = nearest opposite frozen liquidity level; entry-expiry E=20 bars, resolution horizon H=60 bars. Coherent geometry (stop the correct side of entry) required. Applied to 5m/15m/30m.
+
+**7 occurrences (July 6–10) — `candidate_setups.csv`, charts in `candidate_setups/`:**
+
+| ID | dir | trigger (ET) | swept | entry | stop | target | outcome |
+|---|---|---|---|--:|--:|--:|---|
+| CG1-5m-20260706T1340-L | long | 07-06 13:40 | candle_1000_low | 29923.75 | 29903.25 | 29924.25 | incomplete |
+| CG1-5m-20260706T2120-L | long | 07-06 21:20 | prev_rth_low | 29787.25 | 29776.25 | 29790.75 | ambiguous |
+| CG1-30m-20260707T1000-L | long | 07-07 10:00 | prev_rth_low | 29377.00 | 29273.75 | 29414.75 | loss |
+| CG1-30m-20260708T1030-L | long | 07-08 10:30 | candle_0930_low | 29245.50 | 29201.00 | 29277.50 | incomplete |
+| CG1-15m-20260709T0345-S | short | 07-09 03:45 | prev_rth_high | 29681.50 | 29685.75 | 29675.75 | ambiguous |
+| CG1-5m-20260710T0940-L | long | 07-10 09:40 | candle_0930_low | 29913.50 | 29812.50 | 29918.00 | win |
+| CG1-30m-20260710T1030-L | long | 07-10 10:30 | overnight_low | 30004.00 | 29717.25 | 30011.25 | win |
+
+Outcome mix: **2 win · 1 loss · 2 ambiguous · 2 incomplete**. Each row carries permanent ID, timestamp+direction, trigger, ≤3 context conditions, entry/stop/target/expiry, chart, all primitive IDs, and the observed outcome. Ambiguous = a candle spanned both stop and target (intrabar order unknown from OHLCV); incomplete = entry never filled within expiry or unresolved by horizon.
+
+**Phase 1B is observation only.** No edge is claimed; no setup was ranked by profitability, deleted for losing, or altered after its outcome was seen.

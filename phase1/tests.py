@@ -110,6 +110,45 @@ check("daily prev40 valid", (vt[(vt.tf == "daily") & (vt.horizon_N == 40)].valid
 check("discovery norm segment == 0 (spans contracts)",
       (vt.discovery_norm_segment_id == DISC_NORM_SEG).all())
 
+# ---- Phase 1B: ATR normalization ----
+rb5 = pd.read_csv(os.path.join(LED, "rejection_blocks_5m.csv"))
+for col in ["atr_value", "atr_availability_et", "body_atr", "range_atr", "dwick_atr"]:
+    check(f"rejection has {col}", col in rb5.columns)
+check("rejection ATR-normalized non-null in July", rb5.body_atr.notna().all())
+# causal: ATR availability (candle open) strictly precedes the candle availability (close)
+check("ATR availability precedes candle availability",
+      (ts(rb5.atr_availability_et) < ts(rb5.availability_et)).all())
+d5 = pd.read_csv(os.path.join(LED, "displacement_5m.csv"))
+for col in ["net_move_atr", "total_distance_atr", "atr_value", "atr_availability_et"]:
+    check(f"displacement has {col}", col in d5.columns)
+f5 = pd.read_csv(os.path.join(LED, "fvg_5m.csv"))
+check("fvg has fvg_width_atr", "fvg_width_atr" in f5.columns and f5.fvg_width_atr.notna().all())
+
+# ---- Phase 1B: candidate setups ----
+sp = os.path.join(OUT, "candidate_setups", "candidate_setups.csv")
+if os.path.exists(sp):
+    cs = pd.read_csv(sp)
+    check("5-10 candidate setups", 5 <= len(cs) <= 10, f"got {len(cs)}")
+    for col in ["candidate_id", "direction", "trigger_ts_et", "swept_source", "entry",
+                "structural_stop", "structural_target", "expiry_bars_E", "outcome",
+                "primitive_ids", "context_conditions", "fvg_id"]:
+        check(f"setup has {col}", col in cs.columns)
+    check("setup outcomes in allowed set",
+          set(cs.outcome) <= {"win", "loss", "ambiguous", "incomplete"}, f"{set(cs.outcome)}")
+    # coherent geometry per direction
+    sh = cs[cs.direction == "short"]; lo = cs[cs.direction == "long"]
+    check("short stop above entry", (sh.structural_stop > sh.entry).all() if len(sh) else True)
+    check("long stop below entry", (lo.structural_stop < lo.entry).all() if len(lo) else True)
+    # selected chronologically (not by outcome)
+    check("setups chronological", (ts(cs.trigger_ts_et).is_monotonic_increasing))
+    # all triggers in the July discovery week
+    check("setup triggers in July 6-10",
+          ((ts(cs.trigger_ts_et) >= pd.Timestamp("2026-07-06", tz=TZ)) &
+           (ts(cs.trigger_ts_et) < pd.Timestamp("2026-07-11", tz=TZ))).all())
+    # no data before the roll referenced
+    check("setup swept levels after roll (NQU6 initial state)",
+          none_before_roll(cs, ["fvg_avail_et"]))
+
 npass = sum(1 for _, ok, _ in results if ok)
 nfail = len(results) - npass
 for name, ok, detail in results:
