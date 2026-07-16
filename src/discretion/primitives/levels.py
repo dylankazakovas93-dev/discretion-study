@@ -188,9 +188,14 @@ def track_level_interactions(levels: list[Level], bars: list[Bar],
     for lv in levels:
         by_start.setdefault(lv.created_seq + 1, []).append(lv)
 
+    prev_side: dict[str, int] = {}
     active: list[Level] = []
     for i, bar in enumerate(bars):
-        active.extend(by_start.get(i, []))
+        for lv in by_start.get(i, []):
+            active.append(lv)
+            # seed approach side from the (already closed) defining bar
+            c0 = bars[lv.created_seq].close
+            prev_side[lv.id] = 1 if c0 > lv.price_ref else (-1 if c0 < lv.price_ref else 0)
         still: list[Level] = []
         for lv in active:
             if lv.segment_id != bar.segment_id or i - lv.created_seq >= max_age:
@@ -198,6 +203,7 @@ def track_level_interactions(levels: list[Level], bars: list[Bar],
                 lv.active = False
                 continue
             P = lv.price_ref
+            side_before = prev_side[lv.id]
             touched = bar.low <= P <= bar.high
             if touched:
                 if not lv.touched:
@@ -207,14 +213,14 @@ def track_level_interactions(levels: list[Level], bars: list[Bar],
                     lv.add_event("REVISIT", i, bar.ts_utc, price=P)
                 if abs(bar.high - P) < NQ_TICK / 2 or abs(bar.low - P) < NQ_TICK / 2:
                     lv.add_event("EXACT_TOUCH", i, bar.ts_utc, price=P)
-                # sweep: pierced but closed back on approach side
-                if bar.high > P and bar.close < P:
-                    lv.add_event("SWEEP", i, bar.ts_utc, price=bar.high,
-                                 note="above")
+                # sweep = pierce counter to the approach side, then close back.
+                # From below (price under the level): spike above, close back below.
+                if side_before < 0 and bar.high > P and bar.close < P:
+                    lv.add_event("SWEEP", i, bar.ts_utc, price=bar.high, note="above")
                     lv.add_event("REJECTION", i, bar.ts_utc, price=bar.close)
-                elif bar.low < P and bar.close > P:
-                    lv.add_event("SWEEP", i, bar.ts_utc, price=bar.low,
-                                 note="below")
+                # From above: dip below, close back above.
+                elif side_before > 0 and bar.low < P and bar.close > P:
+                    lv.add_event("SWEEP", i, bar.ts_utc, price=bar.low, note="below")
                     lv.add_event("REJECTION", i, bar.ts_utc, price=bar.close)
             # break / acceptance / reclaim by close
             if bar.close > P:
@@ -245,5 +251,7 @@ def track_level_interactions(levels: list[Level], bars: list[Bar],
                     lv.add_event("ACCEPTANCE_BELOW", i, bar.ts_utc, price=bar.close)
                 if lv.consec_below >= 3:
                     lv.add_event("CONTINUATION", i, bar.ts_utc, price=bar.close)
+            if bar.close != P:
+                prev_side[lv.id] = 1 if bar.close > P else -1
             still.append(lv)
         active = still
