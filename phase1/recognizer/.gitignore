@@ -1,4 +1,4 @@
-outputs/
 __pycache__/
 *.pyc
 run_replay.sh
+outputs/vwap_1m.csv

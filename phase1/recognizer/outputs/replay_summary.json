@@ -1,0 +1,56 @@
+{
+  "setup_def_version": "cg-recognizer-v1.0.0",
+  "july_replay_boundary": [
+    "2026-07-06 00:00",
+    "2026-07-11 00:00"
+  ],
+  "total_admissible_setups": 1363,
+  "rejected_candidates": 2135,
+  "july_admissible_setups": 342,
+  "primitive_counts": {
+    "fvg_5m": 1059,
+    "ifvg_5m": 1027,
+    "fvg_15m": 352,
+    "ifvg_15m": 330
+  },
+  "exact_graph_templates": 964,
+  "reduced_graph_templates": [
+    "ORIGIN_FVG_FAILURE|long|15m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_FVG_FAILURE|long|5m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_FVG_FAILURE|short|15m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_FVG_FAILURE|short|5m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_HIST_LEVEL|long|15m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_HIST_LEVEL|long|5m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_HIST_LEVEL|short|15m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_HIST_LEVEL|short|5m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_LIQ_SWEEP|long|15m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_LIQ_SWEEP|long|5m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_LIQ_SWEEP|short|15m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_LIQ_SWEEP|short|5m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_VWAP_BAND|long|15m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_VWAP_BAND|long|5m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_VWAP_BAND|short|15m->DISPLACEMENT->FVG_RETEST",
+    "ORIGIN_VWAP_BAND|short|5m->DISPLACEMENT->FVG_RETEST"
+  ],
+  "july_prediction_class_distribution": {
+    "FAVORABLE": 318,
+    "NEUTRAL": 22,
+    "INSUFFICIENT_EVIDENCE": 2
+  },
+  "july_outcome_distribution": {
+    "WIN": 196,
+    "AMBIGUOUS": 54,
+    "LOSS": 46,
+    "EXPIRED": 46
+  },
+  "july_ess_distribution": {
+    "count": 342.0,
+    "mean": 120.5,
+    "std": 72.9714020229602,
+    "min": 7.0,
+    "25%": 53.0,
+    "50%": 80.0,
+    "75%": 195.0,
+    "max": 224.0
+  }
+}

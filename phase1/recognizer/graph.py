@@ -198,8 +198,14 @@ def construct(tf, cd, fvgs, ifvgs, levels, vwdf, vwdf_idx, disc_abs=None):
             "volatility_bucket": _vol_bucket(atr, cd, Cidx),
             "risk_atr": round(risk_atr, 3),
         }
+        # up to THREE entry-context conditions (descriptive, not retro filters)
+        ctx = [f"origin={origin_family}", f"anchor={anchor}"]
+        if vside:
+            ctx.append(f"vwap_{vside}")
+        ctx = ctx[:PR.MAX_CONTEXT_CONDITIONS]
         dedup.add(key)
         occ.append({
+            "context_conditions": " | ".join(ctx), "n_context_conditions": len(ctx),
             "occurrence_id": oid, "setup_def_version": PR.SETUP_DEF_VERSION,
             "tf": tf, "session_globex_day": sess, "segment_id": int(seg[i]),
             "direction": direction, "origin_family": origin_family,

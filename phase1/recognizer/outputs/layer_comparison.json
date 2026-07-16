@@ -1,0 +1,179 @@
+{
+  "layer1_isolated_concepts": {
+    "LIQ_SWEEP": {
+      "n": 15,
+      "completed": 10,
+      "wins": 10,
+      "losses": 0,
+      "fav_rate": 1.0,
+      "mean_R": 0.672
+    },
+    "VWAP_BAND": {
+      "n": 114,
+      "completed": 75,
+      "wins": 62,
+      "losses": 13,
+      "fav_rate": 0.827,
+      "mean_R": 0.528
+    },
+    "HIST_LEVEL": {
+      "n": 0,
+      "completed": 0,
+      "wins": 0,
+      "losses": 0,
+      "fav_rate": null,
+      "mean_R": null
+    },
+    "FVG_FAILURE": {
+      "n": 213,
+      "completed": 157,
+      "wins": 124,
+      "losses": 33,
+      "fav_rate": 0.79,
+      "mean_R": 0.216
+    }
+  },
+  "layer2_coherent_graphs": {
+    "all_coherent_graphs": {
+      "n": 342,
+      "completed": 242,
+      "wins": 196,
+      "losses": 46,
+      "fav_rate": 0.81,
+      "mean_R": 0.332
+    },
+    "by_reduced": {
+      "ORIGIN_FVG_FAILURE|long|15m->DISPLACEMENT->FVG_RETEST": {
+        "n": 29,
+        "completed": 21,
+        "wins": 17,
+        "losses": 4,
+        "fav_rate": 0.81,
+        "mean_R": 0.078
+      },
+      "ORIGIN_FVG_FAILURE|long|5m->DISPLACEMENT->FVG_RETEST": {
+        "n": 87,
+        "completed": 62,
+        "wins": 46,
+        "losses": 16,
+        "fav_rate": 0.742,
+        "mean_R": 0.125
+      },
+      "ORIGIN_FVG_FAILURE|short|15m->DISPLACEMENT->FVG_RETEST": {
+        "n": 25,
+        "completed": 21,
+        "wins": 19,
+        "losses": 2,
+        "fav_rate": 0.905,
+        "mean_R": 0.258
+      },
+      "ORIGIN_FVG_FAILURE|short|5m->DISPLACEMENT->FVG_RETEST": {
+        "n": 72,
+        "completed": 53,
+        "wins": 42,
+        "losses": 11,
+        "fav_rate": 0.792,
+        "mean_R": 0.36
+      },
+      "ORIGIN_LIQ_SWEEP|long|15m->DISPLACEMENT->FVG_RETEST": {
+        "n": 3,
+        "completed": 1,
+        "wins": 1,
+        "losses": 0,
+        "fav_rate": 1.0,
+        "mean_R": 0.5
+      },
+      "ORIGIN_LIQ_SWEEP|long|5m->DISPLACEMENT->FVG_RETEST": {
+        "n": 2,
+        "completed": 1,
+        "wins": 1,
+        "losses": 0,
+        "fav_rate": 1.0,
+        "mean_R": 0.28
+      },
+      "ORIGIN_LIQ_SWEEP|short|15m->DISPLACEMENT->FVG_RETEST": {
+        "n": 6,
+        "completed": 4,
+        "wins": 4,
+        "losses": 0,
+        "fav_rate": 1.0,
+        "mean_R": 1.154
+      },
+      "ORIGIN_LIQ_SWEEP|short|5m->DISPLACEMENT->FVG_RETEST": {
+        "n": 4,
+        "completed": 4,
+        "wins": 4,
+        "losses": 0,
+        "fav_rate": 1.0,
+        "mean_R": 0.332
+      },
+      "ORIGIN_VWAP_BAND|long|15m->DISPLACEMENT->FVG_RETEST": {
+        "n": 28,
+        "completed": 19,
+        "wins": 16,
+        "losses": 3,
+        "fav_rate": 0.842,
+        "mean_R": 0.255
+      },
+      "ORIGIN_VWAP_BAND|long|5m->DISPLACEMENT->FVG_RETEST": {
+        "n": 37,
+        "completed": 23,
+        "wins": 14,
+        "losses": 9,
+        "fav_rate": 0.609,
+        "mean_R": 0.073
+      },
+      "ORIGIN_VWAP_BAND|short|15m->DISPLACEMENT->FVG_RETEST": {
+        "n": 18,
+        "completed": 14,
+        "wins": 13,
+        "losses": 1,
+        "fav_rate": 0.929,
+        "mean_R": 0.451
+      },
+      "ORIGIN_VWAP_BAND|short|5m->DISPLACEMENT->FVG_RETEST": {
+        "n": 31,
+        "completed": 19,
+        "wins": 19,
+        "losses": 0,
+        "fav_rate": 1.0,
+        "mean_R": 1.407
+      }
+    }
+  },
+  "layer3_rolling_recognizer": {
+    "FAVORABLE": {
+      "n": 318,
+      "completed": 225,
+      "wins": 182,
+      "losses": 43,
+      "fav_rate": 0.809,
+      "mean_R": 0.336
+    },
+    "NEUTRAL": {
+      "n": 22,
+      "completed": 16,
+      "wins": 13,
+      "losses": 3,
+      "fav_rate": 0.812,
+      "mean_R": 0.193
+    },
+    "ADVERSE": {
+      "n": 0,
+      "completed": 0,
+      "wins": 0,
+      "losses": 0,
+      "fav_rate": null,
+      "mean_R": null
+    },
+    "INSUFFICIENT_EVIDENCE": {
+      "n": 2,
+      "completed": 1,
+      "wins": 1,
+      "losses": 0,
+      "fav_rate": 1.0,
+      "mean_R": 1.482
+    }
+  },
+  "note": "Descriptive only; one July week cannot establish edge or that Layer 3 dominates."
+}
