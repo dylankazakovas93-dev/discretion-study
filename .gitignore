@@ -1,0 +1,15 @@
+# Raw market data (licensed Databento GLBX.MDP3; not redistributed)
+data/raw/
+data/*.csv
+data/*.zst
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# OS
+.DS_Store
