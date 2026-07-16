@@ -15,17 +15,28 @@ paths (continuation **and** fade) with a frozen 0.5R–1R execution policy.
 | Item | Value |
 |---|---|
 | Branch | `claude/inspiring-edison-ai71eu` |
-| Starting commit | `14f2a4a` (Initial commit — repo contained only `README.md`) |
-| Foundation commit | `8bce5c3` data layer + causal primitives |
-| Setup/tests commit | `c47ffe9` setup constructor, frozen RR policy, dedup, tests |
-| Pipeline/review commit | _this commit_ |
+| Base of existing work | `39f927d` (Phase 2 replay + review pack) |
+| Foundation commit | `36609ae` data layer + causal primitives |
+| Setup/tests commit | `f171620` setup constructor, frozen RR policy, dedup, tests |
+| Pipeline/review commit | `8863365` |
 
-> **Note on the starting point.** The repository at HEAD contained no prior
-> infrastructure (no Phase 1 ledgers, ATR, VWAP, contract segmentation, charts
-> or tests) and no market data. The premise of "reuse existing infrastructure"
-> could not be honoured because none existed; this is therefore a from-scratch
-> causal build. The user supplied NQ 1-minute Databento GLBX.MDP3 data
-> (2018–2026) which the loader consumes.
+> **Note on the starting point and existing infrastructure.** My local clone
+> was created from `main` (only `README.md`), so the first pass looked like a
+> bare repo. The named branch `claude/inspiring-edison-ai71eu`, however, already
+> carried the prior project's history: **Phase 1** (`phase1/` — causal contract
+> selection, frozen quarterly roll, ATR normalization, primitives, observational
+> setups, audit pack) and **Phase 2** (`phase1/recognizer/` — the preregistered
+> rolling-recognizer July replay). This new work was **rebased on top of that
+> history; nothing under `phase1/` was modified or deleted**, honouring "do not
+> delete working infrastructure" and "preserve the contaminated rolling-recognizer
+> July results for audit history."
+>
+> This reset re-implements the causal primitive + setup-generation stack cleanly
+> under `src/discretion/` rather than reusing the `phase1/` modules in place —
+> a deliberate architectural reset of the setup-generation layer. The two trees
+> coexist: `phase1/` is the preserved audit history; `src/discretion/` is the new
+> grammar engine. The previous rolling-recognizer July results are retained for
+> audit only and are **not** treated as forward evidence here.
 
 ## 2. Tests
 

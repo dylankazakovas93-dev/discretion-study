@@ -6,6 +6,13 @@ through primitives — continuation *or* fade — with a frozen 0.5R–1R execut
 policy. Everything is computed on completed bars only; no future information,
 no post-outcome construction.
 
+> **Repository history.** `phase1/` holds the preserved prior work — Phase 1
+> (causal contract selection, roll segmentation, ATR normalization, primitives,
+> audit pack) and Phase 2 (`phase1/recognizer/`, the preregistered rolling-
+> recognizer July replay). Those results are retained for audit history only and
+> are **not** forward evidence. This reset adds a clean causal grammar engine
+> under `src/discretion/` without modifying `phase1/`.
+
 ## Layout
 
 - `src/discretion/data/` — Databento GLBX.MDP3 loader, front-month/roll
