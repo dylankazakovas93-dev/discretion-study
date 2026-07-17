@@ -1,0 +1,68 @@
+{
+  "counts": {
+    "primitive_events": 317066,
+    "episodes": 5018,
+    "branches_created": 22566,
+    "branches_forked": 17548,
+    "branches_merged": 0,
+    "branches_unresolved": 61,
+    "branches_expired": 627,
+    "branches_invalidated": 1297,
+    "branches_emitted": 20581,
+    "branches_by_cont_fade": {
+      "continuation": 12630,
+      "fade": 9936
+    },
+    "graph_native_raw_trigger_states": 20581,
+    "graph_native_candidates": 4506,
+    "graph_native_rejected_below_0p5R": 16006,
+    "graph_native_unformed": {
+      "NO_STRUCTURAL_TARGET": 69
+    },
+    "graph_candidates_by_trigger_mode": {
+      "formation_close": 2662,
+      "next_bar": 268,
+      "first_touch": 254,
+      "first_fill": 320,
+      "midpoint": 289,
+      "full_fill": 472,
+      "retest": 241
+    },
+    "graph_candidates_by_cont_fade": {
+      "continuation": 2383,
+      "fade": 2123
+    },
+    "qualified_graph_native": 1491,
+    "not_activated_graph_native": 3015,
+    "static_baseline_candidates": 4302,
+    "static_baseline_rejected": 71125
+  },
+  "artifacts": [
+    {
+      "path": "artifacts/graph_native/candidates_graph_native.csv",
+      "rows": 4506,
+      "sha256": "6867c7e80314f8063d872d1ae6491eb317dc67ab134e976d444595770e7b5179",
+      "gitignored": false
+    },
+    {
+      "path": "artifacts/graph_native/events.jsonl.gz",
+      "rows": 317066,
+      "sha256": "19ebd0ff4ec5a90dbcd7ee5c49b6f102d49017020c3b3f880d8663ce82aa8bca",
+      "gitignored": true
+    },
+    {
+      "path": "artifacts/graph_native/branches.csv.gz",
+      "rows": 22566,
+      "sha256": "daf00b92d4e4b6f83b0cf039b639b6285d839653cd6ee99538cb3a58e9692a2e",
+      "gitignored": true
+    },
+    {
+      "path": "artifacts/graph_native/rejected_graph.csv.gz",
+      "rows": 16006,
+      "sha256": "349ab3561653c1241ecfd1c58ca74dcfbbce3ea2e34c0acdcf5d09bab195582d",
+      "gitignored": true
+    }
+  ],
+  "candidate_ledger_hash": "6867c7e80314f8063d872d1ae6491eb317dc67ab134e976d444595770e7b5179",
+  "n_examples_populated": 25
+}

@@ -1,0 +1,38 @@
+{
+  "primitive_events": 317066,
+  "episodes": 5018,
+  "branches_created": 22566,
+  "branches_forked": 17548,
+  "branches_merged": 0,
+  "branches_unresolved": 61,
+  "branches_expired": 627,
+  "branches_invalidated": 1297,
+  "branches_emitted": 20581,
+  "branches_by_cont_fade": {
+    "continuation": 12630,
+    "fade": 9936
+  },
+  "graph_native_raw_trigger_states": 20581,
+  "graph_native_candidates": 4506,
+  "graph_native_rejected_below_0p5R": 16006,
+  "graph_native_unformed": {
+    "NO_STRUCTURAL_TARGET": 69
+  },
+  "graph_candidates_by_trigger_mode": {
+    "formation_close": 2662,
+    "next_bar": 268,
+    "first_touch": 254,
+    "first_fill": 320,
+    "midpoint": 289,
+    "full_fill": 472,
+    "retest": 241
+  },
+  "graph_candidates_by_cont_fade": {
+    "continuation": 2383,
+    "fade": 2123
+  },
+  "qualified_graph_native": 1491,
+  "not_activated_graph_native": 3015,
+  "static_baseline_candidates": 4302,
+  "static_baseline_rejected": 71125
+}
