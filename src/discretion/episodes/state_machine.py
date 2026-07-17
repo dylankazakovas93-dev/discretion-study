@@ -33,6 +33,10 @@ ORIGIN_STATES = {
 
 
 def is_origin(ev) -> bool:
+    if ev.event_type == "displacement":
+        # a good displacement can originate a retracement episode; weaker legs
+        # remain transitions only
+        return ev.state_after == "FORMED" and ev.event_subtype.startswith("GOOD")
     return ev.state_after in ORIGIN_STATES.get(ev.event_type, set())
 
 

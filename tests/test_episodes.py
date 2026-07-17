@@ -30,10 +30,11 @@ def _episode(active_price=100.0, direction=1, origin_seq=10, expiry=250,
 
 
 def _ev(object_id="OBJ-B", parent="", ref=100.0, direction=1,
-        state="FIRST_TOUCH", etype="fvg"):
+        state="FIRST_TOUCH", etype="fvg", subtype=""):
     return types.SimpleNamespace(
         object_id=object_id, parent_object_id=parent, reference_price=ref,
-        direction=direction, state_after=state, event_type=etype)
+        direction=direction, state_after=state, event_type=etype,
+        event_subtype=subtype)
 
 
 def test_valid_same_object_edge():
@@ -94,7 +95,11 @@ def test_origin_detection():
     assert is_origin(_ev(etype="rejection_block", state="CONFIRMED"))
     assert is_origin(_ev(etype="liquidity", state="SWEEP"))
     assert not is_origin(_ev(etype="fvg", state="FIRST_TOUCH"))
-    assert not is_origin(_ev(etype="displacement", state="FORMED"))
+    # only a GOOD displacement leg originates; weaker legs remain transitions
+    assert is_origin(_ev(etype="displacement", state="FORMED",
+                         subtype="GOOD_BULLISH_DISPLACEMENT"))
+    assert not is_origin(_ev(etype="displacement", state="FORMED",
+                            subtype="MIXED_BULLISH_DISPLACEMENT"))
 
 
 # ---- data-gated integration ----
