@@ -56,6 +56,8 @@ class BranchState:
     origin_seq: int = 0
     last_advanced_seq: int = 0
     segment_id: int = 0
+    # per-transition object/boundary evidence (append-only)
+    transition_records: list = field(default_factory=list)
 
     @property
     def active(self) -> bool:
@@ -205,10 +207,20 @@ class BranchEngine:
                     self.rejections.add("stage_no_match")
                 return
             # matched -> record and act (avoid re-recording an immediate origin=trigger)
+            focus_before = b.focus_object_id   # object the relationship was proven on
             if not b.ordered_event_ids or b.ordered_event_ids[-1] != ev.event_id:
                 b.ordered_event_ids.append(ev.event_id)
                 b.exact_graph_so_far.append(ev.event_subtype)
             b.ordered_transition_ids.append(f"{b.hypothesis_id}:S{b.stage_index}")
+            b.transition_records.append({
+                "transition_id": f"{b.hypothesis_id}:S{b.stage_index}",
+                "event_id": ev.event_id, "event_subtype": ev.event_subtype,
+                "acted_on_object": focus_before, "new_object": ev.object_id,
+                "relationships_satisfied": tuple(sorted(satisfied - {
+                    "WITHIN_SUPPORTING_ATR_PROXIMITY", "WITHIN_FROZEN_TIME_GAP",
+                    "DIRECTIONALLY_SUPPORTS", "DIRECTIONALLY_INVALIDATES"})),
+                "state_after": ev.state_after,
+            })
             b.branch_version += 1
             b.last_advanced_at = ev.availability_timestamp_et
             b.last_advanced_seq = seq

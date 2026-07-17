@@ -69,27 +69,45 @@ def fills_zone(obj, ev, ctx):
 
 
 def closes_through_zone(obj, ev, ctx):
-    return ev.state_after in ("FAILURE", "REINVERSION")
+    # a close-through of the actual focus zone (its own failure/re-inversion)
+    return _acts_on_focus(obj, ev) and ev.state_after in ("FAILURE", "REINVERSION")
+
+
+def _acts_on_focus(obj, ev):
+    """Proof that the event acts on the branch's actual focus object/region:
+    same object id, an explicit parent/child link, or source-object provenance.
+    A generic state label from an unrelated object does NOT satisfy this."""
+    if obj is None:
+        return False
+    if ev.object_id == obj.id:
+        return True
+    if ev.parent_object_id and ev.parent_object_id == obj.id:
+        return True
+    if getattr(obj, "source_fvg_id", "") == ev.object_id:
+        return True
+    return False
 
 
 def reclaims_boundary(obj, ev, ctx):
-    return ev.state_after == "RECLAIM"
+    # a reclaim of the actual stored boundary (the focus object's own reclaim)
+    return _acts_on_focus(obj, ev) and ev.state_after == "RECLAIM"
 
 
 def breaks_boundary(obj, ev, ctx):
-    return ev.state_after == "BREAK"
+    return _acts_on_focus(obj, ev) and ev.state_after == "BREAK"
 
 
 def accepts_beyond_boundary(obj, ev, ctx):
-    return ev.state_after in ("ACCEPTANCE_ABOVE", "ACCEPTANCE_BELOW")
+    return _acts_on_focus(obj, ev) and ev.state_after in ("ACCEPTANCE_ABOVE",
+                                                          "ACCEPTANCE_BELOW")
 
 
 def rejects_boundary(obj, ev, ctx):
-    return ev.state_after == "REJECTION"
+    return _acts_on_focus(obj, ev) and ev.state_after == "REJECTION"
 
 
 def sweeps_reference(obj, ev, ctx):
-    return ev.state_after == "SWEEP"
+    return _acts_on_focus(obj, ev) and ev.state_after == "SWEEP"
 
 
 def object_created_by_leg(obj, ev, ctx):
@@ -127,12 +145,15 @@ def compression_forms_around_object(obj, ev, ctx):
 
 
 def expansion_leaves_compression(obj, ev, ctx):
+    # expansion/break out of the SAME stored compression region
     return (obj is not None and obj.family == "structure"
+            and _acts_on_focus(obj, ev)
             and ev.state_after in ("EXPANSION", "BREAK"))
 
 
 def failed_expansion_returns_to_region(obj, ev, ctx):
     return (obj is not None and obj.family == "structure"
+            and _acts_on_focus(obj, ev)
             and ev.state_after == "FAILED_CONTINUATION")
 
 
@@ -190,9 +211,10 @@ PREDICATES = {
     "WITHIN_SUPPORTING_ATR_PROXIMITY": within_supporting_atr_proximity,
 }
 
-# proximity-only names — never sufficient on their own to justify an edge
+# supporting-only names — never sufficient on their own to justify a causal edge
+# (price proximity, time gap, and bare directional agreement/disagreement)
 PROXIMITY_ONLY = {"WITHIN_SUPPORTING_ATR_PROXIMITY", "WITHIN_FROZEN_TIME_GAP",
-                  "DIRECTIONALLY_SUPPORTS"}
+                  "DIRECTIONALLY_SUPPORTS", "DIRECTIONALLY_INVALIDATES"}
 
 
 def _lookup(ctx, oid):

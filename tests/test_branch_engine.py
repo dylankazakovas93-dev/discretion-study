@@ -82,6 +82,14 @@ def test_proximity_alone_rejected(result):
     assert result["rejections"].get("no_structural_edge", 0) > 0
 
 
+def test_every_accepted_transition_has_structural_evidence(result):
+    # no transition is accepted on proximity/direction alone
+    for b in result["branches"]:
+        for rec in b.transition_records:
+            assert rec["relationships_satisfied"], \
+                f"{b.branch_id} transition without structural edge: {rec}"
+
+
 def test_engine_never_reads_outcomes():
     # architectural: branch creation/termination cannot depend on outcomes
     import discretion.graph.branch_engine as mod

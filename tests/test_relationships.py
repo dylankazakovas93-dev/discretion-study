@@ -66,10 +66,43 @@ def test_zone_touch_enter_fill():
     assert not fills_zone(z, _ev(plo=100.6, phi=101.0), _ctx())
 
 
-def test_state_based_relationships():
+def test_state_based_relationships_require_acting_on_focus():
     z = FakePrim("FVG-1", "fvg", 100, 101, 1)
-    assert closes_through_zone(z, _ev(state="FAILURE"), _ctx())
-    assert sweeps_reference(z, _ev(state="SWEEP"), _ctx())
+    # same-object (acts on the focus zone) -> True
+    assert closes_through_zone(z, _ev(object_id="FVG-1", state="FAILURE"), _ctx())
+    assert sweeps_reference(z, _ev(object_id="FVG-1", state="SWEEP"), _ctx())
+    # a generic FAILURE/SWEEP from an unrelated object -> False
+    assert not closes_through_zone(z, _ev(object_id="OTHER", state="FAILURE"), _ctx())
+    assert not sweeps_reference(z, _ev(object_id="OTHER", state="SWEEP"), _ctx())
+
+
+def test_unrelated_state_labels_do_not_link():
+    from discretion.graph.relationships import (
+        breaks_boundary, reclaims_boundary, accepts_beyond_boundary,
+        failed_expansion_returns_to_region,
+    )
+    lvl = FakePrim("LVL-1", "hist_level", 100, 100, 0)
+    comp = FakePrim("STRUCT-1", "structure", 99, 101, 0)
+    # unrelated object carrying the right state does NOT satisfy the boundary rels
+    assert not breaks_boundary(lvl, _ev(object_id="LVL-9", state="BREAK"), _ctx())
+    assert not reclaims_boundary(lvl, _ev(object_id="LVL-9", state="RECLAIM"), _ctx())
+    assert not accepts_beyond_boundary(lvl, _ev(object_id="LVL-9", state="ACCEPTANCE_ABOVE"), _ctx())
+    assert not failed_expansion_returns_to_region(
+        comp, _ev(object_id="STRUCT-9", etype="structure", state="FAILED_CONTINUATION"), _ctx())
+    # the same-object versions DO link
+    assert breaks_boundary(lvl, _ev(object_id="LVL-1", state="BREAK"), _ctx())
+    assert reclaims_boundary(lvl, _ev(object_id="LVL-1", state="RECLAIM"), _ctx())
+    assert failed_expansion_returns_to_region(
+        comp, _ev(object_id="STRUCT-1", etype="structure", state="FAILED_CONTINUATION"), _ctx())
+
+
+def test_labels_alone_never_satisfy_structural_edge():
+    lvl = FakePrim("LVL-1", "hist_level", 100, 100, 0)
+    reg = FakeReg([lvl])
+    # an unrelated BREAK, near in price and same direction, still no structural edge
+    ev = _ev(object_id="LVL-9", ref=100.3, direction=1, state="BREAK")
+    sat = evaluate(lvl, ev, _ctx(atr=2.0, branch_dir=1, reg=reg))
+    assert not has_structural_edge(sat)
 
 
 def test_directional_support_and_invalidation():
