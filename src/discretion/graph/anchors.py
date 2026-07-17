@@ -90,12 +90,14 @@ def resolve_anchors(fam, direction, entry_price, seq, seg, focus, origin,
         if lvl is not None:
             tgt = (f"opposing_{lvl.family}", lvl.id, lvl.price_ref)
 
-    if tgt is None:
-        return None, None, "NO_STRUCTURAL_TARGET"
-
-    rule = f"{fam}|stop={stop[0]}|target={tgt[0]}"
     stop_anchor = {"stop_anchor_type": stop[0], "stop_anchor_object_id": stop[1],
                    "stop_anchor_price": float(stop[2])}
+    if tgt is None:
+        # stop is always structural; the branch objective simply yields no
+        # BRANCH_SEMANTIC target (other policies may still find one).
+        return stop_anchor, None, f"{fam}|stop={stop[0]}|target=NONE"
+
+    rule = f"{fam}|stop={stop[0]}|target={tgt[0]}"
     target_anchor = {"target_anchor_type": tgt[0], "target_anchor_object_id": tgt[1],
                      "target_anchor_price": float(tgt[2])}
     return stop_anchor, target_anchor, rule

@@ -176,14 +176,16 @@ def detect_htf_fvgs(bars, agg, reg):
                 continue
             width = hi - lo
             width_atr = round(width / c.atr, 4) if c.atr and c.atr > 0 else None
-            fvgs.append(HTFFVG(
+            f = HTFFVG(
                 id=reg.new_id(f"HTFFVG{tf}"), timeframe=tf, direction=direction,
                 subtype="bullish" if direction > 0 else "bearish",
                 a_candle_id=a.candle_id, b_candle_id=b.candle_id,
                 c_candle_id=c.candle_id, segment_id=c.segment_id,
                 created_seq=c.available_seq, created_ts=c.open_ts,
                 availability_ts=c.close_ts, lo=lo, hi=hi, width_atr=width_atr,
-                metrics={"width": width}))
+                metrics={"width": width})
+            reg.register(f)
+            fvgs.append(f)
 
     ifvgs = _track_and_invert(fvgs, bars, reg)
     return fvgs, ifvgs
@@ -236,11 +238,13 @@ def _track_and_invert(fvgs, bars, reg):
 
 def _spawn_ifvg(f, i, bar, reg):
     direction = -f.direction
-    return HTFIFVG(
+    iv = HTFIFVG(
         id=reg.new_id(f"HTFIFVG{f.timeframe}"), timeframe=f.timeframe,
         direction=direction, subtype="bullish" if direction > 0 else "bearish",
         source_fvg_id=f.id, segment_id=f.segment_id, created_seq=i,
         created_ts=str(bar.ts_et), lo=f.lo, hi=f.hi, width_atr=f.width_atr)
+    reg.register(iv)
+    return iv
 
 
 def _track_ifvgs(ifvgs, bars):

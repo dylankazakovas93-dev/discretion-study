@@ -97,7 +97,9 @@ def build_event_log(ps) -> EventLog:
     # collect (sort_key, primitive, event, ordinal)
     items = []
     for p in ps.registry.all():
-        for ordinal, e in enumerate(p.events):
+        # target-inventory objects (wick liquidity, HTF FVG/iFVG) carry permanent
+        # ids but never drive canonical episode events, so they have no event log.
+        for ordinal, e in enumerate(getattr(p, "events", ())):
             key = (e.seq, _FAMILY_RANK.get(p.family, 99), p.id, ordinal)
             items.append((key, p, e, ordinal))
     items.sort(key=lambda t: t[0])

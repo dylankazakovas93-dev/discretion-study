@@ -10,11 +10,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..data.atr import wilder_atr
+from ..data.aggregation import aggregate_all
 from ..data.bars import Bar
 from .base import IdRegistry
 from .displacement import detect_displacements, Displacement
 from .fvg import detect_fvgs, FVG
+from .htf_fvg import detect_htf_fvgs, HTFFVG, HTFIFVG
 from .ifvg import detect_ifvgs, IFVG
+from .wick_liquidity import detect_wick_liquidity, ProminentWickLiquidity
 from .levels import (
     build_time_anchors, build_session_levels, track_level_interactions, Level,
 )
@@ -40,6 +43,11 @@ class PrimitiveSet:
     equal_levels: list[Level] = field(default_factory=list)
     vwaps: list[VWAPSession] = field(default_factory=list)
     structures: list[StructureZone] = field(default_factory=list)
+    # multi-timeframe target inventory (5/15/30/60m)
+    htf: dict = field(default_factory=dict)
+    wicks: list[ProminentWickLiquidity] = field(default_factory=list)
+    htf_fvgs: list[HTFFVG] = field(default_factory=list)
+    htf_ifvgs: list[HTFIFVG] = field(default_factory=list)
 
     @property
     def all_levels(self) -> list[Level]:
@@ -82,9 +90,15 @@ def build_primitives(bars: list[Bar], atr_period: int = 14) -> PrimitiveSet:
     vwaps = build_vwap_sessions(bars, reg)
     structures = detect_compression_expansion(bars, atr, reg)
 
+    # multi-timeframe target inventory (causal 5/15/30/60m aggregation)
+    htf = aggregate_all(bars)
+    wicks = detect_wick_liquidity(bars, htf, reg)
+    htf_fvgs, htf_ifvgs = detect_htf_fvgs(bars, htf, reg)
+
     return PrimitiveSet(
         bars=bars, atr=atr, registry=reg,
         fvgs=fvgs, ifvgs=ifvgs, rbs=rbs, displacements=disps,
         anchors=anchors, session_levels=session_levels, swings=swings,
         equal_levels=equals, vwaps=vwaps, structures=structures,
+        htf=htf, wicks=wicks, htf_fvgs=htf_fvgs, htf_ifvgs=htf_ifvgs,
     )

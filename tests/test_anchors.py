@@ -51,12 +51,15 @@ def test_sweep_fade_stop_is_swept_extreme():
     assert stop["stop_anchor_price"] > 101.0   # beyond the sweep high
 
 
-def test_no_structural_target_returns_reason():
+def test_no_branch_objective_still_returns_stop():
+    # With no levels the branch objective is absent, but the stop is always
+    # structural; the target-universe policies (not this resolver) supply targets.
     fvg = _fake_zone("FVG-1", 99.0, 100.0, "fvg")
     stop, target, rule = resolve_anchors(
         "fvg_fill", +1, 100.5, 10, 0, fvg, fvg, _bar(100.0, 101.0),
         types.SimpleNamespace(reference_price=100.0), [], None)  # no levels
-    assert stop is None and target is None and rule == "NO_STRUCTURAL_TARGET"
+    assert stop is not None and stop["stop_anchor_type"] == "fvg_boundary"
+    assert target is None and rule.endswith("target=NONE")
 
 
 # ---- data-gated ----
@@ -81,10 +84,18 @@ def test_every_candidate_stores_typed_anchors(day):
 def test_anchor_objects_are_causally_available(day):
     reg = day["engine"].ps.registry
     for c in day["graph_candidates"]:
-        for oid in (c.stop_anchor_object_id, c.target_anchor_object_id):
-            if oid:
-                obj = reg.get(oid)
-                assert obj.created_seq <= c.setup.entry_seq  # never future
+        # stop anchors are always registered structural primitives
+        if c.stop_anchor_object_id:
+            try:
+                obj = reg.get(c.stop_anchor_object_id)
+            except KeyError:
+                obj = None
+            if obj is not None:
+                assert obj.created_seq <= c.setup.entry_seq
+        # the selected target is available at (never after) the entry seq
+        row = next(r for r in c.considered_targets
+                   if r["object_id"] == c.target_anchor_object_id)
+        assert row["available_seq"] <= c.setup.entry_seq
 
 
 def test_stop_anchor_families_are_branch_specific(day):

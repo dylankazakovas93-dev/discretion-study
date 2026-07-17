@@ -173,6 +173,7 @@ def detect_wick_liquidity(bars, agg, reg):
                              "wick_atr_pct": round(wick_atr_pct, 4),
                              "range_atr_pct": round(range_atr_pct, 4),
                              "exposed_pct": round(exposed_pct, 4)})
+                reg.register(obj)
                 out.append(obj)
                 hist_exposed[side].append(exposed_prot_atr)
                 hist_wick_atr[side].append(wick_atr)

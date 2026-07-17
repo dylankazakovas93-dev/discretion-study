@@ -19,7 +19,8 @@ NUM_KEYS = ["minutes_from_0930", "dist_to_stop_atr", "natural_rr",
             "path_body_ratio", "favorable_close"]
 CAT_KEYS = ["session", "target_family", "level_family", "nearest_vwap_band",
             "entry_mode", "has_fvg", "has_ifvg", "has_rb", "has_sweep",
-            "vwap_side"]
+            "vwap_side", "target_timeframe", "target_prominence",
+            "target_surface_policy"]
 
 
 def entry_mode_class(mode: str) -> str:
@@ -31,7 +32,9 @@ def hard_compatible(fa: dict, fb: dict) -> bool:
     different origin family) are forbidden regardless of numeric closeness."""
     return (fa["continuation_or_fade"] == fb["continuation_or_fade"]
             and entry_mode_class(fa["entry_mode"]) == entry_mode_class(fb["entry_mode"])
-            and fa["origin_family"] == fb["origin_family"])
+            and fa["origin_family"] == fb["origin_family"]
+            # different target policies are never equivalent research variants
+            and fa.get("target_policy_id") == fb.get("target_policy_id"))
 
 
 def numeric_ranges(pool_features: list[dict]) -> dict:
