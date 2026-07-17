@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CanonicalEvent",
+  "description": "Append-only causal primitive event emitted by src/discretion.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id", "event_type", "event_subtype", "object_id", "parent_object_id",
+    "timestamp_et", "availability_timestamp_et", "source_timeframe",
+    "absolute_segment_id", "normalization_segment_id", "direction",
+    "price_low", "price_high", "reference_price", "state_before", "state_after",
+    "feature_values", "causal_parent_event_ids", "invalidation_timestamp",
+    "expiry_timestamp", "source_detector_version"
+  ],
+  "properties": {
+    "event_id": {"type": "string", "pattern": "^EVT-[0-9]{7}$"},
+    "event_type": {"type": "string"},
+    "event_subtype": {"type": "string"},
+    "object_id": {"type": "string"},
+    "parent_object_id": {"type": "string"},
+    "timestamp_et": {"type": "string"},
+    "availability_timestamp_et": {"type": "string"},
+    "source_timeframe": {"type": "string", "enum": ["1m"]},
+    "absolute_segment_id": {"type": "integer"},
+    "normalization_segment_id": {"type": "integer"},
+    "direction": {"type": "integer", "enum": [-1, 0, 1]},
+    "price_low": {"type": "number"},
+    "price_high": {"type": "number"},
+    "reference_price": {"type": "number"},
+    "state_before": {"type": "string"},
+    "state_after": {"type": "string"},
+    "feature_values": {"type": "object"},
+    "causal_parent_event_ids": {"type": "array", "items": {"type": "string"}},
+    "invalidation_timestamp": {"type": "string"},
+    "expiry_timestamp": {"type": "string"},
+    "source_detector_version": {"type": "string"}
+  }
+}
