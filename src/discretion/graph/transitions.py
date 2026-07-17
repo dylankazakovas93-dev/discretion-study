@@ -204,6 +204,33 @@ def hypotheses_for_family(family: str) -> list[Hypothesis]:
     return BY_FAMILY.get(family, [])
 
 
+def spawn_states(h: Hypothesis) -> set:
+    """Event states that may OPEN this hypothesis (gates branch spawning so a
+    hypothesis is not spawned on an unrelated event of the same family)."""
+    fam, hid = h.family, h.hypothesis_id
+    if fam == "fvg":
+        return {"FORMED"}
+    if fam == "ifvg":
+        return {"CONFIRMED"}
+    if fam == "rejection_block":
+        return {"CONFIRMED"}
+    if fam == "structure":
+        return {"COMPRESSION"}
+    if "vwap_reclaim" in hid:
+        return {"RECLAIM"}
+    if "vwap_break_accept" in hid:
+        return {"BREAK"}
+    if "vwap" in hid:
+        return {"REJECTION"}
+    if "sweep" in hid:
+        return {"SWEEP"}
+    if "break" in hid:
+        return {"BREAK"}
+    if "reclaim" in hid:
+        return {"RECLAIM"}
+    return {"SWEEP", "BREAK", "RECLAIM", "REJECTION"}
+
+
 def stage_matches(stage: Stage, ev, satisfied: set, delay: int, branch_dir: int) -> bool:
     """True iff the event satisfies this stage (excluding the structural-edge
     check, which the engine enforces separately via has_structural_edge)."""
