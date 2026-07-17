@@ -58,6 +58,12 @@ class BranchState:
     segment_id: int = 0
     # per-transition object/boundary evidence (append-only)
     transition_records: list = field(default_factory=list)
+    # FVG->iFVG lineage (populated for iFVG child branches)
+    parent_fvg_id: str = ""
+    fvg_formation_event_id: str = ""
+    fvg_failure_event_id: str = ""
+    ifvg_confirmation_event_id: str = ""
+    retest_event_id: str = ""
 
     @property
     def active(self) -> bool:
@@ -165,6 +171,9 @@ class BranchEngine:
         branches: list[BranchState] = []
         triggers: list[TriggerState] = []
         spawned: set = set()
+        # FVG formation/failure event ids, for iFVG child lineage
+        fvg_formation_event: dict[str, str] = {}
+        fvg_failure_event: dict[str, str] = {}
 
         # active indices
         keyed: dict[str, list[BranchState]] = {}   # focus_object_id -> branches
@@ -258,6 +267,8 @@ class BranchEngine:
                     ordered_event_ids=tuple(b.ordered_event_ids),
                     ordered_transition_ids=tuple(b.ordered_transition_ids),
                     relationship_evidence=rel_ev, seq=seq))
+                if stage.trigger_family == "ifvg_retest":
+                    b.retest_event_id = ev.event_id
                 b.terminal_status, b.terminal_reason = "EMITTED", stage.trigger_family
                 b.current_state = f"{b.hypothesis_id}@EMITTED"
             else:
@@ -266,6 +277,11 @@ class BranchEngine:
 
         for ev in log:
             seq = self.ts_to_seq[ev.timestamp_et]
+            # record FVG formation/failure event ids for downstream iFVG lineage
+            if ev.event_type == "fvg" and ev.state_after == "FORMED":
+                fvg_formation_event.setdefault(ev.object_id, ev.event_id)
+            elif ev.event_type == "fvg" and ev.state_after == "FAILURE":
+                fvg_failure_event.setdefault(ev.object_id, ev.event_id)
             # prune (expiry / inactivity / stage delay) -> mark EXPIRED/UNRESOLVED
             def prune(lst):
                 keep = []
@@ -316,6 +332,9 @@ class BranchEngine:
                     continue   # bare FVG formation is not a coherent setup
                 if (h.hypothesis_id, ev.object_id) in spawned:
                     continue
+                parent_fvg = ev.parent_object_id if ev.event_type == "ifvg" else ""
+                if ev.event_type == "ifvg" and not parent_fvg:
+                    continue   # an iFVG must retain its parent FVG lineage
                 s0 = h.stages[0]
                 # spawn only if the first stage can plausibly start here
                 if s0.immediate:
@@ -364,6 +383,23 @@ class BranchEngine:
                     hypothesis=h, stage_index=0, focus_object_id=ev.object_id,
                     origin_seq=seq, last_advanced_seq=seq,
                     segment_id=ev.absolute_segment_id)
+                # seed iFVG child branches with their parent FVG lineage so the
+                # graph visibly contains FVG_FORMED -> FVG_FAILURE -> IFVG_ACTIVATION
+                if ev.event_type == "ifvg":
+                    fform = fvg_formation_event.get(parent_fvg, "")
+                    ffail = fvg_failure_event.get(parent_fvg, "")
+                    seed = [x for x in (fform, ffail) if x]
+                    b.ordered_event_ids = seed + [ev.event_id]
+                    b.exact_graph_so_far = [log.get(x).event_subtype for x in seed] + \
+                        [ev.event_subtype]
+                    b.current_structural_objects = [parent_fvg, ev.object_id]
+                    b.parent_fvg_id = parent_fvg
+                    b.fvg_formation_event_id = fform
+                    b.fvg_failure_event_id = ffail
+                    b.ifvg_confirmation_event_id = ev.event_id
+                    pep = episodes.get(parent_fvg)
+                    if pep and pep.branch_ids:
+                        b.parent_branch_id = pep.branch_ids[0]
                 ep.branch_ids.append(b.branch_id)
                 branches.append(b)
                 if s0.immediate:

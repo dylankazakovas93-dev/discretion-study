@@ -36,6 +36,12 @@ class GraphNativeCandidate:
     features: dict = field(default_factory=dict)
     evidence: dict = field(default_factory=dict)     # Phase 6
     qualification: str = "UNSCORED"                  # Phase 6
+    # FVG->iFVG lineage (empty for non-iFVG candidates)
+    parent_fvg_id: str = ""
+    fvg_formation_event_id: str = ""
+    fvg_failure_event_id: str = ""
+    ifvg_confirmation_event_id: str = ""
+    retest_event_id: str = ""
     # convenience mirrors
     session_ord: int | None = None
     completion_ord: int | None = None
@@ -160,7 +166,12 @@ class Materializer:
             ordered_event_ids=trigger.ordered_event_ids,
             ordered_transition_ids=trigger.ordered_transition_ids,
             relationship_evidence=trigger.relationship_evidence,
-            direction=s.direction, entry_mode=trigger.entry_mode, setup=s, features=feats)
+            direction=s.direction, entry_mode=trigger.entry_mode, setup=s, features=feats,
+            parent_fvg_id=branch.parent_fvg_id,
+            fvg_formation_event_id=branch.fvg_formation_event_id,
+            fvg_failure_event_id=branch.fvg_failure_event_id,
+            ifvg_confirmation_event_id=branch.ifvg_confirmation_event_id,
+            retest_event_id=branch.retest_event_id)
         branch.emitted_candidate_ids.append(cid)
         reason = s.rejection_reason if s.rejected else None
         return cand, reason
