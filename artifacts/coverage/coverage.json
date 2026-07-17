@@ -146,7 +146,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -161,7 +161,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -176,7 +176,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -191,7 +191,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -206,7 +206,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -221,7 +221,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -236,7 +236,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -251,7 +251,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -266,7 +266,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -281,7 +281,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -296,7 +296,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -311,7 +311,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -326,7 +326,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 4,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -446,7 +446,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 142,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -461,7 +461,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 141,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -476,7 +476,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 858,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -491,7 +491,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 837,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -896,7 +896,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 51,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -911,7 +911,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 48,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -926,7 +926,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 52,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -934,14 +934,14 @@
     "subtype": "state:RECLAIM",
     "implemented": true,
     "unit_tested": true,
-    "detected_in_dev_history": 47,
+    "detected_in_dev_history": 46,
     "eligible_as_origin": true,
     "eligible_as_transition": true,
     "eligible_as_trigger": true,
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
-    "generated_occurrence_count": 47,
-    "rejection_count": 555,
+    "generated_occurrence_count": 46,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -956,7 +956,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 48,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -964,14 +964,14 @@
     "subtype": "state:ACCEPTANCE_ABOVE",
     "implemented": true,
     "unit_tested": true,
-    "detected_in_dev_history": 47,
+    "detected_in_dev_history": 46,
     "eligible_as_origin": true,
     "eligible_as_transition": true,
     "eligible_as_trigger": true,
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
-    "generated_occurrence_count": 47,
-    "rejection_count": 555,
+    "generated_occurrence_count": 46,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -986,7 +986,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 51,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -1001,7 +1001,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 52,
-    "rejection_count": 555,
+    "rejection_count": 604,
     "reason_for_zero": ""
   },
   {
@@ -1136,7 +1136,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 1978,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -1151,7 +1151,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 1884,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -1166,7 +1166,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 1851,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -1181,7 +1181,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 1978,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -1196,7 +1196,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 1848,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -1211,7 +1211,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 1851,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -1226,7 +1226,7 @@
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
     "generated_occurrence_count": 1976,
-    "rejection_count": 65762,
+    "rejection_count": 65747,
     "reason_for_zero": ""
   },
   {
@@ -1399,14 +1399,14 @@
     "subtype": "formation_close",
     "implemented": true,
     "unit_tested": true,
-    "detected_in_dev_history": 3246,
+    "detected_in_dev_history": 3257,
     "eligible_as_origin": false,
     "eligible_as_transition": false,
     "eligible_as_trigger": true,
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
-    "generated_occurrence_count": 3246,
-    "rejection_count": 67224,
+    "generated_occurrence_count": 3257,
+    "rejection_count": 67260,
     "reason_for_zero": ""
   },
   {
@@ -1474,14 +1474,14 @@
     "subtype": "retest",
     "implemented": true,
     "unit_tested": true,
-    "detected_in_dev_history": 751,
+    "detected_in_dev_history": 752,
     "eligible_as_origin": false,
     "eligible_as_transition": false,
     "eligible_as_trigger": true,
     "eligible_for_continuation": true,
     "eligible_for_fade": true,
-    "generated_occurrence_count": 751,
-    "rejection_count": 1247,
+    "generated_occurrence_count": 752,
+    "rejection_count": 1245,
     "reason_for_zero": ""
   },
   {
@@ -1504,14 +1504,14 @@
     "subtype": "retracement_continuation",
     "implemented": true,
     "unit_tested": true,
-    "detected_in_dev_history": 924,
+    "detected_in_dev_history": 925,
     "eligible_as_origin": false,
     "eligible_as_transition": false,
     "eligible_as_trigger": true,
     "eligible_for_continuation": true,
     "eligible_for_fade": false,
-    "generated_occurrence_count": 924,
-    "rejection_count": 2472,
+    "generated_occurrence_count": 925,
+    "rejection_count": 2470,
     "reason_for_zero": ""
   },
   {
@@ -1519,14 +1519,14 @@
     "subtype": "fade",
     "implemented": true,
     "unit_tested": true,
-    "detected_in_dev_history": 3213,
+    "detected_in_dev_history": 3224,
     "eligible_as_origin": false,
     "eligible_as_transition": false,
     "eligible_as_trigger": true,
     "eligible_for_continuation": false,
     "eligible_for_fade": true,
-    "generated_occurrence_count": 3213,
-    "rejection_count": 66940,
+    "generated_occurrence_count": 3224,
+    "rejection_count": 66976,
     "reason_for_zero": ""
   }
 ]

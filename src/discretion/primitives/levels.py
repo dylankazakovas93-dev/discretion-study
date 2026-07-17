@@ -28,7 +28,7 @@ ANCHOR_TIMES = {
     "midnight_open": (0, 0),
     "asia_open": (20, 0),
     "london_open": (3, 0),
-    "ny_session_open": (8, 30),
+    "ny_session_open": (9, 30),  # NY cash-equities open; coincides with open_0930
     "open_0900": (9, 0),
     "open_0930": (9, 30),
     "open_1000": (10, 0),

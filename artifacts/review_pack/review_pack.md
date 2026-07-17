@@ -106,7 +106,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![13_time_anchor_no_fvg](../charts/13_time_anchor_no_fvg.png)
 
 ## 14_hist_level_continuation
-- setup_id: `SETUP-004112`  short  mode: retest  (continuation)
+- setup_id: `SETUP-004148`  short  mode: retest  (continuation)
 - timestamp (ET): 2025-07-07 09:52:00-04:00
 - graph: `hist_level:hl_0930_high:break -> accept -> retest -> continuation`
 - primitive_ids: ['LVL-000009']
@@ -117,7 +117,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![14_hist_level_continuation](../charts/14_hist_level_continuation.png)
 
 ## 15_hist_level_fade
-- setup_id: `SETUP-004123`  short  mode: formation_close  (fade)
+- setup_id: `SETUP-004159`  short  mode: formation_close  (fade)
 - timestamp (ET): 2025-07-08 02:16:00-04:00
 - graph: `hist_level:hl_0930_low:sweep -> reject -> fade`
 - primitive_ids: ['LVL-000010']
@@ -128,7 +128,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![15_hist_level_fade](../charts/15_hist_level_fade.png)
 
 ## 16_vwap_continuation
-- setup_id: `SETUP-041416`  short  mode: first_touch  (continuation)
+- setup_id: `SETUP-041469`  short  mode: first_touch  (continuation)
 - timestamp (ET): 2025-07-06 18:11:00-04:00
 - graph: `vwap:bounce -> continuation`
 - primitive_ids: ['VWAP-000001']
@@ -139,7 +139,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![16_vwap_continuation](../charts/16_vwap_continuation.png)
 
 ## 17_vwap_fade
-- setup_id: `SETUP-041413`  short  mode: formation_close  (fade)
+- setup_id: `SETUP-041466`  short  mode: formation_close  (fade)
 - timestamp (ET): 2025-07-06 18:05:00-04:00
 - graph: `vwap:band_reject_+1.618 -> fade_to_vwap`
 - primitive_ids: ['VWAP-000001']
@@ -150,7 +150,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![17_vwap_fade](../charts/17_vwap_fade.png)
 
 ## 18_compression_to_expansion
-- setup_id: `SETUP-042544`  short  mode: next_bar  (continuation)
+- setup_id: `SETUP-042597`  short  mode: next_bar  (continuation)
 - timestamp (ET): 2025-07-07 01:20:00-04:00
 - graph: `compression -> expansion -> continuation`
 - primitive_ids: ['STRUCT-000006']
@@ -161,7 +161,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![18_compression_to_expansion](../charts/18_compression_to_expansion.png)
 
 ## 19_capped_1R
-- setup_id: `SETUP-041413`  short  mode: formation_close  (fade)
+- setup_id: `SETUP-041466`  short  mode: formation_close  (fade)
 - timestamp (ET): 2025-07-06 18:05:00-04:00
 - graph: `vwap:band_reject_+1.618 -> fade_to_vwap`
 - primitive_ids: ['VWAP-000001']
@@ -172,7 +172,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![19_capped_1R](../charts/19_capped_1R.png)
 
 ## 20_natural_half_to_1R
-- setup_id: `SETUP-041414`  short  mode: formation_close  (fade)
+- setup_id: `SETUP-041467`  short  mode: formation_close  (fade)
 - timestamp (ET): 2025-07-06 18:06:00-04:00
 - graph: `vwap:band_reject_+1.618 -> fade_to_vwap`
 - primitive_ids: ['VWAP-000001']
@@ -183,7 +183,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![20_natural_half_to_1R](../charts/20_natural_half_to_1R.png)
 
 ## 21_rejected_below_half_R
-- setup_id: `SETUP-041411`  short  mode: formation_close  (fade)
+- setup_id: `SETUP-041464`  short  mode: formation_close  (fade)
 - timestamp (ET): 2025-07-06 18:01:00-04:00
 - graph: `vwap:band_reject_+1.618 -> fade_to_vwap`
 - primitive_ids: ['VWAP-000001']
@@ -194,7 +194,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![21_rejected_below_half_R](../charts/21_rejected_below_half_R.png)
 
 ## 22_continuation_setup
-- setup_id: `SETUP-041416`  short  mode: first_touch  (continuation)
+- setup_id: `SETUP-041469`  short  mode: first_touch  (continuation)
 - timestamp (ET): 2025-07-06 18:11:00-04:00
 - graph: `vwap:bounce -> continuation`
 - primitive_ids: ['VWAP-000001']
@@ -205,7 +205,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![22_continuation_setup](../charts/22_continuation_setup.png)
 
 ## 23_fade_setup
-- setup_id: `SETUP-041413`  short  mode: formation_close  (fade)
+- setup_id: `SETUP-041466`  short  mode: formation_close  (fade)
 - timestamp (ET): 2025-07-06 18:05:00-04:00
 - graph: `vwap:band_reject_+1.618 -> fade_to_vwap`
 - primitive_ids: ['VWAP-000001']
@@ -216,7 +216,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![23_fade_setup](../charts/23_fade_setup.png)
 
 ## 24_no_fvg_no_ifvg
-- setup_id: `SETUP-041413`  short  mode: formation_close  (fade)
+- setup_id: `SETUP-041466`  short  mode: formation_close  (fade)
 - timestamp (ET): 2025-07-06 18:05:00-04:00
 - graph: `vwap:band_reject_+1.618 -> fade_to_vwap`
 - primitive_ids: ['VWAP-000001']
@@ -227,7 +227,7 @@ Deterministic chronological selection per category. Examples validate implementa
 ![24_no_fvg_no_ifvg](../charts/24_no_fvg_no_ifvg.png)
 
 ## 25_no_liquidity_sweep
-- setup_id: `SETUP-041413`  short  mode: formation_close  (fade)
+- setup_id: `SETUP-041466`  short  mode: formation_close  (fade)
 - timestamp (ET): 2025-07-06 18:05:00-04:00
 - graph: `vwap:band_reject_+1.618 -> fade_to_vwap`
 - primitive_ids: ['VWAP-000001']

@@ -348,7 +348,7 @@
     "category": "14_hist_level_continuation",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-004112",
+      "setup_id": "SETUP-004148",
       "timestamp_et": "2025-07-07 09:52:00-04:00",
       "direction": "short",
       "graph": "hist_level:hl_0930_high:break -> accept -> retest -> continuation",
@@ -381,7 +381,7 @@
     "category": "15_hist_level_fade",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-004123",
+      "setup_id": "SETUP-004159",
       "timestamp_et": "2025-07-08 02:16:00-04:00",
       "direction": "short",
       "graph": "hist_level:hl_0930_low:sweep -> reject -> fade",
@@ -414,7 +414,7 @@
     "category": "16_vwap_continuation",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-041416",
+      "setup_id": "SETUP-041469",
       "timestamp_et": "2025-07-06 18:11:00-04:00",
       "direction": "short",
       "graph": "vwap:bounce -> continuation",
@@ -447,7 +447,7 @@
     "category": "17_vwap_fade",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-041413",
+      "setup_id": "SETUP-041466",
       "timestamp_et": "2025-07-06 18:05:00-04:00",
       "direction": "short",
       "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
@@ -480,7 +480,7 @@
     "category": "18_compression_to_expansion",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-042544",
+      "setup_id": "SETUP-042597",
       "timestamp_et": "2025-07-07 01:20:00-04:00",
       "direction": "short",
       "graph": "compression -> expansion -> continuation",
@@ -513,7 +513,7 @@
     "category": "19_capped_1R",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-041413",
+      "setup_id": "SETUP-041466",
       "timestamp_et": "2025-07-06 18:05:00-04:00",
       "direction": "short",
       "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
@@ -546,7 +546,7 @@
     "category": "20_natural_half_to_1R",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-041414",
+      "setup_id": "SETUP-041467",
       "timestamp_et": "2025-07-06 18:06:00-04:00",
       "direction": "short",
       "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
@@ -579,7 +579,7 @@
     "category": "21_rejected_below_half_R",
     "kind": "rejected",
     "example": {
-      "setup_id": "SETUP-041411",
+      "setup_id": "SETUP-041464",
       "timestamp_et": "2025-07-06 18:01:00-04:00",
       "direction": "short",
       "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
@@ -612,7 +612,7 @@
     "category": "22_continuation_setup",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-041416",
+      "setup_id": "SETUP-041469",
       "timestamp_et": "2025-07-06 18:11:00-04:00",
       "direction": "short",
       "graph": "vwap:bounce -> continuation",
@@ -645,7 +645,7 @@
     "category": "23_fade_setup",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-041413",
+      "setup_id": "SETUP-041466",
       "timestamp_et": "2025-07-06 18:05:00-04:00",
       "direction": "short",
       "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
@@ -678,7 +678,7 @@
     "category": "24_no_fvg_no_ifvg",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-041413",
+      "setup_id": "SETUP-041466",
       "timestamp_et": "2025-07-06 18:05:00-04:00",
       "direction": "short",
       "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
@@ -711,7 +711,7 @@
     "category": "25_no_liquidity_sweep",
     "kind": "setup",
     "example": {
-      "setup_id": "SETUP-041413",
+      "setup_id": "SETUP-041466",
       "timestamp_et": "2025-07-06 18:05:00-04:00",
       "direction": "short",
       "graph": "vwap:band_reject_+1.618 -> fade_to_vwap",
