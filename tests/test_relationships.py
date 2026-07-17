@@ -129,6 +129,21 @@ def test_structural_edge_when_same_object():
     assert "SAME_OBJECT" in sat and has_structural_edge(sat)
 
 
+def test_fvg_continuation_away_requires_movement_beyond_boundary():
+    from discretion.graph.relationships import fvg_continuation_away
+    fvg = FakePrim("FVG-1", "fvg", 100, 101, 1)  # bullish, near edge 101
+    ctx = _ctx(atr=1.0, branch_dir=1)
+    far = _ev(object_id="DISP-1", etype="displacement", state="FORMED",
+              direction=1, ref=102.5)   # >= 101 + 1.0*atr
+    near = _ev(object_id="DISP-2", etype="displacement", state="FORMED",
+               direction=1, ref=101.4)  # not far enough
+    opp = _ev(object_id="DISP-3", etype="displacement", state="FORMED",
+              direction=-1, ref=103.0)
+    assert fvg_continuation_away(fvg, far, ctx)
+    assert not fvg_continuation_away(fvg, near, ctx)
+    assert not fvg_continuation_away(fvg, opp, ctx)
+
+
 def test_fvg_created_by_displacement_links_to_that_displacement():
     disp = FakePrim("DISP-1", "displacement", 100, 102, 1, created_seq=5)
     fvg = FakePrim("FVG-9", "fvg", 101, 102, 1, created_seq=6, a_seq=4, c_seq=6)

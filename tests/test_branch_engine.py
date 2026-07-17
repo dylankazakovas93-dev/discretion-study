@@ -44,8 +44,8 @@ def test_one_event_advances_multiple_branches(result):
 def test_invalidated_branches_recorded_and_caused_by_events(result):
     inval = [b for b in result["branches"] if b.terminal_status == "INVALIDATED"]
     assert inval
-    assert all(b.terminal_reason in ("opposing_move", "origin_invalidated")
-               for b in inval)
+    assert all(b.terminal_reason in ("opposing_move", "origin_invalidated",
+                                     "context_invalidated") for b in inval)
 
 
 def test_unresolved_and_expired_retained(result):

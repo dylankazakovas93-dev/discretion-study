@@ -40,6 +40,12 @@ class Hypothesis:
     cont_or_fade: str               # continuation | fade | unresolved
     dir_from_origin: object         # +1 | -1 | "FROM_EVENT" | "FROM_SUBTYPE"
     stages: tuple
+    # a bare FVG formation is not a coherent setup: formation-entry hypotheses
+    # require a qualifying displacement context before they may spawn
+    requires_displacement_context: bool = False
+    # states on the origin object that terminate this hypothesis (e.g. a no-fill
+    # branch is invalidated the moment its FVG is touched)
+    invalidate_on: frozenset = frozenset()
 
 
 def _emit(entry_mode, trigger_family, **kw):
@@ -56,10 +62,20 @@ def _adv(**kw):
 _FVG = [
     Hypothesis("H_fvg_formation_close", "fvg", "continuation", +1,
                (_emit("formation_close", "fvg_formation", immediate=True,
-                      rels=("SAME_OBJECT",)),)),
+                      rels=("SAME_OBJECT",)),),
+               requires_displacement_context=True),
     Hypothesis("H_fvg_next_bar", "fvg", "continuation", +1,
                (_emit("next_bar", "fvg_formation", immediate=True,
-                      rels=("SAME_OBJECT",)),)),
+                      rels=("SAME_OBJECT",)),),
+               requires_displacement_context=True),
+    # genuine continuation-without-fill: FVG never touched, price continues away
+    Hypothesis("H_fvg_no_fill_continuation", "fvg", "continuation", +1,
+               (_emit("no_fill_continuation", "fvg_no_fill",
+                      rels=("FVG_CONTINUATION_AWAY",), direction="SUPPORT",
+                      min_delay=3, updates_focus=False),),
+               invalidate_on=frozenset({"FIRST_TOUCH", "FIRST_FILL", "MIDPOINT",
+                                        "FULL_FILL", "FAILURE", "REVISIT",
+                                        "EXACT_TOUCH"})),
     Hypothesis("H_fvg_first_touch", "fvg", "continuation", +1,
                (_emit("first_touch", "fvg_fill", event_family="fvg",
                       event_state="FIRST_TOUCH", rels=("SAME_OBJECT", "TOUCHES_ZONE")),)),

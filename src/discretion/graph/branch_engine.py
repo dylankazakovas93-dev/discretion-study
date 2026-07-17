@@ -127,6 +127,18 @@ class BranchEngine:
         self._n_trig = 0
         self._n_merged = 0
         self.rejections = RejectionCounter()
+        # FVGs that were created by a same-direction good displacement (the
+        # qualifying context that lets an immediate FVG formation be a setup)
+        self.fvg_disp_context: set = set()
+        good_by_seq: dict[int, list] = {}
+        for d in ps.displacements:
+            if d.grade == "good":
+                good_by_seq.setdefault(d.created_seq, []).append(d)
+        for f in ps.fvgs:
+            for s in range(f.a_seq, f.c_seq + 1):
+                if any(d.direction == f.direction for d in good_by_seq.get(s, [])):
+                    self.fvg_disp_context.add(f.id)
+                    break
 
     def _origin_dir(self, ev, dir_from_origin):
         base = ev.direction
@@ -189,6 +201,11 @@ class BranchEngine:
             # origin-object invalidation
             if ev.object_id == b.origin_object_id and ev.state_after in INVALIDATION_STATES:
                 b.terminal_status, b.terminal_reason = "INVALIDATED", "origin_invalidated"
+                return
+            # hypothesis-specific invalidation (e.g. FVG touched before a no-fill path)
+            if (b.hypothesis.invalidate_on and ev.object_id == b.origin_object_id
+                    and ev.state_after in b.hypothesis.invalidate_on):
+                b.terminal_status, b.terminal_reason = "INVALIDATED", "context_invalidated"
                 return
             if not has_structural_edge(satisfied):
                 # opposing strong move can still invalidate a continuation branch
@@ -294,6 +311,9 @@ class BranchEngine:
             for h in hyps:
                 if ev.state_after not in spawn_states(h):
                     continue   # this event does not open this hypothesis
+                if (h.requires_displacement_context
+                        and ev.object_id not in self.fvg_disp_context):
+                    continue   # bare FVG formation is not a coherent setup
                 if (h.hypothesis_id, ev.object_id) in spawned:
                     continue
                 s0 = h.stages[0]

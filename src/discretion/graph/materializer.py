@@ -87,7 +87,7 @@ class Materializer:
             self.seg_last[b.segment_id] = i
 
     def _entry(self, entry_mode, seq, trig_ev):
-        if entry_mode == "formation_close":
+        if entry_mode in ("formation_close", "no_fill_continuation"):
             return seq, self.bars[seq].close
         if entry_mode == "next_bar":
             nb = seq + 1

@@ -15,6 +15,7 @@ from ..data.bars import NQ_TICK
 
 LINK_PROXIMITY_ATR = 1.5   # supporting proximity only (frozen)
 LINK_MAX_GAP_BARS = 120
+MIN_CONTINUATION_ATR = 1.0  # min move beyond the FVG boundary for a no-fill path
 
 
 @dataclass
@@ -157,6 +158,27 @@ def failed_expansion_returns_to_region(obj, ev, ctx):
             and ev.state_after == "FAILED_CONTINUATION")
 
 
+def fvg_continuation_away(obj, ev, ctx):
+    """A directional displacement/expansion that moves measurably away from the
+    FVG's stored boundary (a geometric relationship to that object). The branch
+    separately guarantees the FVG was never touched."""
+    if obj is None or not _is_zone(obj) or obj.family != "fvg":
+        return False
+    d = getattr(obj, "direction", 0)
+    if ev.direction == 0 or ev.direction != d:
+        return False
+    strong = ((ev.event_type == "displacement" and ev.state_after == "FORMED")
+              or (ev.event_type == "structure" and ev.state_after in ("EXPANSION", "BREAK")))
+    if not strong:
+        return False
+    atr = ctx.atr or 0
+    if atr <= 0:
+        return False
+    if d > 0:
+        return ev.reference_price >= obj.hi + MIN_CONTINUATION_ATR * atr
+    return ev.reference_price <= obj.lo - MIN_CONTINUATION_ATR * atr
+
+
 def time_anchor_interaction(obj, ev, ctx):
     return (obj is not None and obj.family == "time_anchor"
             and (same_object(obj, ev, ctx)
@@ -201,6 +223,7 @@ PREDICATES = {
     "REJECTS_BOUNDARY": rejects_boundary,
     "SWEEPS_REFERENCE": sweeps_reference,
     "DISPLACEMENT_ORIGINATES_AT_OBJECT": displacement_originates_at_object,
+    "FVG_CONTINUATION_AWAY": fvg_continuation_away,
     "COMPRESSION_FORMS_AROUND_OBJECT": compression_forms_around_object,
     "EXPANSION_LEAVES_COMPRESSION": expansion_leaves_compression,
     "FAILED_EXPANSION_RETURNS_TO_REGION": failed_expansion_returns_to_region,
