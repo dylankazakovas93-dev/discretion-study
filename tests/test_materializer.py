@@ -53,8 +53,12 @@ def test_rr_policy(result):
         assert 0.5 <= c.setup.executed_rr <= 1.0
     assert any(abs(c.setup.executed_rr - 1.0) < 1e-9 for c in result["graph_candidates"])
     assert any(0.5 <= c.setup.executed_rr < 1.0 for c in result["graph_candidates"])
+    assert any(c.setup.rejection_reason == "INSUFFICIENT_NATURAL_RR"
+               for c in result["graph_rejected"])
     for c in result["graph_rejected"]:
-        assert c.setup.rejection_reason == "INSUFFICIENT_NATURAL_RR"
+        assert c.setup.rejection_reason in (
+            "INSUFFICIENT_NATURAL_RR", "TARGET_WRONG_SIDE", "DEGENERATE_STOP")
+        assert c.setup.executed_target == 0.0   # never given an executable target
 
 
 def test_structural_stop_and_target_on_correct_side(result):

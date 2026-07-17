@@ -136,7 +136,7 @@ _RB = [
                 _emit("formation_close", "rb_failure_fade",
                       event_state={"FAILED_CONTINUATION", "BREAK", "FAILURE",
                                    "REINVERSION", "ACCEPTANCE_ABOVE", "ACCEPTANCE_BELOW"},
-                      rels=(), direction="INVERSION"))),
+                      rels=(), direction="INVERSION", updates_focus=False))),
 ]
 
 # --------------------------------------------------------------------------

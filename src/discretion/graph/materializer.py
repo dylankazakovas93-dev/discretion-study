@@ -13,8 +13,8 @@ from dataclasses import dataclass, field
 from types import SimpleNamespace
 
 from ..setups.model import Setup, apply_rr_policy
-from ..setups.structural import nearest_level_above, nearest_level_below, STOP_BUFFER
 from ..representations.signatures import FeatureContext, build_features, reduce_graph
+from .anchors import resolve_anchors
 
 EXPIRY_BARS = 120
 
@@ -42,6 +42,14 @@ class GraphNativeCandidate:
     fvg_failure_event_id: str = ""
     ifvg_confirmation_event_id: str = ""
     retest_event_id: str = ""
+    # branch-specific stop/target anchors
+    stop_anchor_type: str = ""
+    stop_anchor_object_id: str = ""
+    stop_anchor_price: float = 0.0
+    target_anchor_type: str = ""
+    target_anchor_object_id: str = ""
+    target_anchor_price: float = 0.0
+    anchor_resolution_rule: str = ""
     # convenience mirrors
     session_ord: int | None = None
     completion_ord: int | None = None
@@ -115,18 +123,16 @@ class Materializer:
 
         entry_seq, entry_price = self._entry(trigger.entry_mode, seq0, trig_ev)
         seg = self.bars[entry_seq].segment_id
-        # structural stop: object boundary or the trigger-bar extreme (frozen)
-        flo = focus.lo if focus is not None else entry_price
-        fhi = focus.hi if focus is not None else entry_price
-        if direction > 0:
-            stop = min(flo, bar0.low) - STOP_BUFFER
-            tlvl = nearest_level_above(entry_price, entry_seq, seg, self.levels)
-        else:
-            stop = max(fhi, bar0.high) + STOP_BUFFER
-            tlvl = nearest_level_below(entry_price, entry_seq, seg, self.levels)
-        if tlvl is None:
-            return None, "NO_STRUCTURAL_TARGET"
-        target = tlvl.price_ref
+        # branch-specific stop/target anchors (frozen, keyed by trigger family)
+        vwap_val = focus.value_at(entry_seq) if (focus is not None
+                                                 and focus.family == "vwap") else None
+        stop_a, target_a, rule = resolve_anchors(
+            trigger.trigger_family, direction, entry_price, entry_seq, seg,
+            focus, origin, bar0, trig_ev, self.levels, vwap_val)
+        if stop_a is None:
+            return None, rule
+        stop = stop_a["stop_anchor_price"]
+        target = target_a["target_anchor_price"]
 
         self._n += 1
         cid = f"GNC-{self._n:06d}"
@@ -171,7 +177,8 @@ class Materializer:
             fvg_formation_event_id=branch.fvg_formation_event_id,
             fvg_failure_event_id=branch.fvg_failure_event_id,
             ifvg_confirmation_event_id=branch.ifvg_confirmation_event_id,
-            retest_event_id=branch.retest_event_id)
+            retest_event_id=branch.retest_event_id,
+            anchor_resolution_rule=rule, **stop_a, **target_a)
         branch.emitted_candidate_ids.append(cid)
         reason = s.rejection_reason if s.rejected else None
         return cand, reason

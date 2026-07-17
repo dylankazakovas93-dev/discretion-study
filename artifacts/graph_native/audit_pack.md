@@ -3,8 +3,8 @@
 July 2025 development data (contaminated). Examples selected chronologically, never by profit. Candidates are materialized by episode branches (not build_setups). Outcome shown separately; qualification uses prior sessions only.
 
 ## 01_rb_good_disp_continuation
-- candidate_id: GNC-001049
-- branch_id: GBR-001134
+- candidate_id: GNC-000920
+- branch_id: GBR-001126
 - episode_id: GEP-000269
 - trigger_event_id: EVT-0005294
 - branch_lineage_parents: []
@@ -19,11 +19,15 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - trigger_family: rb_reaction
 - continuation_or_fade: continuation
 - entry: 22951.5
-- stop: 22956.0
+- stop: 22955.75
 - natural_target: 22950.0
-- natural_rr: 0.3333
+- natural_rr: 0.3529
 - executed_target: 22950.0
 - executed_rr: 0.0
+- stop_anchor: {'type': 'rb_invalidation_boundary', 'object': 'RB-000041', 'price': 22955.75}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000137', 'price': 22950.0}
+- anchor_rule: rb_reaction|stop=rb_invalidation_boundary|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: None
 - qualification: UNSCORED
@@ -32,7 +36,7 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![01_rb_good_disp_continuation](charts/01_rb_good_disp_continuation.png)
 
 ## 02_rb_bad_disp_unresolved
-- branch_id: GBR-004321
+- branch_id: GBR-004307
 - episode_id: GEP-000968
 - hypothesis_id: H_rb_unresolved_fade
 - terminal_status: UNRESOLVED
@@ -44,16 +48,16 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![02_rb_bad_disp_unresolved](charts/02_rb_bad_disp_unresolved.png)
 
 ## 03_rb_bad_disp_failure_fade
-- candidate_id: GNC-004484
-- branch_id: GBR-004769
+- candidate_id: GNC-004068
+- branch_id: GBR-004746
 - episode_id: GEP-001068
 - trigger_event_id: EVT-0054295
-- branch_lineage_parents: ['GBR-004767']
+- branch_lineage_parents: ['GBR-004744']
 - exact_graph: BULLISH_RB_CONFIRMED -> BULLISH_RB_TAP -> BAD_BEARISH_DISPLACEMENT -> COMPRESSION -> SWING_HIGH_BREAK -> FORMATION_CLOSE_SHORT_TRIGGER
 - reduced_graph: STRUCTURAL_ZONE_INTERACTION -> WEAK_DISPLACEMENT -> COMPRESSION -> LEVEL_BREAK -> ENTRY_TRIGGER
 - ordered_event_ids: ['EVT-0051805', 'EVT-0051835', 'EVT-0052588', 'EVT-0054279', 'EVT-0054295']
 - ordered_transition_ids: ['H_rb_unresolved_fade:S0', 'H_rb_unresolved_fade:S1', 'H_rb_unresolved_fade:S2', 'H_rb_unresolved_fade:S3']
-- relationship_evidence: ['BREAKS_BOUNDARY', 'DIRECTIONALLY_SUPPORTS', 'EXPANSION_LEAVES_COMPRESSION', 'TOUCHES_ZONE', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
+- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'TOUCHES_ZONE', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
 - timestamp_et: 2025-07-07 16:08:00-04:00
 - direction: short
 - entry_mode: formation_close
@@ -65,6 +69,10 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - natural_rr: 0.0741
 - executed_target: 22857.0
 - executed_rr: 0.0
+- stop_anchor: {'type': 'failure_region_boundary', 'object': 'STRUCT-000013', 'price': 22864.25}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000425', 'price': 22857.0}
+- anchor_rule: rb_failure_fade|stop=failure_region_boundary|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: None
 - qualification: UNSCORED
@@ -73,69 +81,77 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![03_rb_bad_disp_failure_fade](charts/03_rb_bad_disp_failure_fade.png)
 
 ## 04_fvg_immediate_formation
-- candidate_id: GNC-000001
-- branch_id: GBR-000006
-- episode_id: GEP-000003
-- trigger_event_id: EVT-0000026
+- candidate_id: GNC-000139
+- branch_id: GBR-000178
+- episode_id: GEP-000047
+- trigger_event_id: EVT-0000487
 - branch_lineage_parents: []
 - exact_graph: BEARISH_FVG_FORMED -> FORMATION_CLOSE_SHORT_TRIGGER
 - reduced_graph: GAP_FORMATION -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0000026']
+- ordered_event_ids: ['EVT-0000487']
 - ordered_transition_ids: ['H_fvg_formation_close:S0']
-- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE']
-- timestamp_et: 2025-07-06 18:10:00-04:00
+- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
+- timestamp_et: 2025-07-06 18:54:00-04:00
 - direction: short
 - entry_mode: formation_close
 - trigger_family: fvg_formation
 - continuation_or_fade: continuation
-- entry: 23000.0
-- stop: 23006.25
-- natural_target: 22977.0
-- natural_rr: 3.68
-- executed_target: 22993.75
+- entry: 22987.25
+- stop: 22989.25
+- natural_target: 22981.0
+- natural_rr: 3.125
+- executed_target: 22985.25
 - executed_rr: 1.0
+- stop_anchor: {'type': 'fvg_boundary', 'object': 'FVG-000016', 'price': 22989.25}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000077', 'price': 22981.0}
+- anchor_rule: fvg_formation|stop=fvg_boundary|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
-- outcome_shown_separately: WIN
+- outcome_shown_separately: LOSS
 
 ![04_fvg_immediate_formation](charts/04_fvg_immediate_formation.png)
 
 ## 05_fvg_continuation_without_fill
-- candidate_id: GNC-000001
-- branch_id: GBR-000006
-- episode_id: GEP-000003
-- trigger_event_id: EVT-0000026
+- candidate_id: GNC-000139
+- branch_id: GBR-000178
+- episode_id: GEP-000047
+- trigger_event_id: EVT-0000487
 - branch_lineage_parents: []
 - exact_graph: BEARISH_FVG_FORMED -> FORMATION_CLOSE_SHORT_TRIGGER
 - reduced_graph: GAP_FORMATION -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0000026']
+- ordered_event_ids: ['EVT-0000487']
 - ordered_transition_ids: ['H_fvg_formation_close:S0']
-- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE']
-- timestamp_et: 2025-07-06 18:10:00-04:00
+- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
+- timestamp_et: 2025-07-06 18:54:00-04:00
 - direction: short
 - entry_mode: formation_close
 - trigger_family: fvg_formation
 - continuation_or_fade: continuation
-- entry: 23000.0
-- stop: 23006.25
-- natural_target: 22977.0
-- natural_rr: 3.68
-- executed_target: 22993.75
+- entry: 22987.25
+- stop: 22989.25
+- natural_target: 22981.0
+- natural_rr: 3.125
+- executed_target: 22985.25
 - executed_rr: 1.0
+- stop_anchor: {'type': 'fvg_boundary', 'object': 'FVG-000016', 'price': 22989.25}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000077', 'price': 22981.0}
+- anchor_rule: fvg_formation|stop=fvg_boundary|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
-- outcome_shown_separately: WIN
+- outcome_shown_separately: LOSS
 
 ![05_fvg_continuation_without_fill](charts/05_fvg_continuation_without_fill.png)
 
 ## 06_fvg_first_touch
-- candidate_id: GNC-000006
-- branch_id: GBR-000016
+- candidate_id: GNC-000003
+- branch_id: GBR-000014
 - episode_id: GEP-000005
 - trigger_event_id: EVT-0000035
-- branch_lineage_parents: ['GBR-000014']
+- branch_lineage_parents: ['GBR-000013']
 - exact_graph: BEARISH_FVG_FORMED -> BEARISH_FVG_FIRST_TOUCH -> FIRST_TOUCH_SHORT_TRIGGER
 - reduced_graph: GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER
 - ordered_event_ids: ['EVT-0000031', 'EVT-0000035']
@@ -152,6 +168,10 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - natural_rr: 7.6
 - executed_target: 22993.5
 - executed_rr: 1.0
+- stop_anchor: {'type': 'fvg_boundary', 'object': 'FVG-000002', 'price': 22998.5}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000070', 'price': 22977.0}
+- anchor_rule: fvg_fill|stop=fvg_boundary|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
@@ -160,11 +180,11 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![06_fvg_first_touch](charts/06_fvg_first_touch.png)
 
 ## 07_fvg_midpoint
-- candidate_id: GNC-000008
-- branch_id: GBR-000018
+- candidate_id: GNC-000005
+- branch_id: GBR-000016
 - episode_id: GEP-000005
 - trigger_event_id: EVT-0000037
-- branch_lineage_parents: ['GBR-000014']
+- branch_lineage_parents: ['GBR-000013']
 - exact_graph: BEARISH_FVG_FORMED -> BEARISH_FVG_MIDPOINT -> MIDPOINT_SHORT_TRIGGER
 - reduced_graph: GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER
 - ordered_event_ids: ['EVT-0000031', 'EVT-0000037']
@@ -181,6 +201,10 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - natural_rr: 13.3333
 - executed_target: 22995.5
 - executed_rr: 1.0
+- stop_anchor: {'type': 'fvg_boundary', 'object': 'FVG-000002', 'price': 22998.5}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000070', 'price': 22977.0}
+- anchor_rule: fvg_fill|stop=fvg_boundary|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
@@ -189,14 +213,14 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![07_fvg_midpoint](charts/07_fvg_midpoint.png)
 
 ## 08_fvg_failure_ifvg_immediate
-- candidate_id: GNC-000016
-- branch_id: GBR-000022
+- candidate_id: GNC-000011
+- branch_id: GBR-000020
 - episode_id: GEP-000007
 - trigger_event_id: EVT-0000053
-- branch_lineage_parents: []
-- exact_graph: BULLISH_IFVG_ACTIVATION -> FORMATION_CLOSE_LONG_TRIGGER
-- reduced_graph: INVERSION_ACTIVATION -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0000053']
+- branch_lineage_parents: ['GBR-000013']
+- exact_graph: BEARISH_FVG_FORMED -> BEARISH_FVG_FAILURE -> BULLISH_IFVG_ACTIVATION -> FORMATION_CLOSE_LONG_TRIGGER
+- reduced_graph: GAP_FORMATION -> GAP_FAILURE -> INVERSION_ACTIVATION -> ENTRY_TRIGGER
+- ordered_event_ids: ['EVT-0000031', 'EVT-0000048', 'EVT-0000053']
 - ordered_transition_ids: ['H_ifvg_immediate:S0']
 - relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
 - timestamp_et: 2025-07-06 18:15:00-04:00
@@ -205,11 +229,15 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - trigger_family: ifvg_activation
 - continuation_or_fade: fade
 - entry: 23004.0
-- stop: 22992.0
+- stop: 22995.5
 - natural_target: 23022.0
-- natural_rr: 1.5
-- executed_target: 23016.0
+- natural_rr: 2.1176
+- executed_target: 23012.5
 - executed_rr: 1.0
+- stop_anchor: {'type': 'ifvg_invalidation_boundary', 'object': 'IFVG-000001', 'price': 22995.5}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000071', 'price': 23022.0}
+- anchor_rule: ifvg_activation|stop=ifvg_invalidation_boundary|target=opposing_liquidity
+- parent_fvg_lineage: {'parent_fvg': 'FVG-000002', 'fvg_formation': 'EVT-0000031', 'fvg_failure': 'EVT-0000048', 'ifvg_confirmation': 'EVT-0000053', 'retest': ''}
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
@@ -218,14 +246,14 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![08_fvg_failure_ifvg_immediate](charts/08_fvg_failure_ifvg_immediate.png)
 
 ## 09_fvg_failure_ifvg_retest
-- candidate_id: GNC-000025
-- branch_id: GBR-000035
+- candidate_id: GNC-000018
+- branch_id: GBR-000032
 - episode_id: GEP-000010
 - trigger_event_id: EVT-0000065
-- branch_lineage_parents: ['GBR-000033']
-- exact_graph: BULLISH_IFVG_ACTIVATION -> BULLISH_IFVG_FIRST_TOUCH -> RETEST_LONG_TRIGGER
-- reduced_graph: INVERSION_ACTIVATION -> INVERSION_INTERACTION -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0000061', 'EVT-0000065']
+- branch_lineage_parents: ['GBR-000006']
+- exact_graph: BEARISH_FVG_FORMED -> BEARISH_FVG_FAILURE -> BULLISH_IFVG_ACTIVATION -> BULLISH_IFVG_FIRST_TOUCH -> RETEST_LONG_TRIGGER
+- reduced_graph: GAP_FORMATION -> GAP_FAILURE -> INVERSION_ACTIVATION -> INVERSION_INTERACTION -> ENTRY_TRIGGER
+- ordered_event_ids: ['EVT-0000026', 'EVT-0000055', 'EVT-0000061', 'EVT-0000065']
 - ordered_transition_ids: ['H_ifvg_retest:S0']
 - relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_FROZEN_TIME_GAP', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
 - timestamp_et: 2025-07-06 18:17:00-04:00
@@ -234,11 +262,15 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - trigger_family: ifvg_retest
 - continuation_or_fade: fade
 - entry: 23005.75
-- stop: 23001.25
+- stop: 23004.5
 - natural_target: 23022.0
-- natural_rr: 3.6111
-- executed_target: 23010.25
+- natural_rr: 13.0
+- executed_target: 23007.0
 - executed_rr: 1.0
+- stop_anchor: {'type': 'ifvg_invalidation_boundary', 'object': 'IFVG-000002', 'price': 23004.5}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000071', 'price': 23022.0}
+- anchor_rule: ifvg_retest|stop=ifvg_invalidation_boundary|target=opposing_liquidity
+- parent_fvg_lineage: {'parent_fvg': 'FVG-000001', 'fvg_formation': 'EVT-0000026', 'fvg_failure': 'EVT-0000055', 'ifvg_confirmation': 'EVT-0000061', 'retest': 'EVT-0000065'}
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
@@ -247,69 +279,77 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![09_fvg_failure_ifvg_retest](charts/09_fvg_failure_ifvg_retest.png)
 
 ## 10_sweep_reclaim_fade
-- candidate_id: GNC-000054
-- branch_id: GBR-000065
-- episode_id: GEP-000009
-- trigger_event_id: EVT-0000115
-- branch_lineage_parents: ['GBR-000031']
+- candidate_id: GNC-000067
+- branch_id: GBR-000089
+- episode_id: GEP-000022
+- trigger_event_id: EVT-0000182
+- branch_lineage_parents: ['GBR-000075']
 - exact_graph: SWING_LOW_SWEEP_BELOW -> SWING_LOW_RECLAIM -> FORMATION_CLOSE_LONG_TRIGGER
 - reduced_graph: LIQUIDITY_SWEEP -> RECLAIM -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0000112', 'EVT-0000115']
+- ordered_event_ids: ['EVT-0000167', 'EVT-0000182']
 - ordered_transition_ids: ['H_liquidity_sweep_reclaim_fade:S0']
-- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'RECLAIMS_BOUNDARY', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
-- timestamp_et: 2025-07-06 18:25:00-04:00
+- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'RECLAIMS_BOUNDARY', 'SAME_OBJECT', 'WITHIN_FROZEN_TIME_GAP', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
+- timestamp_et: 2025-07-06 18:33:00-04:00
 - direction: long
 - entry_mode: formation_close
 - trigger_family: sweep_reclaim_fade
 - continuation_or_fade: fade
-- entry: 22989.5
-- stop: 22987.0
-- natural_target: 22990.75
+- entry: 22979.75
+- stop: 22977.25
+- natural_target: 22981.0
 - natural_rr: 0.5
-- executed_target: 22990.75
+- executed_target: 22981.0
 - executed_rr: 0.5
-- expiry_rule: 120_bars_or_segment_end
-- evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
-- qualification: RECORDED_NOT_ACTIVATED
-- outcome_shown_separately: LOSS
-
-![10_sweep_reclaim_fade](charts/10_sweep_reclaim_fade.png)
-
-## 11_sweep_acceptance_continuation
-- candidate_id: GNC-000111
-- branch_id: GBR-000116
-- episode_id: GEP-000028
-- trigger_event_id: EVT-0000221
-- branch_lineage_parents: ['GBR-000114']
-- exact_graph: SWING_HIGH_SWEEP_ABOVE -> SWING_LOW_ACCEPTANCE_ABOVE -> FORMATION_CLOSE_LONG_TRIGGER
-- reduced_graph: LIQUIDITY_SWEEP -> ACCEPTANCE -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0000209', 'EVT-0000221']
-- ordered_transition_ids: ['H_liquidity_sweep_accept_continuation:S0']
-- relationship_evidence: ['ACCEPTS_BEYOND_BOUNDARY', 'DIRECTIONALLY_SUPPORTS', 'WITHIN_FROZEN_TIME_GAP', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
-- timestamp_et: 2025-07-06 18:35:00-04:00
-- direction: long
-- entry_mode: formation_close
-- trigger_family: sweep_accept_cont
-- continuation_or_fade: continuation
-- entry: 22988.75
-- stop: 22986.25
-- natural_target: 22990.75
-- natural_rr: 0.8
-- executed_target: 22990.75
-- executed_rr: 0.8
+- stop_anchor: {'type': 'swept_extreme', 'object': 'LVL-000077', 'price': 22977.25}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000077', 'price': 22981.0}
+- anchor_rule: sweep_reclaim_fade|stop=swept_extreme|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
 - outcome_shown_separately: WIN
 
+![10_sweep_reclaim_fade](charts/10_sweep_reclaim_fade.png)
+
+## 11_sweep_acceptance_continuation
+- candidate_id: GNC-000042
+- branch_id: GBR-000060
+- episode_id: GEP-000009
+- trigger_event_id: EVT-0000127
+- branch_lineage_parents: ['GBR-000028']
+- exact_graph: SWING_LOW_SWEEP_BELOW -> SWING_LOW_ACCEPTANCE_BELOW -> FORMATION_CLOSE_SHORT_TRIGGER
+- reduced_graph: LIQUIDITY_SWEEP -> ACCEPTANCE -> ENTRY_TRIGGER
+- ordered_event_ids: ['EVT-0000112', 'EVT-0000127']
+- ordered_transition_ids: ['H_liquidity_sweep_accept_continuation:S0']
+- relationship_evidence: ['ACCEPTS_BEYOND_BOUNDARY', 'DIRECTIONALLY_SUPPORTS', 'SAME_OBJECT', 'WITHIN_FROZEN_TIME_GAP', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
+- timestamp_et: 2025-07-06 18:27:00-04:00
+- direction: short
+- entry_mode: formation_close
+- trigger_family: sweep_accept_cont
+- continuation_or_fade: continuation
+- entry: 22982.25
+- stop: 22988.75
+- natural_target: 22977.0
+- natural_rr: 0.8077
+- executed_target: 22977.0
+- executed_rr: 0.8077
+- stop_anchor: {'type': 'structural_extreme_fallback', 'object': 'LVL-000072', 'price': 22988.75}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000070', 'price': 22977.0}
+- anchor_rule: sweep_accept_cont|stop=structural_extreme_fallback|target=opposing_liquidity
+- parent_fvg_lineage: None
+- expiry_rule: 120_bars_or_segment_end
+- evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
+- qualification: RECORDED_NOT_ACTIVATED
+- outcome_shown_separately: LOSS
+
 ![11_sweep_acceptance_continuation](charts/11_sweep_acceptance_continuation.png)
 
 ## 12_time_anchor_reclaim_no_fvg
-- candidate_id: GNC-000414
-- branch_id: GBR-000457
+- candidate_id: GNC-000354
+- branch_id: GBR-000447
 - episode_id: GEP-000105
 - trigger_event_id: EVT-0001950
-- branch_lineage_parents: ['GBR-000443']
+- branch_lineage_parents: ['GBR-000433']
 - exact_graph: ANCHOR_ASIA_OPEN_RECLAIM -> FORMATION_CLOSE_LONG_TRIGGER
 - reduced_graph: RECLAIM -> ENTRY_TRIGGER
 - ordered_event_ids: ['EVT-0001950']
@@ -321,11 +361,15 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - trigger_family: anchor_reclaim
 - continuation_or_fade: continuation
 - entry: 22986.75
-- stop: 22981.75
+- stop: 22983.25
 - natural_target: 22987.75
-- natural_rr: 0.2
+- natural_rr: 0.2857
 - executed_target: 22987.75
 - executed_rr: 0.0
+- stop_anchor: {'type': 'anchor_boundary', 'object': 'LVL-000001', 'price': 22983.25}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000106', 'price': 22987.75}
+- anchor_rule: anchor_reclaim|stop=anchor_boundary|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: None
 - qualification: UNSCORED
@@ -334,37 +378,41 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![12_time_anchor_reclaim_no_fvg](charts/12_time_anchor_reclaim_no_fvg.png)
 
 ## 13_time_anchor_rejection_fade
-- candidate_id: GNC-001127
-- branch_id: GBR-001284
-- episode_id: GEP-000307
-- trigger_event_id: EVT-0005958
-- branch_lineage_parents: ['GBR-001283']
-- exact_graph: ANCHOR_MIDNIGHT_OPEN_BREAK -> SWING_LOW_RECLAIM -> FORMATION_CLOSE_SHORT_TRIGGER
-- reduced_graph: LEVEL_BREAK -> RECLAIM -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0005956', 'EVT-0005958']
-- ordered_transition_ids: ['H_time_anchor_break_failed_fade:S0']
-- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'RECLAIMS_BOUNDARY', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
-- timestamp_et: 2025-07-07 00:01:00-04:00
+- candidate_id: GNC-000352
+- branch_id: GBR-000434
+- episode_id: GEP-000105
+- trigger_event_id: EVT-0001950
+- branch_lineage_parents: ['GBR-000433']
+- exact_graph: ANCHOR_ASIA_OPEN_SWEEP -> ANCHOR_ASIA_OPEN_RECLAIM -> FORMATION_CLOSE_SHORT_TRIGGER
+- reduced_graph: LIQUIDITY_SWEEP -> RECLAIM -> ENTRY_TRIGGER
+- ordered_event_ids: ['EVT-0001917', 'EVT-0001950']
+- ordered_transition_ids: ['H_time_anchor_sweep_reclaim_fade:S0']
+- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'RECLAIMS_BOUNDARY', 'SAME_OBJECT', 'TIME_ANCHOR_INTERACTION', 'WITHIN_FROZEN_TIME_GAP', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
+- timestamp_et: 2025-07-06 20:02:00-04:00
 - direction: short
 - entry_mode: formation_close
-- trigger_family: break_failed_fade
+- trigger_family: sweep_reclaim_fade
 - continuation_or_fade: fade
-- entry: 22977.5
-- stop: 22978.5
-- natural_target: 22977.0
-- natural_rr: 0.5
-- executed_target: 22977.0
-- executed_rr: 0.5
+- entry: 22986.75
+- stop: 22988.25
+- natural_target: 22985.25
+- natural_rr: 1.0
+- executed_target: 22985.25
+- executed_rr: 1.0
+- stop_anchor: {'type': 'swept_extreme', 'object': 'LVL-000001', 'price': 22988.25}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000091', 'price': 22985.25}
+- anchor_rule: sweep_reclaim_fade|stop=swept_extreme|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
-- evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0736, 'reduced_estimate': 0.0736, 'exact_estimate': 0.0736, 'uncertainty': 1.0, 'recency_ok': False}
+- evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
-- outcome_shown_separately: AMBIGUOUS
+- outcome_shown_separately: LOSS
 
 ![13_time_anchor_rejection_fade](charts/13_time_anchor_rejection_fade.png)
 
 ## 14_vwap_continuation
-- candidate_id: GNC-001124
-- branch_id: GBR-001278
+- candidate_id: GNC-000992
+- branch_id: GBR-001265
 - episode_id: GEP-000305
 - trigger_event_id: EVT-0005943
 - branch_lineage_parents: []
@@ -379,40 +427,48 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - trigger_family: vwap_bounce
 - continuation_or_fade: continuation
 - entry: 22973.416666666668
-- stop: 22971.25
+- stop: 22972.916666666668
 - natural_target: 22974.25
-- natural_rr: 0.3846
-- executed_target: 22974.25
-- executed_rr: 0.0
+- natural_rr: 1.6667
+- executed_target: 22973.916666666668
+- executed_rr: 1.0
+- stop_anchor: {'type': 'vwap', 'object': 'VWAP-000002', 'price': 22972.916666666668}
+- target_anchor: {'type': 'opposing_time_anchor', 'object': 'LVL-000002', 'price': 22974.25}
+- anchor_rule: vwap_bounce|stop=vwap|target=opposing_time_anchor
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
-- evidence_summary: None
-- qualification: UNSCORED
-- outcome_shown_separately: UNEVALUATED
+- evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': -0.0694, 'reduced_estimate': -0.0694, 'exact_estimate': -0.0694, 'uncertainty': 1.0, 'recency_ok': False}
+- qualification: RECORDED_NOT_ACTIVATED
+- outcome_shown_separately: WIN
 
 ![14_vwap_continuation](charts/14_vwap_continuation.png)
 
 ## 15_vwap_fade
-- candidate_id: GNC-001125
-- branch_id: GBR-001279
-- episode_id: GEP-000305
-- trigger_event_id: EVT-0005944
-- branch_lineage_parents: ['GBR-001278']
+- candidate_id: GNC-000001
+- branch_id: GBR-000002
+- episode_id: GEP-000001
+- trigger_event_id: EVT-0000002
+- branch_lineage_parents: ['GBR-000001']
 - exact_graph: VWAP_BAND_REJECT_M1_618 -> FORMATION_CLOSE_LONG_TRIGGER
 - reduced_graph: BAND_REJECTION -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0005944']
+- ordered_event_ids: ['EVT-0000002']
 - ordered_transition_ids: ['H_vwap_band_fade:S0']
-- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'REJECTS_BOUNDARY', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
-- timestamp_et: 2025-07-07 00:00:00-04:00
+- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'REJECTS_BOUNDARY', 'SAME_OBJECT', 'TOUCHES_ZONE']
+- timestamp_et: 2025-07-06 18:00:00-04:00
 - direction: long
 - entry_mode: formation_close
 - trigger_family: vwap_band_fade
 - continuation_or_fade: fade
-- entry: 22973.5
-- stop: 22971.25
-- natural_target: 22974.25
-- natural_rr: 0.3333
-- executed_target: 22974.25
+- entry: 22993.25
+- stop: 22981.5
+- natural_target: 22982.0
+- natural_rr: 0.9574
+- executed_target: 22982.0
 - executed_rr: 0.0
+- stop_anchor: {'type': 'vwap_band', 'object': 'VWAP-000001', 'price': 22981.5}
+- target_anchor: {'type': 'vwap', 'object': 'VWAP-000001', 'price': 22982.0}
+- anchor_rule: vwap_band_fade|stop=vwap_band|target=vwap
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: None
 - qualification: UNSCORED
@@ -421,8 +477,8 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![15_vwap_fade](charts/15_vwap_fade.png)
 
 ## 16_compression_expansion
-- candidate_id: GNC-000020
-- branch_id: GBR-000020
+- candidate_id: GNC-000013
+- branch_id: GBR-000018
 - episode_id: GEP-000006
 - trigger_event_id: EVT-0000058
 - branch_lineage_parents: []
@@ -442,6 +498,10 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - natural_rr: 0.9855
 - executed_target: 23022.0
 - executed_rr: 0.9855
+- stop_anchor: {'type': 'compression_region', 'object': 'STRUCT-000001', 'price': 22987.75}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000071', 'price': 23022.0}
+- anchor_rule: compression_expansion|stop=compression_region|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
@@ -450,11 +510,11 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![16_compression_expansion](charts/16_compression_expansion.png)
 
 ## 17_false_expansion_fade
-- candidate_id: GNC-000024
-- branch_id: GBR-000021
+- candidate_id: GNC-000016
+- branch_id: GBR-000019
 - episode_id: GEP-000006
 - trigger_event_id: EVT-0000062
-- branch_lineage_parents: ['GBR-000020']
+- branch_lineage_parents: ['GBR-000018']
 - exact_graph: COMPRESSION -> STRUCT_FAILED_CONTINUATION -> FORMATION_CLOSE_SHORT_TRIGGER
 - reduced_graph: COMPRESSION -> STRUCTURAL_EVENT -> ENTRY_TRIGGER
 - ordered_event_ids: ['EVT-0000041', 'EVT-0000062']
@@ -466,38 +526,42 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - trigger_family: compression_false_expansion
 - continuation_or_fade: fade
 - entry: 23002.0
-- stop: 23007.5
+- stop: 23005.75
 - natural_target: 22988.25
-- natural_rr: 2.5
-- executed_target: 22996.5
+- natural_rr: 3.6667
+- executed_target: 22998.25
 - executed_rr: 1.0
+- stop_anchor: {'type': 'compression_region', 'object': 'STRUCT-000001', 'price': 23005.75}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000072', 'price': 22988.25}
+- anchor_rule: compression_false_expansion|stop=compression_region|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
-- outcome_shown_separately: WIN
+- outcome_shown_separately: LOSS
 
 ![17_false_expansion_fade](charts/17_false_expansion_fade.png)
 
 ## 18_one_event_advances_multiple_branches
-- event_id: EVT-0000026
-- advanced_branch_ids: ['GBR-000006', 'GBR-000007']
+- event_id: EVT-0000048
+- advanced_branch_ids: ['GBR-000020', 'GBR-000021', 'GBR-000022']
 - note: one event advanced multiple compatible branches
 
 ![18_one_event_advances_multiple_branches](charts/18_one_event_advances_multiple_branches.png)
 
 ## 19_unrelated_event_rejected
-- rb_branch_id: GBR-001302
-- rb_object: RB-000047
-- rejected_event_id: EVT-0006387
-- rejected_event_subtype: VWAP_VWAP_ABOVE
-- relationships_satisfied: ['WITHIN_FROZEN_TIME_GAP', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
+- rb_branch_id: GBR-000734
+- rb_object: RB-000025
+- rejected_event_id: EVT-0003405
+- rejected_event_subtype: VWAP_BAND_REJECT_M2_618
+- relationships_satisfied: ['DIRECTIONALLY_SUPPORTS', 'WITHIN_FROZEN_TIME_GAP', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
 - reason: within ATR proximity but no structural edge -> rejected (price proximity alone is not a causal edge)
 
 ![19_unrelated_event_rejected](charts/19_unrelated_event_rejected.png)
 
 ## 20_graph_native_not_in_static
-- candidate_id: GNC-001049
-- branch_id: GBR-001134
+- candidate_id: GNC-000920
+- branch_id: GBR-001126
 - episode_id: GEP-000269
 - trigger_event_id: EVT-0005294
 - branch_lineage_parents: []
@@ -512,11 +576,15 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 - trigger_family: rb_reaction
 - continuation_or_fade: continuation
 - entry: 22951.5
-- stop: 22956.0
+- stop: 22955.75
 - natural_target: 22950.0
-- natural_rr: 0.3333
+- natural_rr: 0.3529
 - executed_target: 22950.0
 - executed_rr: 0.0
+- stop_anchor: {'type': 'rb_invalidation_boundary', 'object': 'RB-000041', 'price': 22955.75}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000137', 'price': 22950.0}
+- anchor_rule: rb_reaction|stop=rb_invalidation_boundary|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: None
 - qualification: UNSCORED
@@ -525,27 +593,31 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![20_graph_native_not_in_static](charts/20_graph_native_not_in_static.png)
 
 ## 21_rejected_below_half_R
-- candidate_id: GNC-000005
-- branch_id: GBR-000012
-- episode_id: GEP-000004
-- trigger_event_id: EVT-0000032
-- branch_lineage_parents: []
-- exact_graph: SWING_HIGH_BREAK -> SWING_HIGH_ACCEPTANCE_BELOW -> FORMATION_CLOSE_SHORT_TRIGGER
-- reduced_graph: LEVEL_BREAK -> ACCEPTANCE -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0000028', 'EVT-0000032']
-- ordered_transition_ids: ['H_liquidity_break_accept_continuation:S0']
-- relationship_evidence: ['ACCEPTS_BEYOND_BOUNDARY', 'DIRECTIONALLY_SUPPORTS', 'SAME_OBJECT', 'WITHIN_FROZEN_TIME_GAP']
-- timestamp_et: 2025-07-06 18:12:00-04:00
-- direction: short
+- candidate_id: GNC-000001
+- branch_id: GBR-000002
+- episode_id: GEP-000001
+- trigger_event_id: EVT-0000002
+- branch_lineage_parents: ['GBR-000001']
+- exact_graph: VWAP_BAND_REJECT_M1_618 -> FORMATION_CLOSE_LONG_TRIGGER
+- reduced_graph: BAND_REJECTION -> ENTRY_TRIGGER
+- ordered_event_ids: ['EVT-0000002']
+- ordered_transition_ids: ['H_vwap_band_fade:S0']
+- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'REJECTS_BOUNDARY', 'SAME_OBJECT', 'TOUCHES_ZONE']
+- timestamp_et: 2025-07-06 18:00:00-04:00
+- direction: long
 - entry_mode: formation_close
-- trigger_family: break_accept_cont
-- continuation_or_fade: continuation
-- entry: 22991.0
-- stop: 23022.5
-- natural_target: 22977.0
-- natural_rr: 0.4444
-- executed_target: 22977.0
+- trigger_family: vwap_band_fade
+- continuation_or_fade: fade
+- entry: 22993.25
+- stop: 22981.5
+- natural_target: 22982.0
+- natural_rr: 0.9574
+- executed_target: 22982.0
 - executed_rr: 0.0
+- stop_anchor: {'type': 'vwap_band', 'object': 'VWAP-000001', 'price': 22981.5}
+- target_anchor: {'type': 'vwap', 'object': 'VWAP-000001', 'price': 22982.0}
+- anchor_rule: vwap_band_fade|stop=vwap_band|target=vwap
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: None
 - qualification: UNSCORED
@@ -555,26 +627,30 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 
 ## 22_natural_half_to_1R
 - candidate_id: GNC-000013
-- branch_id: GBR-000019
-- episode_id: GEP-000005
-- trigger_event_id: EVT-0000047
-- branch_lineage_parents: ['GBR-000014']
-- exact_graph: BEARISH_FVG_FORMED -> BEARISH_FVG_FULL_FILL -> FULL_FILL_SHORT_TRIGGER
-- reduced_graph: GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0000031', 'EVT-0000047']
-- ordered_transition_ids: ['H_fvg_full_fill:S0']
-- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_FROZEN_TIME_GAP', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
-- timestamp_et: 2025-07-06 18:15:00-04:00
-- direction: short
-- entry_mode: full_fill
-- trigger_family: fvg_fill
+- branch_id: GBR-000018
+- episode_id: GEP-000006
+- trigger_event_id: EVT-0000058
+- branch_lineage_parents: []
+- exact_graph: COMPRESSION -> STRUCT_BREAK -> NEXT_BAR_LONG_TRIGGER
+- reduced_graph: COMPRESSION -> LEVEL_BREAK -> ENTRY_TRIGGER
+- ordered_event_ids: ['EVT-0000041', 'EVT-0000058']
+- ordered_transition_ids: ['H_compression_expansion:S0']
+- relationship_evidence: ['BREAKS_BOUNDARY', 'DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'EXPANSION_LEAVES_COMPRESSION', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_FROZEN_TIME_GAP', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
+- timestamp_et: 2025-07-06 18:17:00-04:00
+- direction: long
+- entry_mode: next_bar
+- trigger_family: compression_expansion
 - continuation_or_fade: continuation
-- entry: 22998.0
-- stop: 23008.0
-- natural_target: 22988.25
-- natural_rr: 0.975
-- executed_target: 22988.25
-- executed_rr: 0.975
+- entry: 23005.0
+- stop: 22987.75
+- natural_target: 23022.0
+- natural_rr: 0.9855
+- executed_target: 23022.0
+- executed_rr: 0.9855
+- stop_anchor: {'type': 'compression_region', 'object': 'STRUCT-000001', 'price': 22987.75}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000071', 'price': 23022.0}
+- anchor_rule: compression_expansion|stop=compression_region|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
@@ -583,27 +659,31 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![22_natural_half_to_1R](charts/22_natural_half_to_1R.png)
 
 ## 23_capped_1R
-- candidate_id: GNC-000001
-- branch_id: GBR-000006
-- episode_id: GEP-000003
-- trigger_event_id: EVT-0000026
-- branch_lineage_parents: []
-- exact_graph: BEARISH_FVG_FORMED -> FORMATION_CLOSE_SHORT_TRIGGER
-- reduced_graph: GAP_FORMATION -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0000026']
-- ordered_transition_ids: ['H_fvg_formation_close:S0']
-- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE']
-- timestamp_et: 2025-07-06 18:10:00-04:00
+- candidate_id: GNC-000003
+- branch_id: GBR-000014
+- episode_id: GEP-000005
+- trigger_event_id: EVT-0000035
+- branch_lineage_parents: ['GBR-000013']
+- exact_graph: BEARISH_FVG_FORMED -> BEARISH_FVG_FIRST_TOUCH -> FIRST_TOUCH_SHORT_TRIGGER
+- reduced_graph: GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER
+- ordered_event_ids: ['EVT-0000031', 'EVT-0000035']
+- ordered_transition_ids: ['H_fvg_first_touch:S0']
+- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_FROZEN_TIME_GAP']
+- timestamp_et: 2025-07-06 18:13:00-04:00
 - direction: short
-- entry_mode: formation_close
-- trigger_family: fvg_formation
+- entry_mode: first_touch
+- trigger_family: fvg_fill
 - continuation_or_fade: continuation
-- entry: 23000.0
-- stop: 23006.25
+- entry: 22996.0
+- stop: 22998.5
 - natural_target: 22977.0
-- natural_rr: 3.68
-- executed_target: 22993.75
+- natural_rr: 7.6
+- executed_target: 22993.5
 - executed_rr: 1.0
+- stop_anchor: {'type': 'fvg_boundary', 'object': 'FVG-000002', 'price': 22998.5}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000070', 'price': 22977.0}
+- anchor_rule: fvg_fill|stop=fvg_boundary|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED
@@ -612,56 +692,64 @@ July 2025 development data (contaminated). Examples selected chronologically, ne
 ![23_capped_1R](charts/23_capped_1R.png)
 
 ## 24_sufficient_prior_evidence
-- candidate_id: GNC-009499
-- branch_id: GBR-010547
+- candidate_id: GNC-008599
+- branch_id: GBR-010489
 - episode_id: GEP-002358
-- trigger_event_id: EVT-0157595
-- branch_lineage_parents: ['GBR-010546']
-- exact_graph: BEARISH_FVG_FORMED -> NEXT_BAR_SHORT_TRIGGER
-- reduced_graph: GAP_FORMATION -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0157595']
-- ordered_transition_ids: ['H_fvg_next_bar:S0']
-- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
+- trigger_event_id: EVT-0157628
+- branch_lineage_parents: ['GBR-010487']
+- exact_graph: BEARISH_FVG_FORMED -> BEARISH_FVG_FIRST_FILL -> FIRST_FILL_SHORT_TRIGGER
+- reduced_graph: GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER
+- ordered_event_ids: ['EVT-0157595', 'EVT-0157628']
+- ordered_transition_ids: ['H_fvg_first_fill:S0']
+- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_FROZEN_TIME_GAP', 'WITHIN_SUPPORTING_ATR_PROXIMITY']
 - timestamp_et: 2025-07-08 18:10:00-04:00
 - direction: short
-- entry_mode: next_bar
-- trigger_family: fvg_formation
+- entry_mode: first_fill
+- trigger_family: fvg_fill
 - continuation_or_fade: continuation
-- entry: 22916.0
+- entry: 22915.625
 - stop: 22916.25
-- natural_target: 22915.5
-- natural_rr: 2.0
-- executed_target: 22915.75
-- executed_rr: 1.0
+- natural_target: 22915.25
+- natural_rr: 0.6
+- executed_target: 22915.25
+- executed_rr: 0.6
+- stop_anchor: {'type': 'fvg_boundary', 'object': 'FVG-000612', 'price': 22916.25}
+- target_anchor: {'type': 'opposing_time_anchor', 'object': 'LVL-000015', 'price': 22915.25}
+- anchor_rule: fvg_fill|stop=fvg_boundary|target=opposing_time_anchor
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
-- evidence_summary: {'effective_sample': 4, 'unique_sessions': 4, 'shrunk_expected_R': 0.1123, 'reduced_estimate': 0.1405, 'exact_estimate': 0.1123, 'uncertainty': 0.4577, 'recency_ok': True}
+- evidence_summary: {'effective_sample': 4, 'unique_sessions': 4, 'shrunk_expected_R': 0.0734, 'reduced_estimate': 0.0415, 'exact_estimate': 0.0734, 'uncertainty': 0.4373, 'recency_ok': True}
 - qualification: QUALIFIED_PENDING_TRIGGER
 - outcome_shown_separately: AMBIGUOUS
 
 ![24_sufficient_prior_evidence](charts/24_sufficient_prior_evidence.png)
 
 ## 25_recorded_not_activated
-- candidate_id: GNC-000001
-- branch_id: GBR-000006
-- episode_id: GEP-000003
-- trigger_event_id: EVT-0000026
-- branch_lineage_parents: []
-- exact_graph: BEARISH_FVG_FORMED -> FORMATION_CLOSE_SHORT_TRIGGER
-- reduced_graph: GAP_FORMATION -> ENTRY_TRIGGER
-- ordered_event_ids: ['EVT-0000026']
-- ordered_transition_ids: ['H_fvg_formation_close:S0']
-- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE']
-- timestamp_et: 2025-07-06 18:10:00-04:00
+- candidate_id: GNC-000003
+- branch_id: GBR-000014
+- episode_id: GEP-000005
+- trigger_event_id: EVT-0000035
+- branch_lineage_parents: ['GBR-000013']
+- exact_graph: BEARISH_FVG_FORMED -> BEARISH_FVG_FIRST_TOUCH -> FIRST_TOUCH_SHORT_TRIGGER
+- reduced_graph: GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER
+- ordered_event_ids: ['EVT-0000031', 'EVT-0000035']
+- ordered_transition_ids: ['H_fvg_first_touch:S0']
+- relationship_evidence: ['DIRECTIONALLY_SUPPORTS', 'ENTERS_ZONE', 'FILLS_ZONE', 'SAME_OBJECT', 'TOUCHES_ZONE', 'WITHIN_FROZEN_TIME_GAP']
+- timestamp_et: 2025-07-06 18:13:00-04:00
 - direction: short
-- entry_mode: formation_close
-- trigger_family: fvg_formation
+- entry_mode: first_touch
+- trigger_family: fvg_fill
 - continuation_or_fade: continuation
-- entry: 23000.0
-- stop: 23006.25
+- entry: 22996.0
+- stop: 22998.5
 - natural_target: 22977.0
-- natural_rr: 3.68
-- executed_target: 22993.75
+- natural_rr: 7.6
+- executed_target: 22993.5
 - executed_rr: 1.0
+- stop_anchor: {'type': 'fvg_boundary', 'object': 'FVG-000002', 'price': 22998.5}
+- target_anchor: {'type': 'opposing_liquidity', 'object': 'LVL-000070', 'price': 22977.0}
+- anchor_rule: fvg_fill|stop=fvg_boundary|target=opposing_liquidity
+- parent_fvg_lineage: None
 - expiry_rule: 120_bars_or_segment_end
 - evidence_summary: {'effective_sample': 0, 'unique_sessions': 0, 'shrunk_expected_R': 0.0, 'reduced_estimate': 0.0, 'exact_estimate': 0.0, 'uncertainty': 1.0, 'recency_ok': False}
 - qualification: RECORDED_NOT_ACTIVATED

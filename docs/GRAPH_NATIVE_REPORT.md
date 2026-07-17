@@ -144,3 +144,89 @@ Candidate ledger SHA-256: `6867c7e80314f806…` (see `reproducibility.json`).
   rejected ledger — the causal path is demonstrated even though RR filtered that
   specific instance. This is a property of the window/structure, not a missing
   capability.
+
+---
+
+# Blocking-defect corrections (round 2)
+
+The graph-native cutover was accepted; this round fixes four remaining defects.
+Starting SHA `588734483ba5156eba90f18718e10c4849433f9e`.
+
+| # | commit | SHA |
+|---|---|---|
+| 1 | fix: structural relationship integrity (object-bound edges) | `bdf1e29` |
+| 2 | fix: real FVG lifecycle branching (genuine no-fill) | `3e29bc5` |
+| 3 | fix: preserve FVG failure -> iFVG lineage | `80438e9` |
+| 4 | fix: branch-specific stop/target anchors + rerun | _this commit_ |
+
+**Tests:** 179 passing.
+
+## What changed
+1. **Relationship integrity.** `RECLAIMS/BREAKS/ACCEPTS/REJECTS_BOUNDARY`,
+   `SWEEPS_REFERENCE`, `CLOSES_THROUGH_ZONE`, `EXPANSION_LEAVES_COMPRESSION`,
+   `FAILED_EXPANSION_RETURNS_TO_REGION` now require the event to act on the
+   branch's actual focus object (same object / parent-child / provenance);
+   `DIRECTIONALLY_INVALIDATES` is supporting-only. Each accepted transition stores
+   the object it acted on and the structural relationships proven.
+2. **Genuine no-fill.** `H_fvg_no_fill_continuation` emits only on a later
+   same-direction move ≥1 ATR beyond the FVG boundary after ≥3 bars with no
+   intervening touch (invalidated on touch). Bare FVG formation is excluded from
+   coherent setups — formation entries require displacement context.
+3. **iFVG lineage.** Every iFVG candidate is a child of its parent FVG, seeded
+   with the FVG formation + failure event ids; exact graph shows
+   `FVG_FORMED → FVG_FAILURE → IFVG_ACTIVATION`; parent id is mandatory.
+4. **Branch-specific anchors.** Stop/target are chosen per trigger family from the
+   branch's own objects (RB/FVG/iFVG boundary, swept extreme, compression region,
+   accepted level, VWAP/band); nearest generic level only as a named fallback.
+   Each candidate stores stop/target anchor type, object id, price and rule id.
+
+## Final development-run counts (July 6–10, 2025)
+| concept | count |
+|---|---|
+| primitive events | 317,066 |
+| episodes | 5,018 |
+| branches created / forked / merged | 22,352 / 18,531 / 0 |
+| branches unresolved / expired / invalidated / emitted | 61 / 1,522 / 2,192 / 18,577 |
+| graph-native raw trigger states | 18,577 |
+| **graph-native candidates** | **6,107** |
+| rejected < 0.5R (+few degenerate) | 12,392 |
+| unformed (no structural target) | 78 |
+| qualified / not-activated | 770 / 5,337 |
+| genuine no-fill FVG candidates | 6 |
+| parent-linked FVG→iFVG candidates | 786 |
+| static baseline (separate ledger) | 4,302 |
+
+Rejected unrelated transitions are counted in `reproducibility.json`
+(`rejections`: `no_structural_edge`, `stage_no_match`).
+
+**Stop anchors by family:** fvg_boundary 2,897 · swept_extreme 1,013 ·
+ifvg_invalidation_boundary 786 · failed_break_boundary 743 · accepted_boundary
+210 · compression_region 9 · anchor_boundary 8 · vwap 7 ·
+structural_extreme_fallback 434.
+**Target anchors by family:** opposing_liquidity 5,856 · opposing_hist_level 128 ·
+opposing_time_anchor 123.
+
+Candidate ledger SHA-256: `3e37b7d462a1323901ba904c96e6c1526b4d45e8dc84e3b10687cbfe85b2c91b`.
+
+Confirmations: categories 4 (immediate formation) and 5 (no-fill continuation) use
+different hypotheses and candidate ids; no generic state label alone completes a
+branch (every accepted transition carries a structural relationship).
+
+## Direct answers
+1. **Can an unrelated BREAK/RECLAIM/FAILURE complete a branch?** No — the event
+   must act on the branch's actual focus object; a generic label from an unrelated
+   object no longer creates an edge.
+2. **Is FVG no-fill continuation a genuine later path?** Yes — a distinct
+   hypothesis emitting on a later continuation-away event, invalidated on touch;
+   never the formation candidate relabeled.
+3. **Does every graph-native iFVG retain its parent FVG failure lineage?** Yes —
+   mandatory parent id + formation/failure event ids; exact graph shows the FVG
+   failure and iFVG activation.
+4. **Are isolated FVG formations excluded from coherent graph-native setups?**
+   Yes — formation entries require displacement context; bare FVGs are primitives
+   / static baseline only.
+5. **Are stops and targets now selected from the branch's structural objects?**
+   Yes — a frozen resolver keyed by trigger family; nearest generic level only as a
+   named fallback.
+6. **Is PR #2 still development infrastructure only, with no edge/forward claim?**
+   Yes — development data only, gate untuned, no forward-evidence or edge claim.

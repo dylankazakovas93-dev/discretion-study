@@ -100,8 +100,13 @@ def test_rr_policy_and_outcome_retention(day):
 
 def test_rejected_below_half_R_retained_separately(day):
     assert day["graph_rejected"]
-    assert all(c.setup.rejection_reason == "INSUFFICIENT_NATURAL_RR"
+    # the dominant rejection is the below-0.5R rule; a few degenerate anchors may
+    # also reject pre-entry (wrong-side/degenerate). All are pre-entry reasons.
+    assert any(c.setup.rejection_reason == "INSUFFICIENT_NATURAL_RR"
                for c in day["graph_rejected"])
+    assert all(c.setup.rejection_reason in (
+        "INSUFFICIENT_NATURAL_RR", "TARGET_WRONG_SIDE", "DEGENERATE_STOP")
+        for c in day["graph_rejected"])
     # rejected candidates never receive an executable target (stop not manufactured)
     assert all(c.setup.executed_target == 0.0 for c in day["graph_rejected"])
 

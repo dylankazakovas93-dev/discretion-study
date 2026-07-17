@@ -2,46 +2,65 @@
   "counts": {
     "primitive_events": 317066,
     "episodes": 5018,
-    "branches_created": 22566,
-    "branches_forked": 17548,
+    "branches_created": 22352,
+    "branches_forked": 18531,
     "branches_merged": 0,
     "branches_unresolved": 61,
-    "branches_expired": 627,
-    "branches_invalidated": 1297,
-    "branches_emitted": 20581,
+    "branches_expired": 1522,
+    "branches_invalidated": 2192,
+    "branches_emitted": 18577,
     "branches_by_cont_fade": {
-      "continuation": 12630,
+      "continuation": 12416,
       "fade": 9936
     },
-    "graph_native_raw_trigger_states": 20581,
-    "graph_native_candidates": 4506,
-    "graph_native_rejected_below_0p5R": 16006,
+    "graph_native_raw_trigger_states": 18577,
+    "graph_native_candidates": 6107,
+    "graph_native_rejected_below_0p5R": 12392,
     "graph_native_unformed": {
-      "NO_STRUCTURAL_TARGET": 69
+      "NO_STRUCTURAL_TARGET": 78
     },
     "graph_candidates_by_trigger_mode": {
-      "formation_close": 2662,
-      "next_bar": 268,
-      "first_touch": 254,
-      "first_fill": 320,
-      "midpoint": 289,
-      "full_fill": 472,
-      "retest": 241
+      "first_touch": 466,
+      "first_fill": 609,
+      "midpoint": 592,
+      "full_fill": 1138,
+      "formation_close": 2608,
+      "next_bar": 232,
+      "retest": 456,
+      "no_fill_continuation": 6
     },
     "graph_candidates_by_cont_fade": {
-      "continuation": 2383,
-      "fade": 2123
+      "continuation": 3558,
+      "fade": 2549
     },
-    "qualified_graph_native": 1491,
-    "not_activated_graph_native": 3015,
+    "qualified_graph_native": 770,
+    "not_activated_graph_native": 5337,
+    "stop_anchor_families": {
+      "fvg_boundary": 2897,
+      "ifvg_invalidation_boundary": 786,
+      "compression_region": 9,
+      "accepted_boundary": 210,
+      "swept_extreme": 1013,
+      "failed_break_boundary": 743,
+      "structural_extreme_fallback": 434,
+      "vwap": 7,
+      "anchor_boundary": 8
+    },
+    "target_anchor_families": {
+      "opposing_liquidity": 5856,
+      "opposing_time_anchor": 123,
+      "opposing_hist_level": 128
+    },
+    "parent_linked_ifvg_candidates": 786,
+    "no_fill_fvg_candidates": 6,
     "static_baseline_candidates": 4302,
     "static_baseline_rejected": 71125
   },
   "artifacts": [
     {
       "path": "artifacts/graph_native/candidates_graph_native.csv",
-      "rows": 4506,
-      "sha256": "6867c7e80314f8063d872d1ae6491eb317dc67ab134e976d444595770e7b5179",
+      "rows": 6107,
+      "sha256": "3e37b7d462a1323901ba904c96e6c1526b4d45e8dc84e3b10687cbfe85b2c91b",
       "gitignored": false
     },
     {
@@ -52,17 +71,17 @@
     },
     {
       "path": "artifacts/graph_native/branches.csv.gz",
-      "rows": 22566,
-      "sha256": "daf00b92d4e4b6f83b0cf039b639b6285d839653cd6ee99538cb3a58e9692a2e",
+      "rows": 22352,
+      "sha256": "c6eab2e442ac3032b69d272461c7ba1db719cd22b0ac5592f20a8201b1f32ee0",
       "gitignored": true
     },
     {
       "path": "artifacts/graph_native/rejected_graph.csv.gz",
-      "rows": 16006,
-      "sha256": "349ab3561653c1241ecfd1c58ca74dcfbbce3ea2e34c0acdcf5d09bab195582d",
+      "rows": 12392,
+      "sha256": "c7cb72707202f1d08cad054c3c5b467093a7bade823c6efe3fc79b59a7228b92",
       "gitignored": true
     }
   ],
-  "candidate_ledger_hash": "6867c7e80314f8063d872d1ae6491eb317dc67ab134e976d444595770e7b5179",
+  "candidate_ledger_hash": "3e37b7d462a1323901ba904c96e6c1526b4d45e8dc84e3b10687cbfe85b2c91b",
   "n_examples_populated": 25
 }

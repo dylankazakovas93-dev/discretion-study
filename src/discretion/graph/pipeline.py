@@ -53,6 +53,11 @@ def graph_candidate_row(c) -> dict:
         "entry_seq": s.entry_seq, "entry_price": s.entry_price,
         "structural_stop": s.structural_stop, "structural_target": s.structural_target,
         "natural_rr": round(s.natural_rr, 4), "executed_rr": round(s.executed_rr, 4),
+        "stop_anchor_type": c.stop_anchor_type,
+        "stop_anchor_object_id": c.stop_anchor_object_id,
+        "target_anchor_type": c.target_anchor_type,
+        "target_anchor_object_id": c.target_anchor_object_id,
+        "parent_fvg_id": c.parent_fvg_id,
         "effective_sample": ev.get("effective_sample"),
         "shrunk_expected_R": ev.get("shrunk_expected_R"),
         "qualification": c.qualification, "outcome": s.outcome,
@@ -95,6 +100,12 @@ def counts(result, baseline_ledger=None) -> dict:
             c.setup.continuation_or_fade for c in cands)),
         "qualified_graph_native": quals.get("QUALIFIED_PENDING_TRIGGER", 0),
         "not_activated_graph_native": quals.get("RECORDED_NOT_ACTIVATED", 0),
+        "stop_anchor_families": dict(Counter(c.stop_anchor_type for c in cands)),
+        "target_anchor_families": dict(Counter(c.target_anchor_type for c in cands)),
+        "parent_linked_ifvg_candidates": sum(
+            1 for c in cands if c.parent_fvg_id),
+        "no_fill_fvg_candidates": sum(
+            1 for c in cands if c.setup.path_family == "fvg_no_fill"),
     }
     if baseline_ledger is not None:
         out["static_baseline_candidates"] = len(baseline_ledger.eligible)
