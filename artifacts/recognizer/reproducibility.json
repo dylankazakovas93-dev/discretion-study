@@ -1,0 +1,52 @@
+{
+  "artifacts": [
+    {
+      "path": "artifacts/recognizer/candidates_ledger.csv",
+      "rows": 4302,
+      "sha256": "6f7d3435e46b302b53a6af6c5502364f495af95f429a5889bc23e82c1cb491e7",
+      "gitignored": false,
+      "schema": "compact candidate ledger"
+    },
+    {
+      "path": "artifacts/recognizer/events.jsonl.gz",
+      "rows": 317066,
+      "sha256": "19ebd0ff4ec5a90dbcd7ee5c49b6f102d49017020c3b3f880d8663ce82aa8bca",
+      "gitignored": true,
+      "schema": "schemas/event.schema.json"
+    },
+    {
+      "path": "artifacts/recognizer/episodes.csv.gz",
+      "rows": 44742,
+      "sha256": "0223868bef46745c21ed2fef9482c59c5a336ee02edde322ae14b7e68f9f414f",
+      "gitignored": true,
+      "schema": "episode summary"
+    },
+    {
+      "path": "artifacts/recognizer/branches.csv.gz",
+      "rows": 4638,
+      "sha256": "bec6006ad1dca230eb0ac8bdcd778d8cd70b5648a5168765f8285c5dd228b5f7",
+      "gitignored": true,
+      "schema": "branch summary"
+    },
+    {
+      "path": "artifacts/recognizer/audit_pack.json",
+      "rows": 25,
+      "gitignored": false,
+      "schema": "audit examples"
+    }
+  ],
+  "stats": {
+    "episodes": 44742,
+    "branches": 4638,
+    "branches_continuation": 1043,
+    "branches_fade": 3224,
+    "branches_unresolved": 371,
+    "branches_merged": 35,
+    "coherent_candidates": 4302,
+    "candidates_synthetic_episode": 4,
+    "raw_setup_candidates": 78006,
+    "rejected_setups": 71125
+  },
+  "candidate_ledger_hash": "6f7d3435e46b302b53a6af6c5502364f495af95f429a5889bc23e82c1cb491e7",
+  "n_examples_populated": 25
+}

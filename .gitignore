@@ -3,6 +3,12 @@ data/raw/
 data/*.csv
 data/*.zst
 
+# Large generated recognizer ledgers (hashes + row counts committed in
+# artifacts/recognizer/reproducibility.json)
+artifacts/recognizer/events.jsonl.gz
+artifacts/recognizer/episodes.csv.gz
+artifacts/recognizer/branches.csv.gz
+
 # Python
 __pycache__/
 *.py[cod]
