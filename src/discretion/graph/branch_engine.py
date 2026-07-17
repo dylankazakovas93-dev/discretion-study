@@ -123,6 +123,7 @@ class BranchEngine:
         self._n_ep = 0
         self._n_br = 0
         self._n_trig = 0
+        self._n_merged = 0
         self.rejections = RejectionCounter()
 
     def _origin_dir(self, ev, dir_from_origin):
@@ -161,10 +162,13 @@ class BranchEngine:
             return "SAME_OBJECT" in st.rels or "PARENT_CHILD_OBJECT" in st.rels \
                 or "IFVG_CREATED_FROM_PARENT_FVG" in st.rels
 
+        ep_root: dict[str, str] = {}   # episode_id -> root branch id (fork parent)
+
         def index_branch(b):
             if not b.active:
                 return
             if b.signature() in active_sigs:
+                self._n_merged += 1
                 return  # equivalent-state merge
             active_sigs.add(b.signature())
             if stage_keyed(b):
@@ -302,9 +306,15 @@ class BranchEngine:
                         start_timestamp=ev.timestamp_et, segment_id=ev.absolute_segment_id)
                     episodes[ev.object_id] = ep
                 ep = episodes[ev.object_id]
+                branch_id = f"GBR-{self._n_br:06d}"
+                # the first hypothesis of an episode is the root; later hypotheses
+                # are forks of that origin interpretation
+                parent = ep_root.get(ep.episode_id)
+                if parent is None:
+                    ep_root[ep.episode_id] = branch_id
                 b = BranchState(
-                    branch_id=f"GBR-{self._n_br:06d}", episode_id=ep.episode_id,
-                    parent_branch_id=None, branch_version=1,
+                    branch_id=branch_id, episode_id=ep.episode_id,
+                    parent_branch_id=parent, branch_version=1,
                     origin_event_id=ev.event_id, origin_object_id=ev.object_id,
                     hypothesis_id=h.hypothesis_id,
                     hypothesis_direction=self._origin_dir(ev, h.dir_from_origin),
@@ -336,4 +346,5 @@ class BranchEngine:
                 b.terminal_reason = "data_end"
         return {"episodes": list(episodes.values()), "branches": branches,
                 "triggers": triggers, "log": log, "engine": self,
+                "n_merged": self._n_merged,
                 "rejections": dict(self.rejections.counts)}
