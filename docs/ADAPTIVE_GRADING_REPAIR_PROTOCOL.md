@@ -18,16 +18,18 @@ negative grades.
 
 One canonical function, `discretion.data.cme_session.session_date(ts_et) ->
 date`: a session opens at **18:00:00 ET** and runs through **17:59:59 ET the
-next calendar day**. A timestamp's session date is the calendar date on which
-its session *opened if before 18:00 local time, else the following day's
-date* — equivalently: `ts.date()` if `ts.time() < 18:00`, else `ts.date() +
-1 day`. Sunday 22:00 ET and Monday 00:05 ET and Monday 17:59 ET all resolve
-to the same session date (labelled by the Monday date); Monday 18:00 ET opens
-the next session. Comparing local wall-clock hour:minute on an already
-tz-aware `America/New_York` timestamp is DST-transparent: the 18:00 boundary
-never shifts in local time, so a DST-transition day is never split or
-duplicated. Session **ordinals** are the rank of the sorted distinct session
-dates seen in a run (0-based, chronological).
+next calendar day**, labelled by the calendar date its 18:00 ET open occurred
+on — equivalently: `ts.date()` if `ts.time() >= 18:00`, else `ts.date() - 1
+day`. Sunday 22:00 ET and Monday 00:05 ET and Monday 17:59 ET all resolve to
+the same session date (labelled by the Sunday date — the session that opened
+Sunday 18:00 ET); Monday 18:00 ET opens the next session (labelled Monday).
+Comparing local wall-clock hour:minute on an already tz-aware
+`America/New_York` timestamp is DST-transparent: the 18:00 boundary never
+shifts in local time, so a DST-transition day is never split or duplicated.
+Session **ordinals** are the rank of the sorted distinct session dates seen
+in a run (0-based, chronological) — the labelling convention (opening-date
+vs. closing-date) is immaterial to correctness as long as it is applied
+consistently everywhere, which it is.
 
 This is the **only** session-identity function used for evidence gating
 (candidate entry session, outcome completion session, historical comparable

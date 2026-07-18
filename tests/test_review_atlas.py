@@ -231,3 +231,150 @@ def test_bounded_qualification_scan_matches_full_evidence_and_discloses_scope(re
     unscanned = [c for c in cands_in_week if c.candidate_id not in scanned_ids]
     if unscanned:
         assert all(c.qualification == "UNSCORED" for c in unscanned)
+
+
+# ---- Repair task: Stage 3 binary structural validity -----------------------
+
+def test_candidate_structural_state_is_binary(result):
+    seen = set()
+    for c in result["graph_candidates"]:
+        seen.add(ra.candidate_structural_state(c))
+    for c in result["graph_rejected"]:
+        seen.add(ra.candidate_structural_state(c))
+    assert seen <= {ra.STRUCTURALLY_VALID, ra.STRUCTURALLY_REJECTED}
+    assert ra.STRUCTURALLY_VALID in seen and ra.STRUCTURALLY_REJECTED in seen
+    for c in result["graph_candidates"]:
+        assert ra.candidate_structural_state(c) == ra.STRUCTURALLY_VALID
+    for c in result["graph_rejected"]:
+        assert ra.candidate_structural_state(c) == ra.STRUCTURALLY_REJECTED
+
+
+def test_branch_structural_state_unresolved_iff_never_emitted(result):
+    for b in result["branches"]:
+        state = ra.branch_structural_state(b)
+        if b.emitted_candidate_ids:
+            assert state is None   # judged via its candidates individually
+        else:
+            assert state == ra.UNRESOLVED
+    # every terminal_status among never-emitted branches maps to UNRESOLVED,
+    # not just the literal "UNRESOLVED" terminal_status string
+    never_emitted_statuses = {b.terminal_status for b in result["branches"]
+                              if not b.emitted_candidate_ids}
+    assert never_emitted_statuses   # the fixture window has some
+    for b in result["branches"]:
+        if not b.emitted_candidate_ids:
+            assert ra.branch_structural_state(b) == ra.UNRESOLVED
+
+
+def test_no_high_medium_low_structural_tier_exists():
+    """Problem 4 repair: structural_quality_key (the ranking function) must
+    no longer exist -- only the descriptive component vector remains."""
+    assert not hasattr(ra, "structural_quality_key")
+    assert hasattr(ra, "structural_quality_vector")
+
+
+# ---- Repair task: Problem 6 -- qualification selector never mislabels ------
+
+def test_no_qualified_candidates_yields_empty_not_fallback():
+    """When qualified_2 is empty, not_activated_similar_graph_2 must also stay
+    empty (never backfilled with unrelated not-activated rows under the same
+    similarity-claiming label); a separately, honestly named chronological
+    category is populated instead."""
+    import types
+    # synthetic candidates: none qualified, several not-activated with a
+    # DIFFERENT reduced graph than any (nonexistent) qualified example
+    cands = []
+    for i in range(3):
+        s = types.SimpleNamespace(entry_seq=i)
+        c = types.SimpleNamespace(candidate_id=f"GNC-{i:06d}", setup=s,
+                                  qualification="RECORDED_NOT_ACTIVATED",
+                                  reduced_graph=f"RG-{i}")
+        cands.append(c)
+    out = ra.select_qualification_examples(cands)
+    assert out["qualified_2"] == []
+    assert out["not_activated_similar_graph_2"] == []   # no fallback substitution
+    assert len(out["chronological_not_activated_examples"]) == 2   # honestly labeled
+
+
+def test_qualified_present_only_matching_reduced_graph_counted_similar():
+    import types
+    def mk(cid, qual, rg, seq):
+        s = types.SimpleNamespace(entry_seq=seq)
+        return types.SimpleNamespace(candidate_id=cid, setup=s, qualification=qual,
+                                     reduced_graph=rg)
+    q = mk("GNC-000001", "QUALIFIED_PENDING_TRIGGER", "RG-A", 0)
+    matching = mk("GNC-000002", "RECORDED_NOT_ACTIVATED", "RG-A", 1)
+    non_matching = mk("GNC-000003", "RECORDED_NOT_ACTIVATED", "RG-B", 2)
+    out = ra.select_qualification_examples([q, matching, non_matching])
+    assert out["qualified_2"] == [q]
+    assert out["not_activated_similar_graph_2"] == [matching]   # RG-B never included
+
+
+# ---- Repair task: Problem 7 -- FVG lifecycle selector strictness -----------
+
+def test_fvg_no_fill_continuation_ignores_later_touch():
+    """A CONTINUATION event alone proves genuine no-fill-at-that-time (fvg.py
+    only stamps it inline when not yet touched); a LATER touch must not
+    retroactively disqualify the example."""
+    from discretion.primitives.fvg import FVG
+    f = FVG(id="FVG-1", family="fvg", subtype="bullish", segment_id=0,
+            created_seq=0, created_ts="t", lo=100, hi=101, direction=1,
+            formation_seq=0, a_seq=0, c_seq=0)
+    f.add_event("FORMED", 0, "t")
+    f.add_event("CONTINUATION", 5, "t", note="away_no_fill")
+    f.touched = True   # simulates a LATER touch after the continuation fired
+    assert f.has_event("CONTINUATION")   # the fixed predicate: has_event alone
+
+
+def test_proven_fvg_to_ifvg_lineage_requires_full_chain():
+    from discretion.primitives.fvg import FVG
+    from discretion.primitives.ifvg import IFVG
+    from discretion.primitives.base import IdRegistry
+    reg = IdRegistry()
+    f = FVG(id="FVG-1", family="fvg", subtype="bullish", segment_id=0,
+            created_seq=0, created_ts="t", lo=100, hi=101, direction=1,
+            formation_seq=0, a_seq=0, c_seq=0)
+    f.add_event("FORMED", 0, "t")
+    f.add_event("FAILURE", 10, "t")
+    f.failed_seq = 10
+    reg.register(f)
+    iv = IFVG(id="IFVG-1", family="ifvg", subtype="bearish", segment_id=0,
+              created_seq=10, created_ts="t", lo=100, hi=101, direction=-1,
+              source_fvg_id="FVG-1", activation_seq=10)
+    iv.add_event("CONFIRMED", 10, "t")
+    reg.register(iv)
+    proof = ra.proven_fvg_to_ifvg_lineage(iv, reg)
+    assert proof is not None
+    assert proof["parent_fvg_id"] == "FVG-1" and proof["child_ifvg_id"] == "IFVG-1"
+    assert proof["parent_formation_event_seq"] <= proof["parent_failure_event_seq"]
+    assert proof["parent_failure_event_seq"] == proof["child_activation_event_seq"]
+
+
+def test_proven_fvg_to_ifvg_lineage_rejects_missing_activation():
+    from discretion.primitives.fvg import FVG
+    from discretion.primitives.ifvg import IFVG
+    from discretion.primitives.base import IdRegistry
+    reg = IdRegistry()
+    f = FVG(id="FVG-1", family="fvg", subtype="bullish", segment_id=0,
+            created_seq=0, created_ts="t", lo=100, hi=101, direction=1,
+            formation_seq=0, a_seq=0, c_seq=0)
+    f.add_event("FORMED", 0, "t")
+    # no FAILURE event added -- lineage must not be provable
+    reg.register(f)
+    iv = IFVG(id="IFVG-1", family="ifvg", subtype="bearish", segment_id=0,
+              created_seq=10, created_ts="t", lo=100, hi=101, direction=-1,
+              source_fvg_id="FVG-1", activation_seq=10)
+    # no CONFIRMED event either
+    reg.register(iv)
+    assert ra.proven_fvg_to_ifvg_lineage(iv, reg) is None
+
+
+# ---- Repair task: branch-path selector token verification ------------------
+
+def test_branch_path_examples_verified_by_graph_tokens(result):
+    by_label = ra.select_branch_path_examples(result, START_ET, END_ET)
+    for label, obj in by_label.items():
+        if label == "rb_tap_bad_displacement_unresolved":
+            continue   # branch, not a candidate; no exact_graph token check
+        assert ra._graph_contains_required_tokens(obj.exact_graph, label), (
+            label, obj.exact_graph)

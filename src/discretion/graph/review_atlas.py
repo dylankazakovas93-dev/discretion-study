@@ -77,7 +77,35 @@ def dedup_by_trigger(candidates):
 
 
 # --------------------------------------------------------------------------
-# structural quality view (Stage 4A) -- no invented composite score
+# Stage 3: binary structural validity (not a graded tier). Pure function of
+# existing frozen fields -- never invents a HIGH/MEDIUM/LOW label.
+# --------------------------------------------------------------------------
+
+STRUCTURALLY_VALID = "STRUCTURALLY_VALID"
+STRUCTURALLY_REJECTED = "STRUCTURALLY_REJECTED"
+UNRESOLVED = "UNRESOLVED"
+
+
+def candidate_structural_state(cand) -> str:
+    """A materialized candidate is either binary state; there is no tier."""
+    return STRUCTURALLY_VALID if cand.setup.eligible else STRUCTURALLY_REJECTED
+
+
+def branch_structural_state(branch) -> str:
+    """A branch that never emitted a candidate is UNRESOLVED regardless of
+    whether its `terminal_status` is None/active, EXPIRED, or INVALIDATED --
+    "the grammar has not yet produced the required trigger" applies to all
+    three (docs/ADAPTIVE_GRADING_REPAIR_PROTOCOL.md Sec 3). A branch that DID
+    emit has no single state of its own: each emitted candidate carries its
+    own `candidate_structural_state` independently."""
+    return None if branch.emitted_candidate_ids else UNRESOLVED
+
+
+# --------------------------------------------------------------------------
+# structural quality view (Stage 4A) -- descriptive component vector only.
+# NOT used to rank/grade candidates (Problem 4 repair): displacement grade,
+# graph length, etc. are branch-identity/similarity features, never a
+# structural-quality ranking. The grade is historical evidence (Stage 12C).
 # --------------------------------------------------------------------------
 
 DISPLACEMENT_RANK = {"good": 2, "mixed": 1, "bad": 0}
@@ -119,7 +147,7 @@ def structural_quality_vector(cand, ps) -> dict:
         "stop_anchor_family": cand.stop_anchor_type,
         "natural_rr": round(s.natural_rr, 4),
         "executed_rr": round(s.executed_rr, 4),
-        "structural_state": ("REJECTED:" + s.rejection_reason) if s.rejected else "VALID",
+        "structural_state": candidate_structural_state(cand),
         "rejection_reason": s.rejection_reason or None,
         # explicitly-absent frozen fields (documented gaps, not manufactured):
         "compression_state": None,     # no frozen field exists (protocol gap)
@@ -127,20 +155,15 @@ def structural_quality_vector(cand, ps) -> dict:
         "close_quality": None,         # no frozen field exists (protocol gap)
     }
 
-
-def structural_quality_key(cand, ps):
-    """Frozen deterministic lexicographic ordering documented in
-    atlas_report.md. Higher tuple = structurally 'stronger' by this ordering.
-    Every component is fixed at materialization time (none read outcome).
-    """
-    v = structural_quality_vector(cand, ps)
-    return (
-        v["graph_completeness_steps"],
-        DISPLACEMENT_RANK.get(v["displacement_grade"], -1),
-        v["natural_rr"],
-        v["executed_rr"],
-        v["target_family"] is not None,
-    )
+# NOTE (Problem 4 repair): the prior `structural_quality_key` lexicographic
+# ranking (graph length -> displacement label -> natural RR -> executed RR ->
+# target presence) has been REMOVED. It graded candidates by structural/visual
+# resemblance, which docs/ADAPTIVE_GRADING_REPAIR_PROTOCOL.md's governing
+# principle explicitly forbids: displacement grade, graph length, RR magnitude
+# beyond the 0.5R feasibility gate, etc. are branch-identity/similarity
+# features, never a quality ranking. `structural_quality_vector` above is
+# retained ONLY as the descriptive component view (Stage 4A/7's "descriptive
+# context"); the setup grade is the historical evidence table (Stage 12C).
 
 
 # --------------------------------------------------------------------------
@@ -471,6 +494,45 @@ def _first_n_distinct(objs, key_fn, n):
     return picked[:n]
 
 
+def fvg_is_no_fill_continuation(f):
+    """Problem 7 repair: a genuine no-fill continuation is proven by the
+    CONTINUATION event's own existence -- fvg.py only ever stamps it when
+    `not fvg.touched` AS OF that event's own seq (evaluated inline, in
+    forward causal order, at detection time), never retroactively. The
+    object's FINAL end-of-window `.touched` flag is a different, later
+    snapshot that a subsequent touch can flip True without invalidating
+    the earlier, already-causally-proven continuation -- so it must NOT
+    gate this predicate (previously `and not f.touched` wrongly excluded
+    genuine continuations that were touched only after continuing)."""
+    return f.has_event("CONTINUATION")
+
+
+def proven_fvg_to_ifvg_lineage(iv, reg):
+    """Problem 7 repair: strict lineage proof, not `failed_seq is not
+    None`. Requires: the parent FVG object resolves; its FORMED and
+    FAILURE events both exist; the child iFVG's own activation
+    (CONFIRMED) event exists; and causal ordering holds (parent formed
+    seq <= parent failure seq == child activation seq)."""
+    if not iv.source_fvg_id:
+        return None
+    try:
+        parent = reg.get(iv.source_fvg_id)
+    except Exception:
+        return None
+    formed = parent.first_event("FORMED")
+    failure = parent.first_event("FAILURE")
+    activated = iv.first_event("CONFIRMED")
+    if not (formed and failure and activated):
+        return None
+    if not (formed.seq <= failure.seq == activated.seq == iv.created_seq):
+        return None
+    return {
+        "parent_fvg_id": parent.id, "parent_formation_event_seq": formed.seq,
+        "parent_failure_event_seq": failure.seq, "child_ifvg_id": iv.id,
+        "child_activation_event_seq": activated.seq,
+    }
+
+
 def select_primitive_examples(ps, start_et, end_et):
     """Stage 3 'required primitive examples'. Returns {category: [objects]}."""
     rbs = _in_week_objs(ps.rbs, start_et, end_et)
@@ -489,19 +551,16 @@ def select_primitive_examples(ps, start_et, end_et):
     def fvg_lifecycle_sig(f):
         return tuple(e.kind for e in f.events if e.kind != "FORMED")
 
-    def fvg_is_no_fill_continuation(f):
-        return f.has_event("CONTINUATION") and not f.touched
-
-    def fvg_failed_to_ifvg(f):
-        return f.failed_seq is not None
-
     ifvgs = _in_week_objs(ps.ifvgs, start_et, end_et)
+    lineage_proven = [(iv, proven_fvg_to_ifvg_lineage(iv, ps.registry)) for iv in ifvgs]
+    lineage_proven = [(iv, p) for iv, p in lineage_proven if p is not None]
 
     out = {
         "rejection_blocks": _first_n_distinct(rbs, lambda r: r.subtype, 3),
         "fvgs_distinct_lifecycle": _first_n_distinct(fvgs, fvg_lifecycle_sig, 3),
         "fvg_continuation_no_fill": [f for f in fvgs if fvg_is_no_fill_continuation(f)][:2],
-        "fvg_failure_to_ifvg": [f for f in fvgs if fvg_failed_to_ifvg(f)][:2],
+        # each entry is (child_ifvg, lineage_proof_dict), never a bare FVG
+        "fvg_failure_to_ifvg": lineage_proven[:2],
         "ifvg_retest": [iv for iv in ifvgs if iv.has_event("REVISIT")][:2],
         "prominent_upper_wick": [w for w in wicks_5_60 if w.side == "upper"][:2],
         "prominent_lower_wick": [w for w in wicks_5_60 if w.side == "lower"][:2],
@@ -553,10 +612,46 @@ BRANCH_PATH_CATEGORIES = {
 }
 
 
+# Stage 11 repair: `path_family` alone is already grammar-guaranteed to imply
+# these graph conditions (verified by direct inspection of graph/transitions.py
+# -- e.g. H_rb_reaction_continuation's own hypothesis definition REQUIRES a
+# rejection-block FIRST_TOUCH advance stage followed by a displacement FORMED
+# stage with `subtype_contains="GOOD"` before it may even emit; a candidate
+# cannot be materialized with path_family=="rb_reaction" without having passed
+# through exactly that sequence). This dict is an EXTRA, cheap, code-level
+# proof beyond that trust -- every selected example's own `exact_graph` string
+# must also literally contain the required causal tokens, so a future grammar
+# change that silently weakened a hypothesis could not slip an unproven
+# example past this selector without the atlas test suite catching it.
+REQUIRED_GRAPH_TOKENS = {
+    "rb_tap_good_displacement_continuation": ("RB_TAP", "GOOD"),
+    "rb_tap_bad_displacement_compression_fade": ("RB_TAP", "BAD", "COMPRESSION"),
+    "genuine_fvg_no_fill_continuation": ("FVG_CONTINUATION",),
+    "fvg_failure_immediate_ifvg": ("FVG_FAILURE", "IFVG_ACTIVATION"),
+    # retest is IFVG_ACTIVATION (confirmation) followed by a LATER
+    # IFVG_FIRST_TOUCH (the retest trigger itself) -- events/adapter.py's
+    # canonical_subtype maps ifvg CONFIRMED -> "..._IFVG_ACTIVATION" and any
+    # other kind (incl. the retest's own FIRST_TOUCH) -> "..._IFVG_{kind}";
+    # there is no literal "IFVG_RETEST" token anywhere in an exact_graph.
+    "fvg_failure_later_ifvg_retest": ("FVG_FAILURE", "IFVG_ACTIVATION", "IFVG_FIRST_TOUCH"),
+    "accepted_break": ("ACCEPTANCE",),
+    "failed_break": ("FAILED",),
+}
+
+
+def _graph_contains_required_tokens(exact_graph, label):
+    needles = REQUIRED_GRAPH_TOKENS.get(label)
+    if needles is None:
+        return True   # no additional token proof defined for this label
+    return all(n in exact_graph for n in needles)
+
+
 def select_branch_path_examples(result, start_et, end_et):
     """Stage 3 'required branch/path examples'. One chronologically-first
     candidate (eligible or rejected -- the graph path is what's being shown,
-    not eligibility) per required category label; 'rb_tap_bad_displacement_
+    not eligibility) per required category label, additionally verified to
+    literally contain the label's required causal tokens in its own
+    exact_graph (see REQUIRED_GRAPH_TOKENS); 'rb_tap_bad_displacement_
     unresolved' comes from branches (correctly never emitted a trigger)."""
     cands = sorted(result["graph_candidates"] + result["graph_rejected"],
                    key=lambda c: (c.setup.entry_seq, c.candidate_id))
@@ -565,7 +660,8 @@ def select_branch_path_examples(result, start_et, end_et):
     by_label: dict[str, object] = {}
     for c in cands_in_week:
         label = BRANCH_PATH_CATEGORIES.get(c.setup.path_family)
-        if label and label not in by_label:
+        if label and label not in by_label and _graph_contains_required_tokens(
+                c.exact_graph, label):
             by_label[label] = c
 
     # RB tap -> bad displacement -> unresolved (never triggered; from branches)
@@ -655,23 +751,29 @@ def select_qualification_examples(cands_in_week):
     subset was actually scored -- see `bounded_qualification_scan`). Reads
     only `qualification`/`reduced_graph` -- never `setup.outcome`/
     `realized_r`/`outcome_seq`. Candidates that were never scored keep the
-    dataclass default `qualification == "UNSCORED"` and are simply excluded."""
+    dataclass default `qualification == "UNSCORED"` and are simply excluded.
+
+    Problem 6 repair: `not_activated_similar_graph_2` is populated ONLY from
+    not-activated candidates whose reduced graph genuinely matches a qualified
+    example's reduced graph. If no candidate qualifies (or no matching reduced
+    graph exists among the not-activated pool), that category is [] -- it is
+    NEVER backfilled with unrelated not-activated candidates under the same
+    label. A separately, honestly named `chronological_not_activated_examples`
+    category (first not-activated candidates, no similarity claim) is always
+    populated when any exist, so the atlas still has *something* to show
+    without ever mislabeling it."""
     chrono = sorted(cands_in_week, key=lambda c: (c.setup.entry_seq, c.candidate_id))
     qualified = [c for c in chrono if c.qualification == "QUALIFIED_PENDING_TRIGGER"][:2]
-    # not-activated examples whose reduced graph matches some qualified example
-    # (superficially similar graph, different qualification)
+    not_activated_chrono = [c for c in chrono
+                            if c.qualification == "RECORDED_NOT_ACTIVATED"]
     qual_reduced = {c.reduced_graph for c in qualified}
     similar_not_activated = [
-        c for c in chrono
-        if c.qualification == "RECORDED_NOT_ACTIVATED" and c.reduced_graph in qual_reduced
-    ][:2]
-    if len(similar_not_activated) < 2:
-        # fall back to first not-activated examples if no reduced-graph overlap
-        # exists this week (documented fallback, not a substitution of category)
-        extra = [c for c in chrono if c.qualification == "RECORDED_NOT_ACTIVATED"
-                and c not in similar_not_activated][:2 - len(similar_not_activated)]
-        similar_not_activated += extra
-    return {"qualified_2": qualified, "not_activated_similar_graph_2": similar_not_activated}
+        c for c in not_activated_chrono if c.reduced_graph in qual_reduced][:2]
+    return {
+        "qualified_2": qualified,
+        "not_activated_similar_graph_2": similar_not_activated,
+        "chronological_not_activated_examples": not_activated_chrono[:2],
+    }
 
 
 def bounded_qualification_scan(result, cands_in_week, max_scan=500):
