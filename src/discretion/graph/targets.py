@@ -143,11 +143,11 @@ class TargetInventory:
         if vs is not None and vs.segment_id == seg:
             val = vs.value_at(entry_seq)
             if val:
-                raw.append((vs.id, "vwap", "vwap", "session", val["vwap"],
-                            seg, vs.start_seq, True, None, True))
+                raw.append((f"{vs.id}:vwap", "vwap", "vwap", "session",
+                            val["vwap"], seg, vs.start_seq, True, None, True))
                 for name, price in val["bands"].items():
-                    raw.append((vs.id, "vwap_band", name, "session", price,
-                                seg, vs.start_seq, True, None, True))
+                    raw.append((f"{vs.id}:{name}", "vwap_band", name, "session",
+                                price, seg, vs.start_seq, True, None, True))
         return raw
 
 

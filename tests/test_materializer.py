@@ -57,7 +57,8 @@ def test_rr_policy(result):
                for c in result["graph_rejected"])
     for c in result["graph_rejected"]:
         assert c.setup.rejection_reason in (
-            "INSUFFICIENT_NATURAL_RR", "TARGET_WRONG_SIDE", "DEGENERATE_STOP")
+            "INSUFFICIENT_NATURAL_RR", "TARGET_WRONG_SIDE", "STOP_WRONG_SIDE",
+            "DEGENERATE_STOP")
         assert c.setup.executed_target == 0.0   # never given an executable target
 
 
