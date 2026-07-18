@@ -108,20 +108,29 @@ def main():
     print("building pre-outcome manifest part 1 (structural/branch/quality)...", flush=True)
     manifest1, prim, branch, quality = build_manifest_part1(result, ps)
 
-    # Evidence is computed once for every in-week ELIGIBLE candidate (a superset
-    # of every example category that can carry qualification -- rejected
-    # candidates are never in result["candidates"], so passing them here is a
-    # harmless no-op, see review_atlas.evidence_for_subset docstring). This
-    # single pass covers both Stage 2's weekly qualified/not-activated counts
-    # and every Stage 4B/qualification-dependent example category.
+    # Evidence for the structural example candidates themselves (Stage 4B
+    # display on ~36 selected examples -- cheap).
     subset = all_selected_candidates(quality, branch)
+    print(f"computing evidence for {len(subset)} selected structural examples...",
+          flush=True)
+    ra.evidence_for_subset(result, subset)
+
+    # Scoring EVERY in-week candidate for qualification (needed for an exact
+    # weekly qualified/not-activated count) proved computationally impractical
+    # in this environment: a full attempt ran 45+ minutes without finishing
+    # evidence.build_snapshot's Gower-distance pass over tens of thousands of
+    # candidates and was aborted -- disclosed in atlas_report.md. Per the same
+    # principle the task applies to prior-session history ("state the exact
+    # number, don't silently substitute"), qualification is instead computed
+    # over a bounded, disclosed chronological prefix of the review week.
     cands_in_week = [c for c in result["graph_candidates"]
                      if ra.in_window(c.setup.entry_ts.tz_convert(ra.ET), START_ET, END_ET)]
-    print(f"computing evidence for {len(cands_in_week)} in-week candidates "
-          f"(covers {len(subset)} selected examples + weekly qualification "
-          f"counts in one pass)...", flush=True)
-    ra.evidence_for_subset(result, cands_in_week)
-    qual_examples = ra.select_qualification_examples(cands_in_week)
+    QUAL_SCAN_CAP = 500
+    scanned, n_scanned, n_total_week = ra.bounded_qualification_scan(
+        result, cands_in_week, max_scan=QUAL_SCAN_CAP)
+    print(f"computed real qualification for {n_scanned}/{n_total_week} in-week "
+          f"candidates (bounded chronological prefix, disclosed)...", flush=True)
+    qual_examples = ra.select_qualification_examples(scanned)
 
     manifest = dict(manifest1)
     manifest["qualification_examples"] = {

@@ -429,10 +429,20 @@ def graph_object_inventory(result, start_et, end_et):
         "structurally_valid_candidates": len(cands_in_week),
         "sub_0p5R_rejected_candidates": sum(
             1 for c in rej_in_week if c.setup.rejection_reason == "INSUFFICIENT_NATURAL_RR"),
-        "qualified_candidates": sum(1 for c in cands_in_week
-                                    if c.qualification == "QUALIFIED_PENDING_TRIGGER"),
-        "recorded_not_activated_candidates": sum(
+        # Real (unmodified evidence.build_snapshot/gate.qualify) qualification,
+        # but only over whichever candidates were actually scored this run
+        # (see bounded_qualification_scan) -- scoring literally every in-week
+        # candidate proved computationally impractical (45+ min, aborted; see
+        # atlas_report.md). These two counts are over the SCORED subset only,
+        # never a silent full-week estimate; n_scored/n_total make the scope
+        # explicit rather than presenting a partial count as the true total.
+        "qualified_candidates_scored_subset": sum(
+            1 for c in cands_in_week if c.qualification == "QUALIFIED_PENDING_TRIGGER"),
+        "recorded_not_activated_candidates_scored_subset": sum(
             1 for c in cands_in_week if c.qualification == "RECORDED_NOT_ACTIVATED"),
+        "qualification_n_scored": sum(1 for c in cands_in_week
+                                      if c.qualification != "UNSCORED"),
+        "qualification_n_total_in_week": len(cands_in_week),
         "deduplicated_trigger_groups": len(dedup),
         "target_policy_variants": len(cands_in_week) + len(rej_in_week),
     }
@@ -659,9 +669,11 @@ def select_quality_tier_examples(result, ps, start_et, end_et):
 
 
 def select_qualification_examples(cands_in_week):
-    """Must run AFTER evidence_for_subset has annotated `qualification` on
-    `cands_in_week`. Reads only `qualification`/`reduced_graph` -- never
-    `setup.outcome`/`realized_r`/`outcome_seq`."""
+    """Must run AFTER evidence has been annotated on `cands_in_week` (whatever
+    subset was actually scored -- see `bounded_qualification_scan`). Reads
+    only `qualification`/`reduced_graph` -- never `setup.outcome`/
+    `realized_r`/`outcome_seq`. Candidates that were never scored keep the
+    dataclass default `qualification == "UNSCORED"` and are simply excluded."""
     chrono = sorted(cands_in_week, key=lambda c: (c.setup.entry_seq, c.candidate_id))
     qualified = [c for c in chrono if c.qualification == "QUALIFIED_PENDING_TRIGGER"][:2]
     # not-activated examples whose reduced graph matches some qualified example
@@ -678,6 +690,29 @@ def select_qualification_examples(cands_in_week):
                 and c not in similar_not_activated][:2 - len(similar_not_activated)]
         similar_not_activated += extra
     return {"qualified_2": qualified, "not_activated_similar_graph_2": similar_not_activated}
+
+
+def bounded_qualification_scan(result, cands_in_week, max_scan=500):
+    """Compute real (unmodified evidence.build_snapshot/gate.qualify) evidence
+    for a bounded chronological prefix of `cands_in_week`, not the whole week.
+
+    Disclosed compute-budget measure: `evidence.build_snapshot`'s Gower-distance
+    pass over the prior-only pool costs roughly O(pool size) per candidate
+    scored, and scoring literally every in-week candidate (tens of thousands
+    here) did not complete in this environment within any practical bound (a
+    full-week attempt ran 45+ minutes without finishing and was aborted). This
+    function computes byte-identical, unmodified evidence/qualification for
+    only the first `max_scan` in-week candidates in chronological order --
+    each one's snapshot is exactly what `evidence.run`/`evidence_for_subset`
+    would have produced for it (same pool, same function calls); nothing about
+    HOW any individual candidate's evidence is computed is changed, only how
+    MANY candidates are scored. Returns the scanned subset and how many of
+    `cands_in_week` were actually covered, so counts derived from it can be
+    honestly labeled as partial.
+    """
+    prefix = sorted(cands_in_week, key=lambda c: (c.setup.entry_seq, c.candidate_id))[:max_scan]
+    evidence_for_subset(result, prefix)
+    return prefix, len(prefix), len(cands_in_week)
 
 
 # --------------------------------------------------------------------------

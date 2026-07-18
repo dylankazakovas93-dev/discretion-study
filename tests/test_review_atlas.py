@@ -198,3 +198,36 @@ def test_targets_never_read_future_at_review_trigger(result):
     for c in result["graph_candidates"] + result["graph_rejected"]:
         for row in c.considered_targets:
             assert row["available_seq"] <= c.setup.entry_seq
+
+
+def test_bounded_qualification_scan_matches_full_evidence_and_discloses_scope(result):
+    """bounded_qualification_scan must produce byte-identical evidence to a
+    full evidence_for_subset call for whichever candidates it scores (a pure
+    compute-budget bound, not a different computation), and must leave
+    everything outside the bound honestly UNSCORED rather than faking coverage."""
+    cands_in_week = [c for c in result["graph_candidates"]
+                     if ra.in_window(c.setup.entry_ts.tz_convert(ra.ET), START_ET, END_ET)]
+    cap = max(1, len(cands_in_week) // 2)
+
+    r_full = run_graph_native(**WIN, with_evidence=False)
+    full_in_week = [c for c in r_full["graph_candidates"]
+                    if ra.in_window(c.setup.entry_ts.tz_convert(ra.ET), START_ET, END_ET)]
+    ra.evidence_for_subset(r_full, full_in_week)
+    full_by_id = {c.candidate_id: c for c in full_in_week}
+
+    scanned, n_scanned, n_total = ra.bounded_qualification_scan(
+        result, cands_in_week, max_scan=cap)
+    assert n_scanned == cap
+    assert n_total == len(cands_in_week)
+    assert len(scanned) == cap
+
+    for c in scanned:
+        fc = full_by_id[c.candidate_id]
+        assert c.qualification == fc.qualification
+        assert c.evidence["summary"] == fc.evidence["summary"]
+
+    # candidates outside the bound are honestly left UNSCORED
+    scanned_ids = {c.candidate_id for c in scanned}
+    unscanned = [c for c in cands_in_week if c.candidate_id not in scanned_ids]
+    if unscanned:
+        assert all(c.qualification == "UNSCORED" for c in unscanned)
