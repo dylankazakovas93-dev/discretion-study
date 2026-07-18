@@ -1,0 +1,124 @@
+{
+  "data_boundaries": "2025-07-06T00:00Z .. 2025-07-11T23:59:59Z (NQU5, end-exclusive 2025-07-12)",
+  "completed_candles_by_timeframe": {
+    "5": 1380,
+    "15": 460,
+    "30": 230,
+    "60": 115
+  },
+  "wick_candidates_by_tf_side": {
+    "5m_lower": 1277,
+    "5m_upper": 1276,
+    "15m_lower": 435,
+    "15m_upper": 429,
+    "30m_lower": 211,
+    "30m_upper": 206,
+    "60m_lower": 99,
+    "60m_upper": 97
+  },
+  "wick_objects_by_grade": {
+    "LOW": 3586,
+    "MEDIUM": 306,
+    "HIGH": 138
+  },
+  "wick_exposed_variants_by_lookback": {
+    "3": 1239,
+    "5": 967,
+    "10": 642
+  },
+  "wick_final_states": {
+    "closed_through": 3872,
+    "swept": 48,
+    "fresh": 56,
+    "overlapped": 54
+  },
+  "htf_fvgs_by_tf_direction": {
+    "5m_bearish": 130,
+    "5m_bullish": 151,
+    "15m_bearish": 39,
+    "15m_bullish": 41,
+    "30m_bearish": 18,
+    "30m_bullish": 20,
+    "60m_bearish": 6,
+    "60m_bullish": 10
+  },
+  "htf_fvg_states": {
+    "failed": 397,
+    "filled": 12,
+    "fresh": 6
+  },
+  "htf_ifvgs_parent_linked": 397,
+  "htf_ifvgs_total": 397,
+  "target_candidates_considered_by_family": {
+    "swing": 789546,
+    "vwap": 9090,
+    "vwap_band": 56456,
+    "branch:opposing_liquidity": 17944,
+    "structure": 328956,
+    "rejection_block": 765716,
+    "htf_fvg": 410233,
+    "htf_ifvg": 422042,
+    "wick_liquidity": 490339,
+    "time_anchor": 169232,
+    "branch:opposing_time_anchor": 449,
+    "branch:vwap": 9,
+    "liquidity": 327833,
+    "hist_level": 244676,
+    "branch:opposing_hist_level": 550,
+    "branch:vwap_band": 1
+  },
+  "target_candidates_considered_by_timeframe": {
+    "1m": 2625959,
+    "session": 65546,
+    "None": 18953,
+    "5": 880859,
+    "30": 119910,
+    "15": 272140,
+    "60": 49705
+  },
+  "target_candidates_rejected_by_reason": {
+    "WRONG_DIRECTION": 1100653,
+    "STALE": 2551997,
+    "LOW_PROMINENCE": 404750,
+    "WRONG_SIDE_OF_ENTRY": 10
+  },
+  "targets_selected_by_policy": {
+    "BRANCH_SEMANTIC": 6861,
+    "NEAREST_VALID_STRUCTURE": 12343,
+    "NEAREST_OPPOSING_HTF_FVG": 9579,
+    "NEAREST_PROMINENT_WICK": 11600
+  },
+  "candidates_by_target_family": {
+    "branch:opposing_liquidity": 6564,
+    "vwap": 448,
+    "structure": 2365,
+    "vwap_band": 843,
+    "swing": 2027,
+    "rejection_block": 6139,
+    "time_anchor": 18,
+    "branch:opposing_time_anchor": 142,
+    "hist_level": 85,
+    "branch:opposing_hist_level": 155,
+    "htf_fvg": 9585,
+    "wick_liquidity": 11726,
+    "liquidity": 237,
+    "htf_ifvg": 49
+  },
+  "candidates_by_target_timeframe": {
+    "None": 6861,
+    "session": 1291,
+    "1m": 10871,
+    "5": 9112,
+    "60": 6436,
+    "15": 2388,
+    "30": 3424
+  },
+  "candidates_below_0p5R_rejected": 25992,
+  "candidates_natural_0p5_to_1R": 7899,
+  "candidates_natural_ge_1R_capped": 32484,
+  "graph_candidates_before_policy_variants": 16191,
+  "graph_candidates_after_policy_variants": 40383,
+  "qualification": {
+    "UNSCORED": 40383
+  }
+}

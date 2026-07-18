@@ -50,14 +50,14 @@ def _build(inv, direction, entry, entry_seq, stop, branch=None):
                                    2.0, branch)
 
 
-def test_wrong_side_and_direction_rejected():
+def test_behind_price_excluded_and_wrong_direction_rejected():
     inv = TargetInventory(_ps(
-        wicks=[_wick("W-1", 5, "lower", 95, 90, "HIGH")],   # below -> wrong side for long
-        fvgs=[_fvg("F-1", 5, +1, 110, 112)]))               # bullish above -> wrong dir for long
+        wicks=[_wick("W-1", 5, "lower", 95, 90, "HIGH")],   # below -> not a target
+        fvgs=[_fvg("F-1", 5, +1, 110, 112)]))               # bullish above -> wrong dir
     cands = _build(inv, +1, 100.0, 10, 98.0)
-    w = next(c for c in cands if c.object_id == "W-1")
+    # a structure behind price is never a target (spec: targets ahead of price)
+    assert all(c.object_id != "W-1" for c in cands)
     f = next(c for c in cands if c.object_id == "F-1")
-    assert "WRONG_SIDE_OF_ENTRY" in w.rejection_reasons
     assert "WRONG_DIRECTION" in f.rejection_reasons and not f.eligible
 
 

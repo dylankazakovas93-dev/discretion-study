@@ -24,3 +24,6 @@ venv/
 artifacts/graph_native/events.jsonl.gz
 artifacts/graph_native/branches.csv.gz
 artifacts/graph_native/rejected_graph.csv.gz
+# Large generated MTF considered-target ledger (hash + row count in reproducibility.json)
+artifacts/mtf_targets/considered_targets.csv.gz
+artifacts/mtf_targets/candidates_mtf.csv.gz

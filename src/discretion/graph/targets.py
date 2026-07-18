@@ -34,6 +34,10 @@ CROSS_SEGMENT = "CROSS_SEGMENT"
 LOW_PROMINENCE = "LOW_PROMINENCE"
 
 MIN_GAP = NQ_TICK
+# Nearest N objects of each family retained in the considered universe. Selection
+# only ever needs the nearest eligible per family; farther ones are always
+# occluded and never selectable, so this bounds cost without changing any choice.
+PER_FAMILY_CAP = 25
 
 
 @dataclass
@@ -188,9 +192,36 @@ def build_target_candidates(inv, direction, entry_price, entry_seq, seg, stop,
             distance_atr=round(dist / atr, 4) if atr else None, natural_rr=rr,
             eligible=not reasons, rejection_reasons=reasons)
 
+    # Only structures AHEAD of price are targets (spec: "targets ahead of price").
+    # Behind-price structures are never selectable, so they never enter the
+    # universe. To bound cost we keep, per family, the nearest PER_FAMILY_CAP
+    # *eligible* objects and the nearest PER_FAMILY_CAP *ineligible* objects: the
+    # nearest eligible drives every selection (so no choice can change) while the
+    # ineligible bulk (stale/wrong-direction) is capped for the audit ledger.
+    per_family: dict[str, list] = {}
     for (oid, fam, sub, tf, price, _csid, avail, fresh, prom, opp) in \
             inv._raw(direction, seg, entry_seq):
-        cands.append(make(oid, fam, sub, tf, price, avail, fresh, prom, opp))
+        ahead = (price > entry_price + MIN_GAP if direction > 0
+                 else price < entry_price - MIN_GAP)
+        if not ahead:
+            continue
+        elig = fresh and opp and prom != "LOW"
+        per_family.setdefault(fam, []).append(
+            (abs(price - entry_price), elig, oid, fam, sub, tf, price, avail, fresh, prom, opp))
+    for fam, rows in per_family.items():
+        rows.sort(key=lambda r: r[0])
+        n_e = n_i = 0
+        for r in rows:
+            if r[1]:
+                if n_e >= PER_FAMILY_CAP:
+                    continue
+                n_e += 1
+            else:
+                if n_i >= PER_FAMILY_CAP:
+                    continue
+                n_i += 1
+            (_d, _e, oid, fam, sub, tf, price, avail, fresh, prom, opp) = r
+            cands.append(make(oid, fam, sub, tf, price, avail, fresh, prom, opp))
 
     # branch-native objective as its own candidate (BRANCH_SEMANTIC input)
     if branch_target is not None:
