@@ -37,12 +37,18 @@ def result():
 
 # ---- 1. identical input -> identical example selection --------------------
 
+def _obj_id(o):
+    # candidates and rejected setups have candidate_id; "unresolved_3" holds
+    # BranchState objects (never triggered) which have branch_id instead.
+    return getattr(o, "candidate_id", None) or getattr(o, "branch_id", None)
+
+
 def test_identical_input_identical_selection(result):
     ps = result["engine"].ps
     m1 = ra.select_quality_tier_examples(result, ps, START_ET, END_ET)
     m2 = ra.select_quality_tier_examples(result, ps, START_ET, END_ET)
     for cat in m1:
-        assert [c.candidate_id for c in m1[cat]] == [c.candidate_id for c in m2[cat]]
+        assert [_obj_id(c) for c in m1[cat]] == [_obj_id(c) for c in m2[cat]]
 
     p1 = ra.select_primitive_examples(ps, START_ET, END_ET)
     p2 = ra.select_primitive_examples(ps, START_ET, END_ET)
@@ -69,7 +75,7 @@ def test_selection_is_invariant_to_candidates_own_outcome(result, monkeypatch):
     from a normal (UNEVALUATED-at-selection-time) run."""
     ps = result["engine"].ps
     quality_before = ra.select_quality_tier_examples(result, ps, START_ET, END_ET)
-    ids_before = {cat: [c.candidate_id for c in cands]
+    ids_before = {cat: [_obj_id(c) for c in cands]
                   for cat, cands in quality_before.items()}
 
     # sanity: at selection time nothing had been evaluated
@@ -83,7 +89,7 @@ def test_selection_is_invariant_to_candidates_own_outcome(result, monkeypatch):
         c.realized_r = 999.0
 
     quality_after = ra.select_quality_tier_examples(result, ps, START_ET, END_ET)
-    ids_after = {cat: [c.candidate_id for c in cands]
+    ids_after = {cat: [_obj_id(c) for c in cands]
                  for cat, cands in quality_after.items()}
     assert ids_before == ids_after
 

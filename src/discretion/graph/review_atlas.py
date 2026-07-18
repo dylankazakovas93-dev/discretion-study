@@ -180,7 +180,14 @@ def evidence_for_subset(result, target_candidates):
     `prepare()`'s outcome evaluation, independent of whether a snapshot was
     built). Regression-tested for byte-identical output vs `evidence.run` on a
     smaller window in tests/test_review_atlas.py.
+
+    `result["candidates"]` is the same alias `pipeline.run_graph_native` sets
+    (`= result["graph_candidates"]`) before calling `evidence.run`; it is set
+    here too so this helper also works against a bare `materialize_all(result)`
+    result (as produced by `scripts/run_review_atlas.py`, which never goes
+    through `run_graph_native`).
     """
+    result.setdefault("candidates", result["graph_candidates"])
     evidence_mod.prepare(result)
     cands = sorted(result["candidates"], key=lambda c: (c.setup.entry_seq, c.setup.id))
     resolved = [c for c in cands if c.completion_ord is not None]
