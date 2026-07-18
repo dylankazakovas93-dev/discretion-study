@@ -108,9 +108,6 @@ def branch_structural_state(branch) -> str:
 # structural-quality ranking. The grade is historical evidence (Stage 12C).
 # --------------------------------------------------------------------------
 
-DISPLACEMENT_RANK = {"good": 2, "mixed": 1, "bad": 0}
-
-
 def structural_quality_vector(cand, ps) -> dict:
     """The existing frozen pre-outcome component fields, verbatim from the
     candidate's own `features` dict (built once at materialization by
@@ -683,23 +680,23 @@ ALL_BRANCH_PATH_LABELS = sorted(set(BRANCH_PATH_CATEGORIES.values())) + \
 
 
 # --------------------------------------------------------------------------
-# Stage 4 quality-tier setup pack (structural view only; see structural_
-# quality_key). Selection never reads setup.outcome/realized_r/outcome_seq.
+# Stage 12 D: structurally rejected examples + frozen-RR-bucket/dedup/policy-
+# pair examples. These are pre-evidence, pre-outcome, non-graded filters on
+# frozen fields only -- NOT a quality ranking (Problem 4: the former
+# strongest_5/middle_5/weakest_5 structural-quality-ranked categories were
+# removed; the setup grade is now the evidence-ranked pack, Section C below).
+# Selection never reads setup.outcome/realized_r/outcome_seq.
 # --------------------------------------------------------------------------
 
-def select_quality_tier_examples(result, ps, start_et, end_et):
+def select_structural_examples(result, ps, start_et, end_et):
     cands = [c for c in result["graph_candidates"]
             if in_window(c.setup.entry_ts.tz_convert(ET), start_et, end_et)]
     rej = [c for c in result["graph_rejected"]
           if in_window(c.setup.entry_ts.tz_convert(ET), start_et, end_et)]
-    cands_sorted = sorted(cands, key=lambda c: structural_quality_key(c, ps),
-                          reverse=True)
-    n = len(cands_sorted)
-    mid_start = max(0, n // 2 - 2)
 
     unresolved = sorted(
         [b for b in result["branches"]
-         if b.terminal_status == "UNRESOLVED" and b.ordered_event_ids
+         if branch_structural_state(b) == UNRESOLVED and b.ordered_event_ids
          and in_window(_event_ts(result["log"].get(b.ordered_event_ids[0])),
                        start_et, end_et)],
         key=lambda b: b.branch_id)[:3]
@@ -707,6 +704,12 @@ def select_quality_tier_examples(result, ps, start_et, end_et):
     rej_chrono = sorted(rej, key=lambda c: (c.setup.entry_seq, c.candidate_id))
     insufficient_rr = [c for c in rej_chrono
                        if c.setup.rejection_reason == "INSUFFICIENT_NATURAL_RR"][:3]
+    # every other material rejection reason, one example each (Section D)
+    other_rejected: dict[str, object] = {}
+    for c in rej_chrono:
+        r = c.setup.rejection_reason
+        if r and r != "INSUFFICIENT_NATURAL_RR" and r not in other_rejected:
+            other_rejected[r] = c
 
     cands_chrono = sorted(cands, key=lambda c: (c.setup.entry_seq, c.candidate_id))
     natural_ge1 = [c for c in cands_chrono if c.setup.natural_rr >= 1.0][:2]
@@ -729,20 +732,123 @@ def select_quality_tier_examples(result, ps, start_et, end_et):
     dedup_examples = sorted(dedup, key=lambda c: (c.setup.entry_seq, c.candidate_id))[:2]
 
     return {
-        "strongest_5": cands_sorted[:5],
-        "middle_5": cands_sorted[mid_start:mid_start + 5],
-        "weakest_5": list(reversed(cands_sorted[-5:])) if len(cands_sorted) >= 5
-                     else list(reversed(cands_sorted)),
         "rejected_5": rej_chrono[:5],
+        "rejected_by_reason": other_rejected,
         "unresolved_3": unresolved,
         "insufficient_rr_3": insufficient_rr,
         "natural_rr_ge1_capped_2": natural_ge1,
         "natural_rr_half_to_1_2": natural_half_to_1,
         "policy_variant_pair_2": policy_pairs,
         "dedup_examples_2": dedup_examples,
-        # qualified / not-activated-similar-graph filled in separately once
-        # evidence_for_subset has annotated qualification (still pre-outcome:
-        # selection reads only c.qualification/c.evidence, never c.setup.outcome)
+    }
+
+
+# --------------------------------------------------------------------------
+# Stage 12 C: evidence-ranked examples -- the setup grade. Every category is
+# a frozen, deterministic, pre-outcome rule reading ONLY `cand.evidence`/
+# `cand.qualification` (never `setup.outcome`/`realized_r`/`outcome_seq`).
+# `cands_scored` must already have real evidence attached (see
+# run_indexed_one_trigger_one_policy / bounded_qualification_scan). "recent"
+# short horizon = 5 sessions, "medium/longer" = 20 sessions (both members of
+# the frozen HORIZONS set); this pairing is fixed here, not tuned per result.
+# --------------------------------------------------------------------------
+
+SHORT_HORIZON, MEDIUM_HORIZON = "5", "20"
+
+
+def _mean_r(cand, tier, horizon):
+    lv = (cand.evidence or {}).get("levels", {}).get(tier, {}).get(horizon)
+    if not lv or lv["occurrences"] == 0:
+        return None
+    return lv["mean_R"]
+
+
+def _occ(cand, tier, horizon="ALL"):
+    lv = (cand.evidence or {}).get("levels", {}).get(tier, {}).get(horizon)
+    return lv["occurrences"] if lv else 0
+
+
+def select_evidence_ranked_examples(cands_scored):
+    """`cands_scored` = the one-trigger/one-policy candidates that actually
+    received real evidence this run (a subset of the review week when a
+    compute bound applies -- see the report's disclosed scope)."""
+    from ..recognizer.gate import DEFAULT_POLICY
+
+    chrono = sorted(cands_scored, key=lambda c: (c.setup.entry_seq, c.candidate_id))
+    scored = [c for c in chrono if c.evidence]
+
+    def top(key_fn, filt, n=3):
+        pool = [c for c in scored if filt(c)]
+        pool.sort(key=lambda c: (key_fn(c), c.candidate_id), reverse=True)
+        return pool[:n]
+
+    strongest_exact = top(lambda c: _mean_r(c, "exact", SHORT_HORIZON),
+                          lambda c: _mean_r(c, "exact", SHORT_HORIZON) is not None
+                          and _mean_r(c, "exact", SHORT_HORIZON) > 0)
+    strongest_reduced = top(lambda c: _mean_r(c, "reduced", SHORT_HORIZON),
+                            lambda c: _mean_r(c, "reduced", SHORT_HORIZON) is not None
+                            and _mean_r(c, "reduced", SHORT_HORIZON) > 0)
+    strongest_qualified = top(
+        lambda c: c.evidence["summary"]["shrunk_expected_R"],
+        lambda c: c.qualification == "QUALIFIED_PENDING_TRIGGER")
+
+    def _best_tier_pair(c):
+        for tier in ("exact", "reduced", "nn"):
+            s, m = _mean_r(c, tier, SHORT_HORIZON), _mean_r(c, tier, MEDIUM_HORIZON)
+            if s is not None and m is not None:
+                return s, m
+        return None, None
+
+    conflicting = []
+    positive_short_negative_long = []
+    negative_recent = []
+    for c in chrono:
+        s, m = _best_tier_pair(c)
+        if s is None:
+            continue
+        if s > 0 and m is not None and m < 0:
+            conflicting.append(c)
+            positive_short_negative_long.append(c)
+        elif s < 0:
+            negative_recent.append(c)
+
+    insufficient_sample = [c for c in scored
+                           if c.evidence["summary"]["effective_sample"]
+                           < DEFAULT_POLICY.min_effective_sample][:3]
+    high_uncertainty = [c for c in scored if "uncertainty" in c.evidence.get("gate_fails", [])][:3]
+    exact_unavail_reduced_present = [
+        c for c in scored if _occ(c, "exact") == 0 and _occ(c, "reduced") > 0][:2]
+    reduced_unavail_nn_present = [
+        c for c in scored if _occ(c, "reduced") == 0 and _occ(c, "nn") > 0][:2]
+    recorded_not_activated = [c for c in chrono
+                              if c.qualification == "RECORDED_NOT_ACTIVATED"][:3]
+
+    by_trig: dict[str, list] = {}
+    for c in scored:
+        by_trig.setdefault(c.trigger_event_id, []).append(c)
+    diff_policy_evidence = []
+    for trig in sorted(by_trig, key=lambda t: min(c.setup.entry_seq for c in by_trig[t])):
+        group = by_trig[trig]
+        if len({c.target_policy_id for c in group}) >= 2:
+            qualifications = {c.qualification for c in group}
+            ers = {c.evidence["summary"]["shrunk_expected_R"] for c in group}
+            if len(qualifications) >= 2 or len(ers) >= 2:
+                diff_policy_evidence = sorted(group, key=lambda c: c.candidate_id)[:2]
+                break
+
+    return {
+        "strongest_positive_recent_exact": strongest_exact,
+        "strongest_positive_recent_reduced": strongest_reduced,
+        "strongest_qualified": strongest_qualified,
+        "conflicting_short_vs_medium_horizon": conflicting[:2],
+        "positive_short_negative_long": positive_short_negative_long[:2],
+        "negative_recent_evidence": negative_recent[:3],
+        "insufficient_sample_evidence": insufficient_sample,
+        "high_uncertainty_evidence": high_uncertainty,
+        "exact_unavailable_reduced_present": exact_unavail_reduced_present,
+        "reduced_unavailable_nn_present": reduced_unavail_nn_present,
+        "recorded_not_activated_examples": recorded_not_activated,
+        "different_target_policy_evidence_pair": diff_policy_evidence,
     }
 
 

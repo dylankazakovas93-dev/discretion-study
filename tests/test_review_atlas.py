@@ -45,8 +45,8 @@ def _obj_id(o):
 
 def test_identical_input_identical_selection(result):
     ps = result["engine"].ps
-    m1 = ra.select_quality_tier_examples(result, ps, START_ET, END_ET)
-    m2 = ra.select_quality_tier_examples(result, ps, START_ET, END_ET)
+    m1 = ra.select_structural_examples(result, ps, START_ET, END_ET)
+    m2 = ra.select_structural_examples(result, ps, START_ET, END_ET)
     for cat in m1:
         assert [_obj_id(c) for c in m1[cat]] == [_obj_id(c) for c in m2[cat]]
 
@@ -74,7 +74,7 @@ def test_selection_is_invariant_to_candidates_own_outcome(result, monkeypatch):
     calling the selection functions and checking the selected IDs don't change
     from a normal (UNEVALUATED-at-selection-time) run."""
     ps = result["engine"].ps
-    quality_before = ra.select_quality_tier_examples(result, ps, START_ET, END_ET)
+    quality_before = ra.select_structural_examples(result, ps, START_ET, END_ET)
     ids_before = {cat: [_obj_id(c) for c in cands]
                   for cat, cands in quality_before.items()}
 
@@ -88,7 +88,7 @@ def test_selection_is_invariant_to_candidates_own_outcome(result, monkeypatch):
         c.setup.outcome_seq = c.setup.entry_seq + 1
         c.realized_r = 999.0
 
-    quality_after = ra.select_quality_tier_examples(result, ps, START_ET, END_ET)
+    quality_after = ra.select_structural_examples(result, ps, START_ET, END_ET)
     ids_after = {cat: [_obj_id(c) for c in cands]
                  for cat, cands in quality_after.items()}
     assert ids_before == ids_after
