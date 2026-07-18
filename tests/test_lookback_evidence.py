@@ -117,6 +117,51 @@ def test_indexed_snapshot_matches_reference_snapshot():
     assert ref == got
 
 
+def test_run_indexed_restrict_to_scores_only_requested_subset():
+    """Comparable pool is unaffected by restrict_to; only the SCORING call
+    (build_snapshot_indexed) is skipped for candidates outside restrict_to."""
+    from discretion.recognizer import evidence as ev
+    import types
+
+    class FakeSetup:
+        def __init__(self, entry_seq, id_):
+            self.entry_seq, self.id = entry_seq, id_
+            self.outcome = "UNEVALUATED"
+            self.outcome_seq = None
+            self.expiry_seq = entry_seq + 50
+            self.eligible = False   # evaluate_outcome no-ops; only scoring matters here
+
+    class FakeCand:
+        def __init__(self, cid, trig, policy, entry_seq):
+            self.candidate_id, self.trigger_event_id = cid, trig
+            self.target_policy_id = policy
+            self.setup = FakeSetup(entry_seq, cid)
+            self.exact_graph, self.reduced_graph = "G", "RG"
+            self.features = _feat()
+            self.evidence, self.qualification = None, "UNSCORED"
+
+    import pandas as pd
+    bars = [SimpleNamespace(segment_id=0,
+                            ts_et=pd.Timestamp("2025-07-07 12:00", tz="America/New_York")
+                            + pd.Timedelta(minutes=i))
+           for i in range(200)]
+    ps = SimpleNamespace(bars=bars)
+    engine = SimpleNamespace(ps=ps)
+    cands = [FakeCand(f"GNC-{i:06d}", f"EVT-{i}", "NEAREST_VALID_STRUCTURE", i * 10)
+            for i in range(5)]
+    result = {"engine": engine, "candidates": cands}
+
+    restrict = cands[:2]
+    out_result, scored_set = ev.run_indexed_one_trigger_one_policy(result, restrict_to=restrict)
+    scored_ids = {c.candidate_id for c in scored_set}
+    assert scored_ids == {"GNC-000000", "GNC-000001"}
+    for c in cands:
+        if c.candidate_id in scored_ids:
+            assert c.evidence is not None
+        else:
+            assert c.qualification == "UNSCORED"
+
+
 def test_indexed_partition_isolates_incompatible_features():
     compat = _comp(0, "WIN", 1.0, exact="G", reduced="RG")
     incompat = _comp(0, "WIN", 5.0, exact="OTHER",

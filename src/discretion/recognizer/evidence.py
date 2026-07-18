@@ -368,7 +368,7 @@ def build_snapshot_indexed(cand_features, cand_exact, cand_reduced,
     }
 
 
-def run_indexed_one_trigger_one_policy(result):
+def run_indexed_one_trigger_one_policy(result, restrict_to=None):
     """Session-partitioned, indexed evidence scoring over the one-trigger/
     one-policy universe (Stage 10 steps 1-8): freeze the pool once per
     session boundary (not per candidate), score every one-trigger/one-policy
@@ -383,11 +383,22 @@ def run_indexed_one_trigger_one_policy(result):
     documented dedup semantics (Sec 10): only one representative per
     (trigger, policy) is ever an independent observation or a scored
     candidate; the rest are diagnostic-only duplicate rows.
+
+    `restrict_to`, when given, further limits which one-trigger/one-policy
+    candidates are actually SCORED (e.g. "only the review week") -- the
+    comparable POOL is unaffected and still includes every session's
+    candidates (prior and review-week alike), exactly as it would with no
+    restriction; this only skips calling `build_snapshot_indexed` for
+    representatives nobody asked to inspect (the same disclosed,
+    regression-tested semantics-preserving pattern as `evidence_for_subset`).
     """
     from .gate import qualify
     prepare(result)
     all_cands = result["candidates"]
     scored_set = one_trigger_one_policy(all_cands)
+    if restrict_to is not None:
+        restrict_ids = {id(c) for c in restrict_to}
+        scored_set = [c for c in scored_set if id(c) in restrict_ids]
     scored_ids = {id(c) for c in scored_set}
 
     resolved = [c for c in all_cands if c.completion_ord is not None]
