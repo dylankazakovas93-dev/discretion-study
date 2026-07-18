@@ -32,4 +32,5 @@ artifacts/mtf_targets/candidates_mtf.csv.gz
 # gitignored candidate ledger (hash + row count in reproducibility.json)
 artifacts/review_week_atlas_2025_07_14_18/_checkpoint_result.pkl
 artifacts/review_week_atlas_2025_07_14_18/_run.log
+artifacts/review_week_atlas_2025_07_14_18/_build.log
 artifacts/review_week_atlas_2025_07_14_18/candidate_ledger.csv.gz
