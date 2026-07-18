@@ -113,17 +113,24 @@ class TargetInventory:
         for avail, tag, o in lst[:hi_idx]:
             if tag == "wick":
                 side_ok = (o.side == "upper") if direction > 0 else (o.side == "lower")
+                # fresh_at(entry_seq) is already the seq-gated causal freshness
+                # check (positive_overlap_seq/swept_seq/closed_through_seq <=
+                # entry_seq); do NOT additionally AND in o.active, which is a
+                # single mutable flag reflecting state at the END of the whole
+                # primitives scan and can be flipped False by an event AFTER
+                # entry_seq -- that would leak future information into target
+                # eligibility (see docs/SIMILARITY_AUDIT_PROTOCOL.md).
                 raw.append((o.id, "wick_liquidity", o.side, o.timeframe, o.proximal,
-                            seg, avail, o.fresh_at(entry_seq) and o.active,
+                            seg, avail, o.fresh_at(entry_seq),
                             o.prominence_grade, side_ok))
             elif tag == "htf_fvg":
                 raw.append((o.id, "htf_fvg", o.subtype, o.timeframe,
                             _proximal(direction, o.lo, o.hi), seg, avail,
-                            o.fresh_at(entry_seq) and o.active, None, o.direction == opp))
+                            o.fresh_at(entry_seq), None, o.direction == opp))
             elif tag == "htf_ifvg":
                 raw.append((o.id, "htf_ifvg", o.subtype, o.timeframe,
                             _proximal(direction, o.lo, o.hi), seg, avail,
-                            o.fresh_at(entry_seq) and o.active, None, o.direction == opp))
+                            o.fresh_at(entry_seq), None, o.direction == opp))
             elif tag == "rb":
                 fresh = o.invalidated_seq is None or o.invalidated_seq > entry_seq
                 raw.append((o.id, "rejection_block", o.subtype, "1m",
