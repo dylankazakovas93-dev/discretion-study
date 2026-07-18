@@ -31,21 +31,25 @@ CKPT = os.path.join(OUT_DIR, "_checkpoint_result_repaired.pkl")
 # Compute-budget disclosure (memory, not time): a first attempt at the
 # required >=40 prior sessions (2025-05-18 .. review week, 45 sessions total)
 # ran ~82 minutes through BranchEngine (224,715 triggers / 59,551 episodes /
-# 267,896 branches -- object counts scaled almost exactly linearly with the
-# 7.5x larger window) and was then OOM-killed by the kernel during
+# 267,896 branches) and was then OOM-killed by the kernel during
 # materialize_all in this 16 GB-RAM, no-swap environment (confirmed via
-# dmesg: anon-rss 15.9 GB at kill, no partial checkpoint survives an OOM
-# kill). A full architecture change to stream/batch materialization instead
-# of holding every candidate object live in memory was judged out of scope
-# for a "narrowly scoped correction" repair task. This run instead uses the
-# largest prior-session window that a smaller, successful trial run showed
-# fits safely in available memory: 20 prior complete sessions (25 total),
-# starting exactly at that earliest session's true 18:00 ET open
-# (2025-06-15, a Sunday) -- short of the requested 40, disclosed exactly
-# rather than silently substituted, per the same principle this task applies
-# to any other demonstrated compute-budget shortfall.
-WINDOW = dict(start="2025-06-15T22:00:00", end="2025-07-19T03:59:59")  # UTC
-REQUIRED_PRIOR_SESSIONS = 20   # disclosed shortfall vs. the requested 40
+# dmesg: anon-rss 15.95 GB at kill). A second attempt at 20 prior sessions
+# (25 total; 124,671 triggers / 33,150 episodes / 148,963 branches) was ALSO
+# OOM-killed during materialize_all (confirmed via dmesg: anon-rss 15.93 GB
+# at kill) -- essentially the same ceiling despite roughly half the trigger
+# count, indicating materialize_all's peak RSS is not simply linear in
+# window/trigger count in this environment. A full architecture change to
+# stream/batch materialization instead of holding every candidate object
+# live in memory was judged out of scope for a "narrowly scoped correction"
+# repair task. This run instead uses a further-reduced window: 10 prior
+# complete sessions (15 total), starting exactly at that earliest session's
+# true 18:00 ET open (2025-06-22, a Sunday) -- short of the requested 40,
+# disclosed exactly rather than silently substituted, per the same
+# principle this task applies to any other demonstrated compute-budget
+# shortfall. No partial checkpoint survives an OOM kill, so both prior
+# attempts' compute (82 min + ~62 min) was lost in full.
+WINDOW = dict(start="2025-06-22T22:00:00", end="2025-07-19T03:59:59")  # UTC
+REQUIRED_PRIOR_SESSIONS = 10   # disclosed shortfall vs. the requested 40
 
 
 def _mem_mb():
