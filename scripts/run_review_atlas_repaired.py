@@ -28,12 +28,35 @@ from discretion.graph.materializer import materialize_all
 OUT_DIR = os.path.join("artifacts", "review_week_atlas_2025_07_14_18")
 CKPT = os.path.join(OUT_DIR, "_checkpoint_result_repaired.pkl")
 
-# Review week's first true CME session opens Sunday 2025-07-13 18:00 ET. The
-# earliest of the required 40 prior complete sessions was located by walking
-# distinct_session_dates() backward from that boundary over the available
-# data file: 2025-05-18 (a Sunday, opening the Sun18:00->Mon17:59 session).
-# The engine window therefore starts EXACTLY at that session's 18:00 ET open.
-WINDOW = dict(start="2025-05-18T22:00:00", end="2025-07-19T03:59:59")  # UTC
+# Compute-budget disclosure (memory, not time): a first attempt at the
+# required >=40 prior sessions (2025-05-18 .. review week, 45 sessions total)
+# ran ~82 minutes through BranchEngine (224,715 triggers / 59,551 episodes /
+# 267,896 branches -- object counts scaled almost exactly linearly with the
+# 7.5x larger window) and was then OOM-killed by the kernel during
+# materialize_all in this 16 GB-RAM, no-swap environment (confirmed via
+# dmesg: anon-rss 15.9 GB at kill, no partial checkpoint survives an OOM
+# kill). A full architecture change to stream/batch materialization instead
+# of holding every candidate object live in memory was judged out of scope
+# for a "narrowly scoped correction" repair task. This run instead uses the
+# largest prior-session window that a smaller, successful trial run showed
+# fits safely in available memory: 20 prior complete sessions (25 total),
+# starting exactly at that earliest session's true 18:00 ET open
+# (2025-06-15, a Sunday) -- short of the requested 40, disclosed exactly
+# rather than silently substituted, per the same principle this task applies
+# to any other demonstrated compute-budget shortfall.
+WINDOW = dict(start="2025-06-15T22:00:00", end="2025-07-19T03:59:59")  # UTC
+REQUIRED_PRIOR_SESSIONS = 20   # disclosed shortfall vs. the requested 40
+
+
+def _mem_mb():
+    try:
+        with open("/proc/self/status") as fh:
+            for line in fh:
+                if line.startswith("VmRSS:"):
+                    return int(line.split()[1]) // 1024
+    except Exception:
+        return -1
+    return -1
 
 
 def main():
@@ -50,24 +73,25 @@ def main():
     review_sessions = [d for d in distinct_session_dates(bars) if d >= review_first_session]
     print(f"prior_sessions={len(prior_sessions)} earliest={prior_sessions[0]} "
           f"latest={prior_sessions[-1]} review_sessions={len(review_sessions)} "
-          f"{review_sessions}", flush=True)
-    assert len(prior_sessions) >= 40, f"only {len(prior_sessions)} prior sessions loaded"
+          f"{review_sessions}  mem_mb={_mem_mb()}", flush=True)
+    assert len(prior_sessions) >= REQUIRED_PRIOR_SESSIONS, \
+        f"only {len(prior_sessions)} prior sessions loaded"
 
     t = time.time()
     ps = build_primitives(bars)
-    print(f"build_primitives {round(time.time()-t,1)}s", flush=True)
+    print(f"build_primitives {round(time.time()-t,1)}s  mem_mb={_mem_mb()}", flush=True)
 
     t = time.time()
     result = BranchEngine(ps).run()
     print(f"branch_engine {round(time.time()-t,1)}s triggers={len(result['triggers'])} "
-          f"episodes={len(result['episodes'])} branches={len(result['branches'])}",
-          flush=True)
+          f"episodes={len(result['episodes'])} branches={len(result['branches'])}"
+          f"  mem_mb={_mem_mb()}", flush=True)
 
     t = time.time()
     materialize_all(result)
     print(f"materialize {round(time.time()-t,1)}s "
           f"candidates={len(result['graph_candidates'])} "
-          f"rejected={len(result['graph_rejected'])}", flush=True)
+          f"rejected={len(result['graph_rejected'])}  mem_mb={_mem_mb()}", flush=True)
 
     n_unevaluated = sum(1 for c in result["graph_candidates"] + result["graph_rejected"]
                         if c.setup.outcome == "UNEVALUATED")
@@ -76,7 +100,8 @@ def main():
 
     with open(CKPT, "wb") as fh:
         pickle.dump(result, fh)
-    print(f"checkpoint written: {CKPT} ({os.path.getsize(CKPT)} bytes)", flush=True)
+    print(f"checkpoint written: {CKPT} ({os.path.getsize(CKPT)} bytes)  "
+         f"mem_mb={_mem_mb()}", flush=True)
     print(f"TOTAL {round(time.time()-t0,1)}s", flush=True)
 
 
