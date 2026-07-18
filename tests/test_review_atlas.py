@@ -378,3 +378,76 @@ def test_branch_path_examples_verified_by_graph_tokens(result):
             continue   # branch, not a candidate; no exact_graph token check
         assert ra._graph_contains_required_tokens(obj.exact_graph, label), (
             label, obj.exact_graph)
+
+
+# ---- Repair task Stage 16 #12: full one-trigger/one-policy review scoring --
+
+def test_full_one_trigger_one_policy_review_scoring_leaves_nothing_unscored(result):
+    from discretion.recognizer.evidence import run_indexed_one_trigger_one_policy
+    cands_in_week = [c for c in result["graph_candidates"]
+                     if ra.in_window(c.setup.entry_ts.tz_convert(ra.ET), START_ET, END_ET)]
+    _, scored_set = run_indexed_one_trigger_one_policy(result, restrict_to=cands_in_week)
+    assert scored_set   # the fixture window has candidates
+    for c in scored_set:
+        assert c.evidence is not None
+        assert c.qualification != "UNSCORED"
+
+
+# ---- Repair task Stage 16 #21: evidence/qualification immutable after ------
+# ---- outcome attachment -----------------------------------------------------
+
+def test_evidence_and_qualification_immutable_after_outcome_attachment(result):
+    from discretion.recognizer.evidence import run_indexed_one_trigger_one_policy
+    cands_in_week = [c for c in result["graph_candidates"]
+                     if ra.in_window(c.setup.entry_ts.tz_convert(ra.ET), START_ET, END_ET)]
+    _, scored_set = run_indexed_one_trigger_one_policy(result, restrict_to=cands_in_week)
+    frozen = {c.candidate_id: (c.qualification, json_evidence(c.evidence)) for c in scored_set}
+
+    ps = result["engine"].ps
+    for c in scored_set:
+        ra.attach_outcome(c, ps.bars)
+
+    for c in scored_set:
+        qual, ev = frozen[c.candidate_id]
+        assert c.qualification == qual
+        assert json_evidence(c.evidence) == ev
+
+    # restore for other tests in this module-scoped fixture
+    for c in result["graph_candidates"] + result["graph_rejected"]:
+        c.setup.outcome = "UNEVALUATED"
+        c.setup.outcome_seq = None
+        c.realized_r = None
+
+
+def json_evidence(ev):
+    import json as _json
+    return _json.dumps(ev, sort_keys=True, default=str)
+
+
+# ---- Repair task Stage 16 #23: deterministic (repaired) manifest hash ------
+
+def test_manifest_hash_is_deterministic():
+    m = {"a": [1, 2, {"b": "c"}], "window": {"start": "x"}}
+    assert ra.manifest_hash(m) == ra.manifest_hash(dict(m))
+    m2 = dict(m)
+    m2["a"] = [1, 2, {"b": "different"}]
+    assert ra.manifest_hash(m) != ra.manifest_hash(m2)
+
+
+# ---- Repair task Stage 16 #3/#4: >=40 complete prior sessions, no partial --
+# ---- warm-up session counted -----------------------------------------------
+
+def test_review_week_window_starts_exactly_at_session_open():
+    """The engine input for the repaired run must begin exactly at the 18:00
+    ET open of the earliest included session -- never at midnight inside one
+    (Problem 2). Verified against the actual committed window constant."""
+    import importlib
+    spec = importlib.util.spec_from_file_location(
+        "build_review_atlas_repaired_probe",
+        os.path.join(os.path.dirname(__file__), "..", "scripts",
+                    "run_review_atlas_repaired.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    start_utc = pd.Timestamp(mod.WINDOW["start"], tz="UTC")
+    start_et = start_utc.tz_convert("America/New_York")
+    assert (start_et.hour, start_et.minute, start_et.second) == (18, 0, 0)

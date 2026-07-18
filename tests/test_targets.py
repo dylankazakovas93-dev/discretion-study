@@ -136,3 +136,22 @@ def test_htf_fvg_failed_before_trigger_not_fresh():
     cands = _build(inv, +1, 100.0, 10, 98.0)
     f = next(c for c in cands if c.object_id == "F-FAIL")
     assert "STALE" in f.rejection_reasons and not f.eligible
+
+
+# ---- Repair task Stage 16 #17: target eligibility never depends on stop ----
+
+def test_target_eligibility_unaffected_by_stop_distance():
+    """Only the diagnostic natural_rr field may vary with the stop; every
+    other field (eligible, rejection_reasons, price, family, frontmost) must
+    be identical no matter how far away the stop is placed."""
+    inv = TargetInventory(_ps(wicks=[_wick("W-1", 5, "upper", 103, 108, "HIGH")]))
+    near_stop = _build(inv, +1, 100.0, 10, 99.0)     # risk 1
+    far_stop = _build(inv, +1, 100.0, 10, 50.0)      # risk 50 -- very different
+    n = next(c for c in near_stop if c.object_id == "W-1")
+    f = next(c for c in far_stop if c.object_id == "W-1")
+    assert n.eligible == f.eligible
+    assert n.rejection_reasons == f.rejection_reasons
+    assert n.price == f.price
+    assert n.family == f.family
+    assert n.frontmost == f.frontmost
+    assert n.natural_rr != f.natural_rr   # the ONLY field allowed to differ

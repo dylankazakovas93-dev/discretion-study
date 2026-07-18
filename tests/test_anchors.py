@@ -121,3 +121,20 @@ def test_rb_failure_fade_stop_is_compression_region(day):
     for c in rb:
         assert c.stop_anchor_type == "failure_region_boundary"
         assert reg.get(c.stop_anchor_object_id).family == "structure"
+
+
+# ---- Repair task Stage 16 #16: stop resolution never reads target distance --
+
+def test_stop_resolution_identical_regardless_of_available_levels():
+    """resolve_anchors's STOP half must be a pure function of
+    (fam, direction, entry_price, seq, seg, focus, origin, bar0, trig_ev) --
+    varying only the `levels` list (which can change the TARGET half via the
+    nearest-level fallback) must never change the stop."""
+    fvg = _fake_zone("FVG-1", 99.0, 100.0, "fvg")
+    trig_ev = types.SimpleNamespace(reference_price=100.0)
+    stop_no_levels, _, _ = resolve_anchors(
+        "fvg_fill", +1, 100.5, 10, 0, fvg, fvg, _bar(100.0, 101.0), trig_ev, [], None)
+    stop_with_levels, _, _ = resolve_anchors(
+        "fvg_fill", +1, 100.5, 10, 0, fvg, fvg, _bar(100.0, 101.0), trig_ev,
+        [_lvl(105.0), _lvl(200.0), _lvl(300.0)], None)
+    assert stop_no_levels == stop_with_levels
