@@ -13,6 +13,7 @@ import math
 import statistics
 from dataclasses import dataclass
 
+from ..data.cme_session import session_ordinal_map as _session_ord_map
 from ..setups.model import evaluate_outcome
 from .similarity import (
     hard_compatible, numeric_ranges, gower, NN_MAX_DISTANCE, NN_MAX_NEIGHBORS,
@@ -21,7 +22,6 @@ from .similarity import (
 K_SHRINK = 5.0
 HORIZONS = [1, 3, 5, 10, 20, 40, "ALL"]
 RECENCY_HALFLIFE = 10
-SESSION_RESET_ET = (18, 0)
 
 
 def realized_r(setup):
@@ -30,16 +30,6 @@ def realized_r(setup):
     if setup.outcome == "LOSS":
         return -1.0
     return None  # AMBIGUOUS / EXPIRED / OPEN excluded from R
-
-
-def _session_ord_map(bars):
-    def key(b):
-        t = (b.ts_et.hour, b.ts_et.minute)
-        d = b.ts_et.date()
-        return (d, 1) if t >= SESSION_RESET_ET else (d, 0)
-    keys = sorted({key(b) for b in bars})
-    ordinal = {k: i for i, k in enumerate(keys)}
-    return [ordinal[key(b)] for b in bars]
 
 
 @dataclass

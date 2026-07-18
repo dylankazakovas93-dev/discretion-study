@@ -163,14 +163,21 @@ by direct code inspection of `signatures.py::build_features` and
 
 ## 5. Named findings (not fixed in this commit)
 
-* **F1 — immediate vs retest not hard-blocked at the NN tier.** `ifvg_activation`
+* **F1 — immediate vs retest not hard-blocked at the NN tier.** ~~`ifvg_activation`
   (immediate) and `ifvg_retest` produce different exact/reduced graphs, so they
   never collide at those tiers. At the NN/broad tier, only `hard_compatible` gates
   comparability, and it does not check `path_family` or a immediate-vs-retest
   flag directly — only `entry_mode_class`, which buckets both under `"delayed"`.
   Two candidates with the same `origin_family`, `continuation_or_fade`, and
   `target_policy_id` but different immediate/retest status **can** appear in each
-  other's NN neighbor set. Audited quantitatively in Commit 2.
+  other's NN neighbor set.~~ **REPAIRED** by
+  `docs/ADAPTIVE_GRADING_REPAIR_PROTOCOL.md` Sec 7:
+  `similarity.hard_compatible` now compares `path_family` (added) and exact
+  `entry_mode` (upgraded from `entry_mode_class`), so `ifvg_activation` and
+  `ifvg_retest` candidates can no longer appear in each other's NN neighbor
+  set. See `tests/test_similarity_audit.py::
+  test_immediate_vs_retest_now_hard_blocked_at_nn_tier`. Audited
+  quantitatively in Commit 2 (pre-repair collision counts).
 * **F2 — direction is not hard-gated.** Relies entirely on other fields being
   correctly direction-normalized (`favorable_close`, `vwap_side`) to make
   cross-direction comparisons meaningful. `nearest_vwap_band` (F6) is not

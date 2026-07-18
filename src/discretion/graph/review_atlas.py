@@ -31,41 +31,23 @@ import json
 import pandas as pd
 
 from ..setups.model import evaluate_outcome
+from ..data.cme_session import session_date as true_session_date
+from ..data.cme_session import distinct_session_dates as count_true_sessions
 from ..recognizer import evidence as evidence_mod
 from ..recognizer.gate import qualify
 from .targets import TARGET_POLICIES
 
 ET = "America/New_York"
-SESSION_OPEN = (18, 0)  # true CME session open, ET
-
+SESSION_OPEN = (18, 0)  # true CME session open, ET -- see data.cme_session
 
 # --------------------------------------------------------------------------
 # session / window utilities
+#
+# `true_session_date`/`count_true_sessions` are re-exports of the single
+# canonical `discretion.data.cme_session` implementation (also used by the
+# evidence engine) -- kept as names here only so existing call sites in this
+# module and its tests don't need to change.
 # --------------------------------------------------------------------------
-
-def true_session_date(ts_et) -> "pd.Timestamp.date":
-    """The single true CME-session opening date (18:00 ET) a timestamp belongs
-    to. Unlike the codebase's internal `_session_key` (used only for VWAP reset
-    and evidence session-ordinals, which intentionally/artifactually also
-    resets at midnight ET), this collapses a full continuous 18:00->17:59
-    session into ONE key, for honest session counting in this atlas's reports.
-    """
-    t = (ts_et.hour, ts_et.minute)
-    d = ts_et.date()
-    if t >= SESSION_OPEN:
-        return d
-    return d - pd.Timedelta(days=1)
-
-
-def count_true_sessions(bars, before_date=None):
-    """Distinct true CME sessions present in `bars`, optionally only those
-    opening strictly before `before_date`."""
-    seen = set()
-    for b in bars:
-        sd = true_session_date(b.ts_et)
-        if before_date is None or sd < before_date:
-            seen.add(sd)
-    return sorted(seen)
 
 
 def in_window(ts_et, start_et, end_et) -> bool:

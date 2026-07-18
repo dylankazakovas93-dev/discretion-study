@@ -102,16 +102,30 @@ def test_target_surface_policy_currently_constant(graph_native):
     assert surfaces <= {"PROXIMAL_EDGE"}
 
 
-def test_immediate_vs_retest_not_hard_blocked_at_nn_tier():
-    """Pins finding F1: hard_compatible does not separate an immediate iFVG
-    activation from a later iFVG retest when origin_family, continuation_or_fade
-    and target_policy_id agree (both entry_mode_class -> 'delayed')."""
-    base = dict(continuation_or_fade="continuation", origin_family="ifvg",
-               target_policy_id="NEAREST_VALID_STRUCTURE")
+def test_immediate_vs_retest_now_hard_blocked_at_nn_tier():
+    """F1 (docs/SIMILARITY_AUDIT_PROTOCOL.md) is REPAIRED by docs/
+    ADAPTIVE_GRADING_REPAIR_PROTOCOL.md Sec 7: hard_compatible now compares
+    exact `entry_mode`, not just its immediate/delayed class, so an immediate
+    iFVG activation (`first_touch`) and a later iFVG retest (`retest`) no
+    longer pass as compatible merely because origin_family/continuation_or_
+    fade/target_policy_id agree and both used to classify as 'delayed'."""
+    base = dict(path_family="ifvg_activation", continuation_or_fade="continuation",
+               origin_family="ifvg", target_policy_id="NEAREST_VALID_STRUCTURE")
     immediate_like = {**base, "entry_mode": "first_touch"}
     retest_like = {**base, "entry_mode": "retest"}
-    # both classify as "delayed" -> hard_compatible does NOT distinguish them
-    assert hard_compatible(immediate_like, retest_like)
+    assert not hard_compatible(immediate_like, retest_like)
+
+
+def test_different_path_family_now_hard_blocked():
+    """Repair-protocol addition: path_family alone must block NN mixing even
+    when every other hard-compatibility field coincides (previously an
+    rb_reaction candidate could NN-match a sweep_fade candidate)."""
+    base = dict(continuation_or_fade="continuation", entry_mode="first_touch",
+               origin_family="rejection_block",
+               target_policy_id="NEAREST_VALID_STRUCTURE")
+    rb = {**base, "path_family": "rb_reaction"}
+    sweep = {**base, "path_family": "sweep_fade"}
+    assert not hard_compatible(rb, sweep)
 
 
 def test_nearest_vwap_band_not_direction_mirrored():

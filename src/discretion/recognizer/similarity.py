@@ -28,10 +28,22 @@ def entry_mode_class(mode: str) -> str:
 
 
 def hard_compatible(fa: dict, fb: dict) -> bool:
-    """Incompatible comparisons (continuation vs fade, immediate vs delayed,
-    different origin family) are forbidden regardless of numeric closeness."""
-    return (fa["continuation_or_fade"] == fb["continuation_or_fade"]
-            and entry_mode_class(fa["entry_mode"]) == entry_mode_class(fb["entry_mode"])
+    """Incompatible comparisons (different path family, continuation vs fade,
+    different exact entry mode, different origin family, different target
+    policy) are forbidden regardless of numeric closeness -- fundamentally
+    different mechanisms are never mixed to pad sample size (docs/
+    ADAPTIVE_GRADING_REPAIR_PROTOCOL.md Sec 7).
+
+    `path_family` and exact `entry_mode` (not just its immediate/delayed
+    class) were added by that repair: previously an `rb_reaction` candidate
+    could pass as NN-compatible with a `sweep_fade` candidate if the other
+    fields coincided, and `first_touch` could pass as compatible with
+    `retest` since both are "delayed" -- both are exactly the "fundamentally
+    different mechanisms mixing" defect the protocol prohibits.
+    """
+    return (fa.get("path_family") == fb.get("path_family")
+            and fa["continuation_or_fade"] == fb["continuation_or_fade"]
+            and fa["entry_mode"] == fb["entry_mode"]
             and fa["origin_family"] == fb["origin_family"]
             # different target policies are never equivalent research variants
             and fa.get("target_policy_id") == fb.get("target_policy_id"))
