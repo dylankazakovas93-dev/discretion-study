@@ -451,3 +451,79 @@ def test_review_week_window_starts_exactly_at_session_open():
     start_utc = pd.Timestamp(mod.WINDOW["start"], tz="UTC")
     start_et = start_utc.tz_convert("America/New_York")
     assert (start_et.hour, start_et.minute, start_et.second) == (18, 0, 0)
+
+
+# ---- Restart-safety repair: resumable materialize matches a single pass ---
+
+def test_materialize_resumable_matches_from_scratch(tmp_path, monkeypatch):
+    """The container hosting this repair task has been observed to silently
+    restart mid-run, killing an in-progress materialize_all pass. The runner
+    was made resumable (checkpoint every batch, replay branch mutations on
+    resume) -- this must produce byte-identical results to an unbroken pass,
+    never a partial/altered candidate universe."""
+    if not os.path.exists(DATA):
+        pytest.skip("raw data absent")
+    import importlib
+    import pickle
+
+    spec = importlib.util.spec_from_file_location(
+        "run_review_atlas_repaired_probe",
+        os.path.join(os.path.dirname(__file__), "..", "scripts",
+                    "run_review_atlas_repaired.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    from discretion.data.loader import load_front_month
+    from discretion.primitives.engine import build_primitives
+    from discretion.graph.branch_engine import BranchEngine
+    from discretion.graph.materializer import materialize_all, Materializer
+
+    bars = load_front_month(DATA, start="2025-07-07", end="2025-07-08")
+    ps = build_primitives(bars)
+    result = BranchEngine(ps).run()
+    assert len(result["triggers"]) >= 6
+
+    # Reference: one unbroken materialize_all pass over an independent copy.
+    ref_result = pickle.loads(pickle.dumps(result))
+    materialize_all(ref_result)
+    ref_ids = sorted(c.candidate_id for c in
+                     ref_result["graph_candidates"] + ref_result["graph_rejected"])
+    ref_unresolved = {b.branch_id for b in ref_result["branches"]
+                      if not b.emitted_candidate_ids}
+
+    # Build an intermediate checkpoint reflecting "first half of triggers
+    # already processed" -- exactly what _materialize_resumable itself would
+    # have written right before a mid-run restart.
+    ckpt_path = tmp_path / "materialize_progress.pkl"
+    monkeypatch.setattr(mod, "MATERIALIZE_CKPT", str(ckpt_path))
+    half = len(result["triggers"]) // 2
+    log = result["log"]
+    branch_by_id = {b.branch_id: b for b in result["branches"]}
+    mat = Materializer(result["engine"].ps)
+    candidates, rejected, unformed = [], [], {}
+    for i in range(half):
+        trig = result["triggers"][i]
+        b = branch_by_id[trig.branch_id]
+        variants, reason = mat.materialize(trig, b, log)
+        if not variants:
+            unformed[reason] = unformed.get(reason, 0) + 1
+        else:
+            for cand in variants:
+                (candidates if cand.setup.eligible else rejected).append(cand)
+    mod._atomic_pickle({"next_index": half, "candidates": candidates,
+                        "rejected": rejected, "unformed": unformed},
+                       str(ckpt_path))
+
+    # Simulate the restart: a freshly-unpickled result (branches reset to
+    # emitted_candidate_ids=[]) plus the on-disk checkpoint above is exactly
+    # what a post-restart process sees.
+    resumed_result = pickle.loads(pickle.dumps(result))
+    out = mod._materialize_resumable(resumed_result)
+    resumed_ids = sorted(c.candidate_id for c in
+                         out["graph_candidates"] + out["graph_rejected"])
+    resumed_unresolved = {b.branch_id for b in out["branches"]
+                          if not b.emitted_candidate_ids}
+
+    assert resumed_ids == ref_ids
+    assert out["unformed_reasons"] == ref_result["unformed_reasons"]
+    assert resumed_unresolved == ref_unresolved
