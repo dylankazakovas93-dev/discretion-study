@@ -1,0 +1,3 @@
+run_id,timestamp_utc,git_sha,dataset_hash,stage,hypothesis_id,config_hash,parent_run_id,change_reason,train_period,validation_period,test_period,seed,command,status,primary_metric,selected,notes
+STAGE0-REPO-001,2026-07-19T00:00:00Z,770f46e739846cdfd34f33e30cb47713994bb716,,STAGE0,, , ,Repository/component/documentation inspection,,, ,,,complete,,,No empirical calculation or outcome inspection
+STAGE0-TEST-001,2026-07-19T00:00:00Z,770f46e739846cdfd34f33e30cb47713994bb716,,STAGE0,, ,STAGE0-REPO-001,Existing test suite,,, ,,,python3 -m pytest -q,complete,,,185 passed; 105 data-gated skipped; no 10:00 strategy test
