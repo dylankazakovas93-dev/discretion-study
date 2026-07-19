@@ -71,9 +71,29 @@ MATERIALIZE_CKPT_S = 120   # flush a resumable batch at least this often
 # shortfall. Subsequent attempts at this same 15-session window were then
 # repeatedly killed not by OOM but by the container itself silently
 # restarting (uptime resets to ~0, no dmesg trace) -- a third, distinct
-# failure mode, which is what motivated the checkpoint/resume design above.
-WINDOW = dict(start="2025-06-22T22:00:00", end="2025-07-19T03:59:59")  # UTC
-REQUIRED_PRIOR_SESSIONS = 10   # disclosed shortfall vs. the requested 40
+# failure mode, which motivated the checkpoint/resume design above.
+#
+# The checkpoint/resume fix only protects materialize_all (checkpointed in
+# 2-minute batches) and the load/build_primitives/branch_engine sequence as
+# a *whole* (checkpointed once branch_engine finishes). It does NOT protect
+# the inside of branch_engine itself: BranchEngine.run() holds live,
+# deeply-mutated in-loop state (episode/branch objects, signature-dedup
+# indices, keyed/wildcard focus indices) that is not safely checkpointable
+# at an arbitrary bar without a much larger, riskier rewrite of the causal
+# engine's internals -- explicitly out of scope for a "narrowly scoped
+# correction" repair task. Observed container restarts have recurred as
+# often as ~2 minutes apart, shorter than branch_engine's ~35-minute
+# uninterrupted runtime for the 15-session window, so that window was never
+# actually protected by the fix above -- it kept dying before ever reaching
+# a checkpoint. This further reduces the window so branch_engine has a
+# realistic chance of completing inside a single up-window: 3 prior
+# complete sessions (disclosed floor; the actual boundary date typically
+# yields a few more, reported exactly in the run log), starting exactly at
+# that earliest session's true 18:00 ET open -- a much larger disclosed
+# shortfall against the requested 40, made necessary by demonstrated
+# environment instability, not a code or data limitation.
+WINDOW = dict(start="2025-07-02T22:00:00", end="2025-07-19T03:59:59")  # UTC
+REQUIRED_PRIOR_SESSIONS = 3   # disclosed shortfall vs. the requested 40 (floor)
 
 
 def _mem_mb():
