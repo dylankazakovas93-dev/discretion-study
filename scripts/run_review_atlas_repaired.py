@@ -28,9 +28,18 @@ what materialize_all computes -- it is the same Materializer.materialize()
 call, same order, same accumulation, just resumable. See docs/
 ADAPTIVE_GRADING_REPAIR_PROTOCOL.md for why this is an operational repair,
 not a change to the primitive/branch engine's semantics.
+
+Memory: materialize_all's dominant cost turned out to be the per-trigger
+considered-target audit ledger staying live on every retained candidate.
+This runner now streams that ledger to LEDGER_PATH instead (see the
+compute-budget disclosure comment below for the measurement and
+tests/test_materializer_streaming.py for the equivalence proof) and keeps
+REQUIRED_PRIOR_SESSIONS at the full 40.
 """
 from __future__ import annotations
 
+import gzip
+import json
 import os
 import pickle
 import sys
@@ -48,6 +57,7 @@ OUT_DIR = os.path.join("artifacts", "review_week_atlas_2025_07_14_18")
 CKPT = os.path.join(OUT_DIR, "_checkpoint_result_repaired.pkl")
 BRANCH_CKPT = os.path.join(OUT_DIR, "_checkpoint_branch_result.pkl")
 MATERIALIZE_CKPT = os.path.join(OUT_DIR, "_checkpoint_materialize_progress.pkl")
+LEDGER_PATH = os.path.join(OUT_DIR, "considered_targets_repaired.jsonl.gz")
 MATERIALIZE_CKPT_S = 120   # flush a resumable batch at least this often
 
 # Compute-budget disclosure (memory, not time): a first attempt at the
@@ -55,45 +65,51 @@ MATERIALIZE_CKPT_S = 120   # flush a resumable batch at least this often
 # ran ~82 minutes through BranchEngine (224,715 triggers / 59,551 episodes /
 # 267,896 branches) and was then OOM-killed by the kernel during
 # materialize_all in this 16 GB-RAM, no-swap environment (confirmed via
-# dmesg: anon-rss 15.95 GB at kill). A second attempt at 20 prior sessions
-# (25 total; 124,671 triggers / 33,150 episodes / 148,963 branches) was ALSO
-# OOM-killed during materialize_all (confirmed via dmesg: anon-rss 15.93 GB
-# at kill) -- essentially the same ceiling despite roughly half the trigger
-# count, indicating materialize_all's peak RSS is not simply linear in
-# window/trigger count in this environment. A full architecture change to
-# stream/batch materialization instead of holding every candidate object
-# live in memory was judged out of scope for a "narrowly scoped correction"
-# repair task. This run instead uses a further-reduced window: 10 prior
-# complete sessions (15 total), starting exactly at that earliest session's
-# true 18:00 ET open (2025-06-22, a Sunday) -- short of the requested 40,
-# disclosed exactly rather than silently substituted, per the same
-# principle this task applies to any other demonstrated compute-budget
-# shortfall. Subsequent attempts at this same 15-session window were then
-# repeatedly killed not by OOM but by the container itself silently
-# restarting (uptime resets to ~0, no dmesg trace) -- a third, distinct
-# failure mode, which motivated the checkpoint/resume design above.
+# dmesg: anon-rss 15.95 GB at kill). Root cause, confirmed by a 6-session
+# smoke measurement in this repair pass: each trigger's considered-target
+# audit ledger (up to PER_FAMILY_CAP=25 eligible + 25 ineligible rows per
+# family, ~8 families) stayed live on every retained GraphNativeCandidate --
+# roughly 42 KB/candidate on average, dominating materialize_all's growth
+# (590 MB post-branch_engine -> 4.47 GB peak for 24,545 triggers / 90,836
+# candidate variants), which extrapolates past this container's 15 GB ceiling
+# for the full required window. materializer.py now supports
+# ``keep_considered_targets=False`` + ``ledger_sink``: the same rows are
+# still computed and streamed to LEDGER_PATH in the same checkpoint batches
+# as the candidate progress (so the full audit ledger stays reproducible on
+# disk), but are no longer held live on every candidate -- a compact-record
+# fix, not a change to any stop/target/RR/evidence computation (proven
+# byte-identical to the always-resident path by
+# tests/test_materializer_streaming.py on a real one-session window).
 #
-# The checkpoint/resume fix only protects materialize_all (checkpointed in
-# 2-minute batches) and the load/build_primitives/branch_engine sequence as
-# a *whole* (checkpointed once branch_engine finishes). It does NOT protect
-# the inside of branch_engine itself: BranchEngine.run() holds live,
-# deeply-mutated in-loop state (episode/branch objects, signature-dedup
-# indices, keyed/wildcard focus indices) that is not safely checkpointable
-# at an arbitrary bar without a much larger, riskier rewrite of the causal
-# engine's internals -- explicitly out of scope for a "narrowly scoped
-# correction" repair task. Observed container restarts have recurred as
-# often as ~2 minutes apart, shorter than branch_engine's ~35-minute
-# uninterrupted runtime for the 15-session window, so that window was never
-# actually protected by the fix above -- it kept dying before ever reaching
-# a checkpoint. This further reduces the window so branch_engine has a
-# realistic chance of completing inside a single up-window: 3 prior
-# complete sessions (disclosed floor; the actual boundary date typically
-# yields a few more, reported exactly in the run log), starting exactly at
-# that earliest session's true 18:00 ET open -- a much larger disclosed
-# shortfall against the requested 40, made necessary by demonstrated
-# environment instability, not a code or data limitation.
-WINDOW = dict(start="2025-07-02T22:00:00", end="2025-07-19T03:59:59")  # UTC
-REQUIRED_PRIOR_SESSIONS = 3   # disclosed shortfall vs. the requested 40 (floor)
+# Data availability (separate from the memory fix): this environment's
+# licensed Databento file was not present at session start and had to be
+# re-supplied; the fetched range only covers 2026-04-19 (a clean session
+# open) through 2026-07-17, well short of reaching the literal 2025-07-14
+# review week in the original task text and short of a complete 2026-07-18
+# either. Per explicit user direction, the review window here is the last 3
+# complete true CME sessions available in that file (2026-07-13/14/15) rather
+# than a literal 2025 or 2026-07-14..18 date range; REQUIRED_PRIOR_SESSIONS
+# is kept at the full 40 (61 are actually available before that window, not
+# reduced).
+#
+# Restart-safety: this execution environment has been observed to silently
+# restart the whole container mid-run (uptime resets to ~0, process vanishes,
+# no OOM trace, no error) in addition to genuine OOM kills. To make forward
+# progress monotonic under that instability, this script checkpoints twice:
+#   1. immediately after BranchEngine completes (before materialize_all), so a
+#      restart during the (uncheckpointable, single-pass) materialize phase
+#      never forces re-running load/build_primitives/branch_engine;
+#   2. in batches during materialize_all itself (every MATERIALIZE_CKPT_S
+#      seconds), so a restart mid-materialize only loses that batch, not the
+#      whole phase; the streamed ledger flushes at the same batch boundaries.
+# Both are ordinary pickle checkpoints, written via a temp-file + os.replace
+# so a restart mid-write can never leave a corrupt checkpoint (the ledger's
+# gzip-append flush is not equally crash-atomic; a restart mid-flush can
+# leave a trailing partial gzip member, a disclosed limitation of the audit
+# ledger only -- it is never read by evidence/qualification).
+WINDOW = dict(start="2026-04-19T22:00:00", end="2026-07-16T22:00:00")  # UTC
+REVIEW_FIRST_SESSION = "2026-07-13"
+REQUIRED_PRIOR_SESSIONS = 40
 
 
 def _mem_mb():
@@ -130,7 +146,7 @@ def _get_or_build_branch_result():
     print(f"load {round(time.time()-t,1)}s bars={len(bars)}", flush=True)
 
     import pandas as pd
-    review_first_session = pd.Timestamp("2025-07-13").date()
+    review_first_session = pd.Timestamp(REVIEW_FIRST_SESSION).date()
     prior_sessions = distinct_session_dates(bars, before_date=review_first_session)
     review_sessions = [d for d in distinct_session_dates(bars) if d >= review_first_session]
     print(f"prior_sessions={len(prior_sessions)} earliest={prior_sessions[0]} "
@@ -164,12 +180,16 @@ def _materialize_resumable(result):
 
     start_idx = 0
     candidates, rejected, unformed = [], [], {}
+    resumed_occluded_by_tf = None
+    resumed_occluded_tally_seen = None
     if os.path.exists(MATERIALIZE_CKPT):
         t = time.time()
         with open(MATERIALIZE_CKPT, "rb") as fh:
             prog = pickle.load(fh)
         start_idx = prog["next_index"]
         candidates, rejected, unformed = prog["candidates"], prog["rejected"], prog["unformed"]
+        resumed_occluded_by_tf = prog.get("occluded_by_tf")
+        resumed_occluded_tally_seen = prog.get("occluded_tally_seen")
         # Replay the branch.emitted_candidate_ids mutations onto the freshly
         # unpickled branches -- only truthiness is ever read downstream
         # (branch_structural_state), so replay order doesn't matter.
@@ -179,8 +199,26 @@ def _materialize_resumable(result):
               f"next_index={start_idx}/{len(triggers)} candidates={len(candidates)} "
               f"rejected={len(rejected)}  mem_mb={_mem_mb()}", flush=True)
 
-    mat = Materializer(ps)
+    ledger_batch = []
+
+    def _sink(trigger_event_id, rows):
+        ledger_batch.append((trigger_event_id, rows))
+
+    def _flush_ledger():
+        if not ledger_batch:
+            return
+        with gzip.open(LEDGER_PATH, "at") as fh:
+            for tid, rows in ledger_batch:
+                fh.write(json.dumps({"trigger_event_id": tid,
+                                     "considered_targets": rows}) + "\n")
+        ledger_batch.clear()
+
+    mat = Materializer(ps, keep_considered_targets=False, ledger_sink=_sink)
     mat._n = len(candidates) + len(rejected)
+    if resumed_occluded_by_tf is not None:
+        mat.occluded_by_tf = resumed_occluded_by_tf
+    if resumed_occluded_tally_seen is not None:
+        mat._occluded_tally_seen = resumed_occluded_tally_seen
 
     t_last_ckpt = time.time()
     for i in range(start_idx, len(triggers)):
@@ -197,8 +235,14 @@ def _materialize_resumable(result):
                     rejected.append(cand)
         due = time.time() - t_last_ckpt >= MATERIALIZE_CKPT_S
         if due or i == len(triggers) - 1:
+            # Ledger flushed before the candidate-progress checkpoint is
+            # written, so a resume's start_idx never reprocesses a trigger
+            # whose ledger rows are already on disk.
+            _flush_ledger()
             _atomic_pickle({"next_index": i + 1, "candidates": candidates,
-                            "rejected": rejected, "unformed": unformed},
+                            "rejected": rejected, "unformed": unformed,
+                            "occluded_by_tf": dict(mat.occluded_by_tf),
+                            "occluded_tally_seen": set(mat._occluded_tally_seen)},
                            MATERIALIZE_CKPT)
             print(f"materialize progress {i+1}/{len(triggers)} "
                   f"candidates={len(candidates)} rejected={len(rejected)}  "
@@ -208,6 +252,7 @@ def _materialize_resumable(result):
     result["graph_candidates"] = candidates
     result["graph_rejected"] = rejected
     result["unformed_reasons"] = unformed
+    result["occluded_by_tf"] = mat.occluded_by_tf
     return result
 
 

@@ -112,7 +112,17 @@ def resolve_direction(trigger, branch, trig_ev, focus, bar) -> int:
 
 
 class Materializer:
-    def __init__(self, ps):
+    def __init__(self, ps, keep_considered_targets=True, ledger_sink=None):
+        """``keep_considered_targets=False`` drops the (large, per-trigger)
+        considered-target audit rows from each retained candidate instead of
+        holding them live for the whole run -- a compact-record memory repair
+        for large windows, not a semantics change: the same rows are still
+        computed and, if ``ledger_sink`` is given, streamed to it (called as
+        ``ledger_sink(trigger_event_id, rows)``) so the full audit ledger
+        stays reproducible on disk. ``occluded_by_tf`` still accumulates the
+        per-timeframe occlusion counts review_atlas needs, regardless of
+        whether the rows themselves are retained in memory.
+        """
         self.ps = ps
         self.reg = ps.registry
         self.bars = ps.bars
@@ -123,6 +133,20 @@ class Materializer:
         self.seg_last = {}
         for i, b in enumerate(self.bars):
             self.seg_last[b.segment_id] = i
+        self.keep_considered_targets = keep_considered_targets
+        self.ledger_sink = ledger_sink
+        self.occluded_by_tf = {5: 0, 15: 0, 30: 0, 60: 0}
+        # Different branches can share one trigger_event_id with genuinely
+        # different considered-target ledgers (different origin -> different
+        # branch-specific stop/entry); review_atlas's reference scan dedupes
+        # by trigger_event_id over graph_candidates+graph_rejected (eligible-
+        # first order), so on that rare ambiguity it can pick a different
+        # branch's ledger than this tally (which dedupes in trigger-processing
+        # order). Both are single well-defined rules; they can disagree by a
+        # small amount on this purely descriptive count (objects_occluded_in_
+        # considered_ledger in review_atlas's htf_inventory) only -- it is
+        # never read by evidence/qualification/grading.
+        self._occluded_tally_seen = set()
 
     def _entry(self, entry_mode, seq, trig_ev):
         if entry_mode in ("formation_close", "no_fill_continuation"):
@@ -171,6 +195,7 @@ class Materializer:
             self.inv, direction, entry_price, entry_seq, seg, stop, atr,
             branch_target)
         ledger = [_target_row(t) for t in considered]
+        stored_ledger = ledger if self.keep_considered_targets else []
 
         subtypes = [log.get(e).event_subtype for e in trigger.ordered_event_ids]
         trig_tok = f"{trigger.entry_mode.upper()}_{'LONG' if direction>0 else 'SHORT'}_TRIGGER"
@@ -239,12 +264,23 @@ class Materializer:
                 target_anchor_timeframe=tgt_c.timeframe,
                 target_prominence_grade=tgt_c.prominence_grade,
                 selected_target_rank=rank, selection_rule_id=sel_rule,
-                considered_targets=ledger, **stop_a, **target_a_fields)
+                considered_targets=stored_ledger, **stop_a, **target_a_fields)
             branch.emitted_candidate_ids.append(cid)
             variants.append(cand)
 
         if not variants:
             return [], "NO_STRUCTURAL_TARGET"
+        # Tallied/sunk only for triggers that actually produced a candidate --
+        # matching what review_atlas's reference scan sees (it dedupes over
+        # graph_candidates/graph_rejected, which never include a trigger whose
+        # policies all failed to select a target).
+        if trigger.trigger_event_id not in self._occluded_tally_seen:
+            self._occluded_tally_seen.add(trigger.trigger_event_id)
+            for r in ledger:
+                if r["timeframe"] in self.occluded_by_tf and r["occluded_by"]:
+                    self.occluded_by_tf[r["timeframe"]] += 1
+        if self.ledger_sink is not None:
+            self.ledger_sink(trigger.trigger_event_id, ledger)
         return variants, None
 
     def _seq(self, ev):
@@ -259,16 +295,20 @@ class Materializer:
             return None
 
 
-def materialize_all(result):
+def materialize_all(result, keep_considered_targets=True, ledger_sink=None):
     """Materialize graph-native candidates from every trigger state.
 
     Returns dict with `candidates` (eligible, RR-valid), `rejected` (formed but
     <0.5R / wrong side), and `unformed_reasons` (could not form entry/target).
+    ``keep_considered_targets=False`` / ``ledger_sink`` are the same
+    compact-record memory repair as ``Materializer.__init__`` -- default
+    behaviour (full in-memory ledger) is unchanged.
     """
     ps = result["engine"].ps
     log = result["log"]
     branch_by_id = {b.branch_id: b for b in result["branches"]}
-    mat = Materializer(ps)
+    mat = Materializer(ps, keep_considered_targets=keep_considered_targets,
+                       ledger_sink=ledger_sink)
     candidates, rejected = [], []
     unformed = {}
     for trig in result["triggers"]:
@@ -285,4 +325,5 @@ def materialize_all(result):
     result["graph_candidates"] = candidates
     result["graph_rejected"] = rejected
     result["unformed_reasons"] = unformed
+    result["occluded_by_tf"] = mat.occluded_by_tf
     return result

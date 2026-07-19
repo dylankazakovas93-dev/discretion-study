@@ -379,15 +379,27 @@ def htf_inventory(result, start_et, end_et):
         selected = [c for c in result["graph_candidates"]
                    if c.target_anchor_timeframe == tf
                    and in_window(c.setup.entry_ts.tz_convert(ET), start_et, end_et)]
-        occluded = 0
-        seen_trig = set()
-        for c in result["graph_candidates"] + result["graph_rejected"]:
-            if c.trigger_event_id in seen_trig:
-                continue
-            seen_trig.add(c.trigger_event_id)
-            for r in c.considered_targets:
-                if r.get("timeframe") == tf and r.get("occluded_by"):
-                    occluded += 1
+        precomputed = result.get("occluded_by_tf")
+        if precomputed is not None:
+            # Materializer accumulated this per-trigger while building the
+            # considered-target ledger, so it matches the scan below without
+            # requiring every candidate's ledger to stay in memory. The two
+            # can differ by a small amount only in the rare case of two
+            # different branches sharing one trigger_event_id with genuinely
+            # different ledgers -- this dedupes in trigger-processing order,
+            # the scan below in candidates-then-rejected order; both are
+            # single well-defined rules over the same descriptive count.
+            occluded = precomputed.get(tf, 0)
+        else:
+            occluded = 0
+            seen_trig = set()
+            for c in result["graph_candidates"] + result["graph_rejected"]:
+                if c.trigger_event_id in seen_trig:
+                    continue
+                seen_trig.add(c.trigger_event_id)
+                for r in c.considered_targets:
+                    if r.get("timeframe") == tf and r.get("occluded_by"):
+                        occluded += 1
         out[tf] = {
             "completed_candles": len(candles),
             "wick_objects_by_grade": {g: sum(1 for w in wicks if w.prominence_grade == g)
