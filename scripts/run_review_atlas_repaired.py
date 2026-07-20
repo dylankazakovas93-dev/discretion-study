@@ -130,6 +130,31 @@ def _atomic_pickle(obj, path):
     os.replace(tmp, path)
 
 
+def _atomic_pickle_split(result, path):
+    """Write CKPT as three sequential pickle.dump() calls (meta, candidates,
+    rejected) instead of one dump() over the whole ~1.2M-object result dict.
+
+    A single dump() of the full result OOM-killed at the very last step of a
+    ~15.5h run (confirmed via dmesg: anon-rss 15.96GB at kill, right after a
+    materialize phase that peaked at 13.76GB) -- pickle's own transient
+    memo/buffer overhead for one huge heterogeneous call pushed past the
+    ceiling even though nothing else grew. Splitting into three smaller,
+    more homogeneous calls to the same file (read back with three sequential
+    load() calls) writes the identical bytes/content, just with lower peak
+    transient overhead per call.
+    """
+    tmp = path + ".tmp"
+    candidates = result["graph_candidates"]
+    rejected = result["graph_rejected"]
+    meta = {k: v for k, v in result.items()
+            if k not in ("graph_candidates", "graph_rejected")}
+    with open(tmp, "wb") as fh:
+        pickle.dump(meta, fh)
+        pickle.dump(candidates, fh)
+        pickle.dump(rejected, fh)
+    os.replace(tmp, path)
+
+
 def _get_or_build_branch_result():
     if os.path.exists(BRANCH_CKPT):
         t = time.time()
@@ -273,7 +298,7 @@ def main():
     n_total = len(result["graph_candidates"]) + len(result["graph_rejected"])
     print(f"pre-outcome check: {n_unevaluated}/{n_total} UNEVALUATED", flush=True)
 
-    _atomic_pickle(result, CKPT)
+    _atomic_pickle_split(result, CKPT)
     print(f"checkpoint written: {CKPT} ({os.path.getsize(CKPT)} bytes)  "
          f"mem_mb={_mem_mb()}", flush=True)
 

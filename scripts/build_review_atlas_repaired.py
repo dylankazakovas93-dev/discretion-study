@@ -38,8 +38,15 @@ REVIEW_FIRST_SESSION = pd.Timestamp("2025-07-13").date()
 
 
 def load_checkpoint():
+    # run_review_atlas_repaired.py writes CKPT as three sequential
+    # pickle.dump() calls (meta, graph_candidates, graph_rejected) instead of
+    # one dump() over the whole ~1.2M-object result -- a memory repair for a
+    # single-dump OOM at write time, not a format change in content.
     with open(CKPT, "rb") as fh:
-        return pickle.load(fh)
+        result = pickle.load(fh)
+        result["graph_candidates"] = pickle.load(fh)
+        result["graph_rejected"] = pickle.load(fh)
+    return result
 
 
 def _cand_id_row(c):
