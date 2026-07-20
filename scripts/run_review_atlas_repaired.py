@@ -45,6 +45,8 @@ import pickle
 import sys
 import time
 
+import pandas as pd
+
 sys.stdout.reconfigure(line_buffering=True)
 
 from discretion.data.loader import load_front_month, DATA_FILES
@@ -58,6 +60,7 @@ CKPT = os.path.join(OUT_DIR, "_checkpoint_result_repaired.pkl")
 BRANCH_CKPT = os.path.join(OUT_DIR, "_checkpoint_branch_result.pkl")
 MATERIALIZE_CKPT = os.path.join(OUT_DIR, "_checkpoint_materialize_progress.pkl")
 LEDGER_PATH = os.path.join(OUT_DIR, "considered_targets_repaired.jsonl.gz")
+RUN_METADATA = os.path.join(OUT_DIR, "_run_metadata.json")
 MATERIALIZE_CKPT_S = 120   # flush a resumable batch at least this often
 
 # Compute-budget disclosure (memory, not time): a first attempt at the
@@ -170,7 +173,6 @@ def _get_or_build_branch_result():
     bars = load_front_month(data_file, **WINDOW)
     print(f"load {round(time.time()-t,1)}s bars={len(bars)}", flush=True)
 
-    import pandas as pd
     review_first_session = pd.Timestamp(REVIEW_FIRST_SESSION).date()
     prior_sessions = distinct_session_dates(bars, before_date=review_first_session)
     review_sessions = [d for d in distinct_session_dates(bars) if d >= review_first_session]
@@ -179,6 +181,22 @@ def _get_or_build_branch_result():
           f"{review_sessions}  mem_mb={_mem_mb()}", flush=True)
     assert len(prior_sessions) >= REQUIRED_PRIOR_SESSIONS, \
         f"only {len(prior_sessions)} prior sessions loaded"
+
+    review_start_et = f"{review_sessions[0]} 18:00:00"
+    review_end_et = f"{review_sessions[-1] + pd.Timedelta(days=1)} 17:59:59"
+    run_metadata = {
+        "data_window_utc": WINDOW,
+        "review_first_session": REVIEW_FIRST_SESSION,
+        "review_sessions": [str(d) for d in review_sessions],
+        "review_start_et": review_start_et, "review_end_et": review_end_et,
+        "required_prior_sessions": REQUIRED_PRIOR_SESSIONS,
+        "actual_prior_sessions": len(prior_sessions),
+        "prior_sessions_earliest": str(prior_sessions[0]),
+        "prior_sessions_latest": str(prior_sessions[-1]),
+    }
+    with open(RUN_METADATA, "w") as fh:
+        json.dump(run_metadata, fh, indent=2)
+    print(f"run metadata written: {RUN_METADATA}", flush=True)
 
     t = time.time()
     ps = build_primitives(bars)
