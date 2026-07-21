@@ -7,6 +7,25 @@ from `discretion.primitives.*` and never imported by `branch_engine`,
 `materializer`, or `pipeline` — the existing candidate/evidence pipeline is
 untouched and does not run on these new primitives.
 
+## Correction: RB causal lifecycle bug (fixed before this report)
+
+Dylan's review of the first version of this report caught an impossible
+timestamp: `RB2-000009` showed `deactivation: 19:40 ET` before
+`activation: 19:50 ET`. Root cause: a newly confirmed RB was appended to
+the causally-processed `active` list in the same outer-loop iteration that
+detected its source candle, so it was tracked against every candle between
+the source and its real confirming candle — before it had actually
+activated. This was a processing-order bug, not a report-formatting issue.
+
+Fixed with a pending-activation queue (`primitive_reset/rejection_block.py`):
+a confirmed RB is scheduled to start tracking at `confirming_index + 1` and
+is never processed against any candle from its source through the confirming
+candle itself. The frozen confirmation/MFE/ATR/traversal/lifetime
+definitions were **not** touched — only *when* a confirmed record joins the
+tracked list changed. See "Validation" below for the real-data proof (zero
+timestamp-order violations across all 3,709 confirmed RBs) and "Tests" for
+the 10 new synthetic proofs plus a real-NQU6 invariant check.
+
 ## Repository integrity
 
 - Branch: `claude/graph-native-candidate-engine-v2`
@@ -183,28 +202,35 @@ in the week.)
    `19:51 ET` (5 candles from formation) — inversion through `29888.75`,
    activating a bullish iFVG.
 
-### RB confirmed examples (5, spanning wick/body ratio and timeframe)
+### RB confirmed examples (5, spanning wick/body ratio and timeframe — causally corrected)
 
-1. **RB2-000068** — 1m bearish. Open NQU6 on 1m at `18:59 ET`. Source OHLC
-   `(29913.25, 29914.25, 29909.50, 29910.25)`, wick/body 0.333. Confirmed on
-   confirming candle 1 (MFE 32.75 pts, ATR 9.71). Activated `19:00 ET`,
-   deactivated `DEACTIVATED_CLOSE_THROUGH` at `20:02 ET`.
-2. **RB2-000032** — 3m bearish. Open NQU6 on 3m at `19:45 ET`. Wick/body
-   0.762. Confirmed on candle 1 (MFE 49.0 pts, ATR 16.34). Activated
-   `19:48 ET`, deactivated `DEACTIVATED_CLOSE_THROUGH` at `20:03 ET`.
-3. **RB2-000009** — 5m bearish. Open NQU6 on 5m at `19:35 ET`. Wick/body
-   1.444. Confirmed on candle 3 (MFE 43.25 pts, ATR 24.30). Activated
-   `19:50 ET`, deactivated `DEACTIVATED_OVERSHOOT_LIMIT` at `19:40 ET`
-   (data-index note: deactivation on a 5m candle can carry an ET timestamp
-   earlier than activation's own candle close — both are correct causal
-   candle-close instants on the 5m series; not a lookahead).
-4. **RB2-000034** — 15m bullish. Open NQU6 on 15m at `2026-07-13 04:00 ET`.
-   Wick/body 2.0. Confirmed on candle 2 (MFE 88.75 pts, ATR 55.53).
-   Activated `04:30 ET`, deactivated `DEACTIVATED_CLOSE_THROUGH` at
-   `09:45 ET`.
-5. **RB2-000065** — 30m bullish. Open NQU6 on 30m at `2026-07-13 23:30 ET`.
-   Wick/body 5.232. Confirmed on candle 3 (MFE 139.75 pts, ATR 89.03).
-   Activated `2026-07-14 01:00 ET`, `EXPIRED_ACTIVE_8H` at `09:00 ET`.
+Each line reports `source_ts < activation_ts <= first_tap_ts/deactivation_ts`
+explicitly so the fix is directly checkable against every example.
+
+1. **RB2-000068** — 1m bearish. Open NQU6 on 1m at source `18:59 ET`. Source
+   OHLC `(29913.25, 29914.25, 29909.50, 29910.25)`, wick/body 0.333.
+   Confirmed on confirming candle 1 (MFE 32.75 pts, ATR 9.71) →
+   **activation `19:00 ET`**. First tap `20:01 ET`, deactivated
+   `DEACTIVATED_CLOSE_THROUGH` at `20:02 ET`.
+2. **RB2-000032** — 3m bearish. Open NQU6 on 3m at source `19:45 ET`.
+   Wick/body 0.762. Confirmed on candle 1 (MFE 49.0 pts, ATR 16.34) →
+   **activation `19:48 ET`**. First tap `19:54 ET`, deactivated
+   `DEACTIVATED_CLOSE_THROUGH` at `20:03 ET`.
+3. **RB2-000009** — 5m bearish. Open NQU6 on 5m at source `19:35 ET`.
+   Wick/body 1.444. Confirmed on candle 3 (MFE 43.25 pts, ATR 24.30) →
+   **activation `19:50 ET`** (previously misreported as `19:50 ET`
+   activation with an impossible `19:40 ET` deactivation — now corrected).
+   First tap and deactivation both land on the very next 5m candle,
+   `19:55 ET` (`DEACTIVATED_OVERSHOOT_LIMIT`).
+4. **RB2-000034** — 15m bullish. Open NQU6 on 15m at source
+   `2026-07-13 04:00 ET`. Wick/body 2.0. Confirmed on candle 2 (MFE 88.75
+   pts, ATR 55.53) → **activation `04:30 ET`**. First tap and deactivation
+   both `09:45 ET` (`DEACTIVATED_CLOSE_THROUGH`).
+5. **RB2-000065** — 30m bullish. Open NQU6 on 30m at source
+   `2026-07-13 23:30 ET`. Wick/body 5.232. Confirmed on candle 3 (MFE 139.75
+   pts, ATR 89.03) → **activation `2026-07-14 01:00 ET`**. Never tapped;
+   `EXPIRED_UNTOUCHED_8H` at `09:00 ET` (8h measured from activation, not
+   from source).
 
 ### RB rejected examples (3 distinct mechanical reasons — all that exist)
 
@@ -224,22 +250,55 @@ in the week.)
 (Only three distinct mechanical rejection reasons are implemented; five was
 not achievable and none were fabricated.)
 
+## Validation (RB causal-lifecycle correction)
+
+Computed across all 3,709 confirmed RBs, all 6 governing timeframes, the
+actual NQU6 audit run:
+
+| metric | value |
+|---|---:|
+| confirmed RBs | 3,709 |
+| confirmed RBs with a recorded first tap | 3,185 |
+| confirmed RBs with a recorded deactivation | 3,709 |
+| minimum activation → first-tap duration | 1 minute |
+| minimum activation → deactivation duration | 1 minute |
+| **timestamp-order violations** | **0** |
+
+"Timestamp-order violation" = `source_ts >= activation_ts`, or
+`first_tap_ts < activation_ts` (when a tap exists), or `deactivation_ts <
+activation_ts` (when a deactivation exists). Every confirmed RB in the real
+audit satisfies `source_ts < activation_ts <= first_tap_ts` and
+`activation_ts <= deactivation_ts`; the minimum 1-minute gaps are exactly
+what's expected on the 1m series (tracking cannot begin before the candle
+immediately after confirmation), and every higher timeframe's minimum is at
+least one of its own candles.
+
 ## Tests
 
 ```
 PYTHONPATH=src python3 -m pytest tests/test_primitive_reset.py -v
 ```
-52 collected, 52 passed, 0 failed, 0 skipped, 0.78s. Per Part 10's instruction,
-only this new, fast, synthetic-data suite was run for this task — the
-complete slow historical suite was not run.
+62 collected, 62 passed, 0 failed, 0 skipped, 3.24s (52 from the original
+Part-10 suite, unchanged and still passing, plus 10 new tests for the RB
+causal-lifecycle fix: activation-never-after-first-tap/deactivation,
+no-event-before-activation, confirmation-on-candle-{1,2,3}-begins-tracking-
+on-the-next-candle, confirmation-candle-cannot-tap-or-invalidate-itself,
+pre-confirmation-traversal-cannot-leak-into-post-activation, rejected-
+candidates-never-enter-the-active-set, expiry-measured-from-activation, a
+segment-boundary edge case, and a real-NQU6-data invariant check asserting
+zero violations across all 3,709 confirmed RBs). Per Part 10's instruction,
+only this fast, synthetic-plus-invariant-check suite was run for this task —
+the complete slow historical suite was not run.
 
 ## Honest verdict
 
 **PRIMITIVE_RESET_READY_WITH_LIMITATIONS**
 
 The exact FVG/iFVG/RB rules, the common traversal contract, the 8h/no-expiry
-lifetime split, and every Part-10 synthetic proof pass. Limitations, so
-Dylan inspects before anything downstream is unblocked:
+lifetime split, every Part-10 synthetic proof, and the RB causal-lifecycle
+correction (zero timestamp-order violations across all 3,709 confirmed RBs
+in the real audit) pass. Limitations, so Dylan inspects before anything
+downstream is unblocked:
 
 1. Requested audit window is short one final hour (`17:00`–`17:59:59 ET` on
    `2026-07-17`) — the licensed file ends there; disclosed, not fabricated.
