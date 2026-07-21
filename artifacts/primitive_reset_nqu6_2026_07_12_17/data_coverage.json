@@ -1,0 +1,35 @@
+{
+  "requested_start_et": "2026-07-12 18:00:00-04:00",
+  "requested_end_et": "2026-07-17 17:59:59-04:00",
+  "symbol": "NQU6",
+  "full_symbol_coverage_first_et": "2026-07-12 18:00:00-04:00",
+  "full_symbol_coverage_last_et": "2026-07-17 16:59:00-04:00",
+  "data_present": true,
+  "rows_in_requested_window": 6900,
+  "actual_window_first_et": "2026-07-12 18:00:00-04:00",
+  "actual_window_last_et": "2026-07-17 16:59:00-04:00",
+  "missing_at_window_end": "0 days 01:00:59",
+  "missing_at_window_start": null,
+  "internal_gaps": [
+    {
+      "after": "2026-07-13 16:59:00-04:00",
+      "before": "2026-07-13 18:00:00-04:00",
+      "gap": "0 days 01:01:00"
+    },
+    {
+      "after": "2026-07-14 16:59:00-04:00",
+      "before": "2026-07-14 18:00:00-04:00",
+      "gap": "0 days 01:01:00"
+    },
+    {
+      "after": "2026-07-15 16:59:00-04:00",
+      "before": "2026-07-15 18:00:00-04:00",
+      "gap": "0 days 01:01:00"
+    },
+    {
+      "after": "2026-07-16 16:59:00-04:00",
+      "before": "2026-07-16 18:00:00-04:00",
+      "gap": "0 days 01:01:00"
+    }
+  ]
+}
