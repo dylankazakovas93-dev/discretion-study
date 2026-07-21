@@ -769,3 +769,215 @@ def test_detectors_run_on_every_governing_timeframe(tf):
     ifvgs = detect_ifvgs(bars, tf, fvgs, atr, series, reg)
     rbs = detect_rejection_blocks(bars, tf, series, atr, reg)
     assert isinstance(fvgs, list) and isinstance(ifvgs, list) and isinstance(rbs, list)
+
+
+# ---------------------------------------------------------------------------
+# RB causal-lifecycle correction: activation must never postdate a tracked
+# event. Reproduces the exact reported defect (RB2-000009: deactivation
+# 19:40 ET before activation 19:50 ET) and proves the pending-activation-
+# queue fix (rejection_block.py) generally.
+# ---------------------------------------------------------------------------
+
+def _assert_rb_causal_invariants(rb):
+    if not rb.confirmed:
+        return
+    assert rb.source_ts < rb.activation_ts, (rb.id, rb.source_ts, rb.activation_ts)
+    if rb.first_tap_ts is not None:
+        assert rb.activation_ts <= rb.first_tap_ts, (rb.id, rb.activation_ts, rb.first_tap_ts)
+    if rb.deactivation_ts is not None:
+        assert rb.activation_ts <= rb.deactivation_ts, (rb.id, rb.activation_ts, rb.deactivation_ts)
+
+
+def _confirmed_rb_with_early_touch_geometry(k):
+    """Bullish RB confirmed on window-position ``k`` (1, 2 or 3). Every
+    scrape candle from the source through the confirming candle *itself*
+    also geometrically reaches into the zone [zlo, zhi] -- if tracking ever
+    started before activation (the reported bug), one of those bars would
+    wrongly become ``first_tap_ts``. The candle immediately after
+    confirmation also reaches the zone, so the *correct* first_tap_ts is
+    unambiguous: exactly that candle, never earlier.
+    """
+    bars, atr_val = seeded_atr()
+    body, wick = 4.0, 4.0
+    src_open, src_close = 100.0, 100.0 + body
+    src_low = src_open - wick
+    zlo, zhi = src_low, min(src_open, src_close)  # [96, 100]
+    bars += mk_bars([(src_open, src_close, src_low, src_close)],
+                    start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    src_seq = len(bars) - 1
+    proximal = zhi  # body_lo, per detect_rejection_blocks' bullish convention
+    # atr_val is the preamble's own ATR; atr_at_source_close (what the
+    # detector actually thresholds against) drifts from it via Wilder
+    # smoothing once the source candle's own true range is folded in -- use
+    # a generous multiplier so the threshold is unambiguously crossed
+    # regardless of that drift.
+    target = proximal + 3.0 * atr_val
+
+    window = []
+    for pos in range(1, 4):
+        if pos < k:
+            # scrape: dips into the zone, no confirm, no invalidation
+            window.append((zhi + 0.1, zhi + 0.2, zhi - 0.3, zhi))
+        elif pos == k:
+            # confirming candle: reaches the MFE target AND dips into the
+            # zone on the same bar -- must never be recorded as a tap.
+            window.append((zhi + 0.1, target, zhi - 0.3, zhi + 0.05))
+        else:
+            window.append((zhi, zhi + 0.1, zhi - 0.1, zhi))  # unused (loop breaks at k)
+    bars += mk_bars(window[:k], start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    confirming_ts = bars[-1].ts_et
+    # candle j+1: also reaches the zone -- this must be the recorded tap.
+    bars += mk_bars([(zhi, zhi + 0.1, zhi - 0.3, zhi)], start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    post_confirm_ts = bars[-1].ts_et
+    bars += mk_bars(flat_preamble(5, zhi, 2), start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+    rb = [r for r in rbs if r.source_seq == src_seq and r.direction == "bullish"][0]
+    return rb, confirming_ts, post_confirm_ts
+
+
+@pytest.mark.parametrize("k", [1, 2, 3])
+def test_confirmation_begins_tracking_on_the_following_candle(k):
+    """Items 4/5/6: confirmation on window-position k begins tracking on
+    the very next candle (k+1), never on the confirming candle itself."""
+    rb, confirming_ts, post_confirm_ts = _confirmed_rb_with_early_touch_geometry(k)
+    assert rb.confirmed and rb.confirming_candle_number == k
+    assert rb.activation_ts == confirming_ts
+    assert rb.first_tap_ts == post_confirm_ts
+    assert rb.first_tap_ts != rb.activation_ts
+    _assert_rb_causal_invariants(rb)
+
+
+def test_confirmation_candle_cannot_invalidate_or_tap_the_new_rb():
+    """Item 7: the confirming candle's own geometry (which also dips into
+    the zone in this construction) must never be attributed as a tap."""
+    rb, confirming_ts, post_confirm_ts = _confirmed_rb_with_early_touch_geometry(2)
+    assert rb.first_tap_ts != confirming_ts
+    assert rb.deactivation_ts != confirming_ts or rb.deactivation_ts is None
+
+
+def test_pre_confirmation_traversal_cannot_appear_as_post_activation_event():
+    """Item 8: scrape candles before confirmation (which geometrically
+    touch the zone) never become first_tap_ts -- only the correct
+    post-activation candle does."""
+    rb, confirming_ts, post_confirm_ts = _confirmed_rb_with_early_touch_geometry(3)
+    assert rb.first_tap_ts == post_confirm_ts
+    _assert_rb_causal_invariants(rb)
+
+
+def test_activation_never_after_first_tap_or_deactivation():
+    """Items 1/2/3: general invariant across a spread of confirmation
+    speeds and directions."""
+    for k in (1, 2, 3):
+        rb, _, _ = _confirmed_rb_with_early_touch_geometry(k)
+        _assert_rb_causal_invariants(rb)
+    for direction in ("bullish", "bearish"):
+        bars, src_seq, _ = _rb_with_mfe(direction, 1.6, 2)
+        reg = ResetRegistry()
+        series = candle_series(bars, 1)
+        atr = atr_series(series)
+        rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+        rb = [r for r in rbs if r.source_seq == src_seq and r.direction == direction][0]
+        _assert_rb_causal_invariants(rb)
+
+
+def test_rejected_candidates_never_enter_active_set():
+    """Item 9: a candidate that never confirms must never carry activation/
+    first-tap/deactivation state, and must not appear as `active` at any
+    point during detection."""
+    bars, src_seq, atr_val = _rb_with_mfe("bullish", 1.6, None)  # never confirms
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+    r = [x for x in rbs if x.source_seq == src_seq and x.direction == "bullish"][0]
+    assert not r.confirmed
+    assert r.activation_ts is None
+    assert r.first_tap_ts is None
+    assert r.deactivation_ts is None
+
+
+def test_expiry_measured_from_activation_not_source_candle():
+    """Item 10: the 8h lifetime clock starts at activation_ts, not
+    source_ts -- confirmed here by checking the elapsed span at expiry."""
+    bars, src_seq, atr_val = _rb_with_mfe("bullish", 1.6, 2)
+    filler = mk_bars([(200, 201, 199, 200)] * 500, start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    bars += filler
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+    r = [x for x in rbs if x.source_seq == src_seq and x.direction == "bullish"][0]
+    assert r.deactivation_reason == "EXPIRED_UNTOUCHED_8H"
+    elapsed_from_activation = r.deactivation_ts - r.activation_ts
+    elapsed_from_source = r.deactivation_ts - r.source_ts
+    assert elapsed_from_activation >= pd.Timedelta(hours=8)
+    assert elapsed_from_source > elapsed_from_activation
+    _assert_rb_causal_invariants(r)
+
+
+def test_segment_boundary_cannot_create_backward_timestamps():
+    """Item 11: a contract roll landing between the confirming candle and
+    what would have been its first tracked candle must finalize the RB at
+    (or after) activation_ts, never before."""
+    bars, atr_val = seeded_atr()
+    body, wick = 4.0, 4.0
+    src_open, src_close = 100.0, 100.0 + body
+    src_low = src_open - wick
+    bars += mk_bars([(src_open, src_close, src_low, src_close)],
+                    start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    src_seq = len(bars) - 1
+    proximal = min(src_open, src_close)
+    target = proximal + 3.0 * atr_val  # see multiplier note above
+    # confirms on window-position 1
+    bars += mk_bars([(proximal, target, proximal - 0.1, proximal + 0.05)],
+                    start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    # segment rolls on the very next candle (new contract segment_id)
+    roll_bars = mk_bars([(proximal, proximal + 0.1, proximal - 0.1, proximal)] * 3,
+                        start=bars[-1].ts_et + pd.Timedelta(minutes=1), segment_id=1)
+    bars += roll_bars
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+    r = [x for x in rbs if x.source_seq == src_seq and x.direction == "bullish"][0]
+    assert r.confirmed
+    assert r.deactivation_reason == "DATA_END_ACTIVE"
+    assert r.deactivation_ts == r.activation_ts  # no same-segment candle ever tracked it
+    _assert_rb_causal_invariants(r)
+
+
+def test_real_nqu6_audit_rb_timestamp_order_invariant():
+    """Item 12: every confirmed RB produced by the actual NQU6 audit
+    (2026-07-12 18:00 ET .. available data on 2026-07-17) satisfies the
+    ordering invariants, with zero violations."""
+    import sys
+    sys.path.insert(0, "scripts")
+    import primitive_reset_audit as pra
+    bars, coverage = pra.load_symbol_bars(pra.DATA_FILE, pra.SYMBOL, pra.REQ_START_ET, pra.REQ_END_ET)
+    if not bars:
+        pytest.skip("raw data absent")
+    violations = 0
+    n_confirmed = n_with_tap = n_deactivated = 0
+    for tf in pra.TIMEFRAMES:
+        reg = ResetRegistry()
+        series = candle_series(bars, tf)
+        atr = atr_series(series)
+        rbs = detect_rejection_blocks(bars, tf, series, atr, reg)
+        for r in rbs:
+            if not r.confirmed:
+                continue
+            n_confirmed += 1
+            if r.first_tap_ts is not None:
+                n_with_tap += 1
+            if r.deactivation_ts is not None:
+                n_deactivated += 1
+            try:
+                _assert_rb_causal_invariants(r)
+            except AssertionError:
+                violations += 1
+    assert n_confirmed > 0
+    assert violations == 0

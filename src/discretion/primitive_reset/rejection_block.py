@@ -70,10 +70,37 @@ def _lifetime_check(tf: int, activation_ts, now_ts, touched: bool) -> str | None
 
 
 def detect_rejection_blocks(bars, tf: int, series, atr, registry) -> list[RBCandidateRecord]:
+    """Causally safe two-stage tracking (pending-activation queue, spec
+    option B): a candidate confirmed on candle ``j`` (the confirming candle
+    itself) is only scheduled to *start* being tracked at candle ``j + 1`` --
+    it is never processed against any candle from its own source candle
+    through ``j`` inclusive. This is what guarantees
+    ``source_ts < activation_ts <= first_tap_ts/deactivation_ts`` for every
+    confirmed RB; the frozen confirmation/MFE lookahead computation itself is
+    unchanged (it still reads candles ``i+1..i+3`` to decide *whether and
+    when* confirmation happens -- only when the resulting object joins the
+    causally-processed ``active`` list changes).
+    """
     out: list[RBCandidateRecord] = []
     active: list[RBCandidateRecord] = []
+    # index (the first candle a confirmed RB may be tracked against) -> [recs]
+    pending_by_start_index: dict[int, list[RBCandidateRecord]] = {}
 
     for i, c in enumerate(series):
+        # 0) activate anything scheduled to start tracking at this index --
+        # added to `active` before step 1 so it's tracked against candle i
+        # itself (the first candle strictly after its confirmation candle).
+        starting = pending_by_start_index.pop(i, [])
+        for rb in starting:
+            if c.segment_id != rb.segment_id:
+                # confirmation candle was the last of its segment; there is
+                # no same-segment candle to ever track this RB against.
+                rb.deactivation_ts = rb.activation_ts
+                rb.deactivation_reason = "DATA_END_ACTIVE"
+                rb.active = False
+                continue
+            active.append(rb)
+
         # 1) advance confirmed/active RBs under the common traversal contract
         still: list[RBCandidateRecord] = []
         for rb in active:
@@ -170,6 +197,7 @@ def detect_rejection_blocks(bars, tf: int, series, atr, registry) -> list[RBCand
                     rec.confirming_candle_number = k
                     rec.activation_ts = candle_ts_et(wbar)
                     rec.active = True
+                    confirming_index = i + k  # == j: the confirming candle's own index
                     break
                 invalidated = (wbar.close < zlo) if direction == "bullish" else (wbar.close > zhi)
                 if invalidated:
@@ -184,12 +212,23 @@ def detect_rejection_blocks(bars, tf: int, series, atr, registry) -> list[RBCand
             registry.register_rb(rec)
             out.append(rec)
             if rec.confirmed:
-                active.append(rec)
+                # Never tracked against its own source candle, any scrape
+                # candle, or the confirming candle itself -- tracking starts
+                # strictly at the candle after confirmation closes.
+                start_index = confirming_index + 1
+                pending_by_start_index.setdefault(start_index, []).append(rec)
 
     if series:
         last_ts = candle_ts_et(series[-1])
         for rb in active:
             rb.deactivation_ts = last_ts
+            rb.deactivation_reason = "DATA_END_ACTIVE"
+            rb.active = False
+    # Any RB confirmed on the series' final candle has no candle j+1 to ever
+    # track it against -- data simply ended at the instant it activated.
+    for pending_list in pending_by_start_index.values():
+        for rb in pending_list:
+            rb.deactivation_ts = rb.activation_ts
             rb.deactivation_reason = "DATA_END_ACTIVE"
             rb.active = False
     return out
