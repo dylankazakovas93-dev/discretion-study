@@ -1,0 +1,16 @@
+{
+  "pre_outcome_manifest_hash": "25e1ba920d0c1d62e186789dea11c2549df4613fde68ede9b9dc1083ec883675",
+  "superseded_manifest_hash_path": "artifacts/review_week_atlas_2025_07_14_18/example_manifest_pre_outcome.sha256",
+  "n_charts": 95,
+  "n_candidates_in_week": 36136,
+  "n_rejected_in_week": 24416,
+  "n_dedup_triggers_in_week_diagnostic": 12792,
+  "n_one_trigger_one_policy_scored": 31042,
+  "true_prior_sessions_before_review_week": 61,
+  "window": {
+    "start": "2026-07-13 18:00:00-04:00",
+    "end": "2026-07-16 17:59:59-04:00"
+  },
+  "staged_finalization": true,
+  "checkpoint_manifest": "artifacts/review_week_atlas_2025_07_14_18/_checkpoint_manifest.json"
+}
