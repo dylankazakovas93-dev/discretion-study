@@ -47,9 +47,33 @@ def atr_series(series) -> list[float | None]:
 def candle_ts_et(candle):
     """ET timestamp usable for elapsed-time lifetime math, for either a raw
     1m ``Bar`` (``ts_et``) or an aggregated ``HTFBar`` (``close_ts``, an ET
-    string -- the timestamp at which the candle became knowable)."""
+    string -- the timestamp at which the candle became knowable). This is
+    the internal causal-availability instant and is what every detector
+    (FVG/iFVG/RB) stores on its records -- untouched, still correct for
+    elapsed-time/ordering math."""
     ts_et = getattr(candle, "ts_et", None)
     if ts_et is not None:
         return ts_et
     import pandas as pd
     return pd.Timestamp(candle.close_ts)
+
+
+def candle_open_ts_et(candle):
+    """Display-only helper: the candle's own OPEN time, i.e. how a real
+    chart plots/labels it (a candle "at 03:45" is the one spanning
+    03:45-03:59, not the one whose 15m bucket closes at 04:00).
+
+    For a raw 1m ``Bar``, ``ts_et`` already *is* the open time (Bar docs:
+    "Bar-open timestamp"), so this equals ``candle_ts_et``. For an
+    aggregated ``HTFBar``, ``candle_ts_et`` returns ``close_ts`` (the
+    causal-availability instant, one full bucket later than the open) --
+    reporting/audit code must use *this* helper instead when telling a
+    human where to look on their own chart. Never used for causal
+    decision-making; every internal comparison stays on the availability
+    timestamp above, which this never touches.
+    """
+    open_ts = getattr(candle, "open_ts", None)
+    if open_ts is not None:
+        import pandas as pd
+        return pd.Timestamp(open_ts)
+    return candle_ts_et(candle)

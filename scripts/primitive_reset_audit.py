@@ -140,9 +140,12 @@ def _rb_row(r):
         "source_seq": r.source_seq, "source_ts_et": r.source_ts,
         "source_open": r.source_ohlc[0], "source_high": r.source_ohlc[1],
         "source_low": r.source_ohlc[2], "source_close": r.source_ohlc[3],
-        "relevant_wick_length": r.relevant_wick_length, "real_body_length": r.real_body_length,
+        "relevant_wick_length": r.relevant_wick_length,
+        "opposite_wick_length": r.opposite_wick_length,
+        "real_body_length": r.real_body_length,
         "body_was_zero": r.body_was_zero, "total_range": r.total_range,
         "wick_body_ratio": r.wick_body_ratio, "wick_range_ratio": r.wick_range_ratio,
+        "dominant_wick_ratio": r.dominant_wick_ratio,
         "atr_at_source_close": r.atr_at_source_close,
         "zone_lo": r.zone_lo, "zone_hi": r.zone_hi,
         "mfe_after_1": r.mfe_after_1, "mfe_after_2": r.mfe_after_2, "mfe_after_3": r.mfe_after_3,
@@ -167,6 +170,7 @@ def main():
         return
 
     all_fvgs, all_ifvgs, all_rbs = [], [], []
+    all_doji_blocked, all_equal_wick, all_precedence_suppressed = [], [], []
     per_tf_counts = {}
     for tf in TIMEFRAMES:
         reg = ResetRegistry()
@@ -178,10 +182,16 @@ def main():
         all_fvgs += fvgs
         all_ifvgs += ifvgs
         all_rbs += rbs
+        all_doji_blocked += reg.doji_blocked_fvgs
+        all_equal_wick += reg.equal_wick_ambiguous_rbs
+        all_precedence_suppressed += reg.precedence_suppressed_rbs
         per_tf_counts[tf] = {
             "n_completed_candles": len(series), "n_fvgs": len(fvgs),
             "n_ifvgs": len(ifvgs), "n_rb_candidates": len(rbs),
             "n_rb_confirmed": sum(1 for r in rbs if r.confirmed),
+            "n_fvg_doji_blocked": len(reg.doji_blocked_fvgs),
+            "n_rb_equal_wick_ambiguous": len(reg.equal_wick_ambiguous_rbs),
+            "n_rb_precedence_suppressed": len(reg.precedence_suppressed_rbs),
         }
 
     import csv as csvmod
@@ -208,6 +218,14 @@ def main():
               list(rb_confirmed_rows[0].keys()) if rb_confirmed_rows else ["id"])
     write_csv(os.path.join(OUT, "rb_rejected_candidates.csv"), rb_rejected_rows,
               list(rb_rejected_rows[0].keys()) if rb_rejected_rows else ["id"])
+
+    # diagnostic-only inventories (never SETUP_ELIGIBLE / never an active RB)
+    write_csv(os.path.join(OUT, "fvg_doji_blocked.csv"), all_doji_blocked,
+              list(all_doji_blocked[0].keys()) if all_doji_blocked else ["timeframe"])
+    write_csv(os.path.join(OUT, "rb_equal_wick_ambiguous.csv"), all_equal_wick,
+              list(all_equal_wick[0].keys()) if all_equal_wick else ["timeframe"])
+    write_csv(os.path.join(OUT, "rb_precedence_suppressed.csv"), all_precedence_suppressed,
+              list(all_precedence_suppressed[0].keys()) if all_precedence_suppressed else ["timeframe"])
 
     # ATR-bin summary (Part 2)
     bin_rows = []
@@ -268,44 +286,71 @@ def main():
         return out[:n]
 
     def pick_ifvg_examples(ifvgs, n=5):
+        # Audit-example selection rule only (not a universal FVG threshold,
+        # spec Part 3): prefer a parent width >= 0.20 ATR per speed bucket
+        # where one exists, so the visual audit doesn't default to a
+        # near-invisible micro-gap parent when a clearer one is available.
         by_speed = {}
         for iv in ifvgs:
             by_speed.setdefault(iv.inversion_speed_bucket, []).append(iv)
         out = []
         for bucket in ("1_candles", "2_candles", "3_candles", "4_candles", "5plus_candles"):
-            if bucket in by_speed and by_speed[bucket]:
-                out.append(by_speed[bucket][0])
+            items = by_speed.get(bucket, [])
+            wide = [x for x in items if (x.parent_width_atr or 0) >= 0.20]
+            pick = wide[0] if wide else (items[0] if items else None)
+            if pick is not None:
+                out.append(pick)
             if len(out) >= n:
                 break
         return out[:n]
 
-    RB_RATIO_BINS = ((0.20, 0.5), (0.5, 1.0), (1.0, 2.0), (2.0, 5.0), (5.0, float("inf")))
+    # Known-good regression examples from the prior (pre-repair) audit,
+    # identified by (timeframe, source_seq, direction) -- stable across the
+    # repair even though their assigned IDs shifted (equal-wick/doji-blocked
+    # entries no longer consume id numbers, so downstream ids renumbered).
+    KNOWN_GOOD = [(1, 59, "bearish"), (3, 34, "bearish")]
+    # Forensic counterexample explicitly requested for re-audit (spec Part 6):
+    # its dominant-wick direction may differ from the old (pre-repair) call,
+    # so matched by (timeframe, source_seq) only, not the old direction.
+    FORENSIC_REJECTED = [(5, 18)]
 
     def pick_rb_confirmed(rbs, n=5):
-        # Spread across wick/body ratio bins (not just the extreme near-doji
-        # spikes that dominate a plain sort-by-ratio, since eff_body floors
-        # at one tick and inflates ratios for tiny-bodied candles).
         confirmed = [r for r in rbs if r.confirmed]
         out = []
-        seen_tf = set()
-        for lo, hi in RB_RATIO_BINS:
-            bucket = [r for r in confirmed if lo <= (r.wick_body_ratio or 0) < hi]
-            bucket.sort(key=lambda r: r.timeframe not in seen_tf, reverse=True)
-            if bucket:
-                out.append(bucket[0])
-                seen_tf.add(bucket[0].timeframe)
+        for tf, seq, direction in KNOWN_GOOD:
+            match = [r for r in confirmed if r.timeframe == tf and r.source_seq == seq
+                     and r.direction == direction]
+            if match:
+                out.append(match[0])
+        # 3 new examples spanning 5m/15m/60m with a non-degenerate wick/body
+        # ratio (excludes the near-doji eff_body-floor extremes) and strong
+        # dominance, distinct from the known-good/forensic set above.
+        used = {(r.timeframe, r.source_seq) for r in out}
+        for tf in (5, 15, 60):
+            cands = [r for r in confirmed if r.timeframe == tf
+                     and (r.timeframe, r.source_seq) not in used
+                     and 0.5 <= r.wick_body_ratio <= 5.0]
+            cands.sort(key=lambda r: -r.dominant_wick_ratio)
+            if cands:
+                out.append(cands[0])
+                used.add((tf, cands[0].source_seq))
             if len(out) >= n:
                 break
         return out[:n]
 
     def pick_rb_rejected(rbs, n=5):
         rejected = [r for r in rbs if not r.confirmed]
+        out = []
+        for tf, seq in FORENSIC_REJECTED:
+            match = [r for r in rejected if r.timeframe == tf and r.source_seq == seq]
+            if match:
+                out.append(match[0])
         by_reason = {}
         for r in rejected:
             by_reason.setdefault(r.rejection_reason, []).append(r)
-        out = []
         for reason, items in by_reason.items():
-            if items:
+            if items and not any(x.timeframe == items[0].timeframe
+                                  and x.source_seq == items[0].source_seq for x in out):
                 out.append(items[0])
             if len(out) >= n:
                 break
@@ -318,6 +363,27 @@ def main():
 
     n_fvg_missing_atr = sum(1 for f in all_fvgs if f.atr_at_c_close is None)
 
+    confirmed_rbs = [r for r in all_rbs if r.confirmed]
+    violations = 0
+    n_with_tap = n_deactivated = 0
+    for r in confirmed_rbs:
+        if not (r.source_ts < r.activation_ts):
+            violations += 1
+        if r.first_tap_ts is not None:
+            n_with_tap += 1
+            if not (r.activation_ts <= r.first_tap_ts):
+                violations += 1
+        if r.deactivation_ts is not None:
+            n_deactivated += 1
+            if not (r.activation_ts <= r.deactivation_ts):
+                violations += 1
+    min_act_to_tap = min(
+        (r.first_tap_ts - r.activation_ts for r in confirmed_rbs if r.first_tap_ts is not None),
+        default=None)
+    min_act_to_deact = min(
+        (r.deactivation_ts - r.activation_ts for r in confirmed_rbs if r.deactivation_ts is not None),
+        default=None)
+
     reproducibility = {
         "data_file": DATA_FILE, "symbol": SYMBOL,
         "requested_window_et": [str(REQ_START_ET), str(REQ_END_ET)],
@@ -327,10 +393,21 @@ def main():
         "n_rb_candidates_total": len(all_rbs),
         "n_rb_confirmed_total": sum(1 for r in all_rbs if r.confirmed),
         "n_rb_rejected_total": sum(1 for r in all_rbs if not r.confirmed),
+        "n_fvg_doji_blocked_total": len(all_doji_blocked),
+        "n_rb_equal_wick_ambiguous_total": len(all_equal_wick),
+        "n_rb_precedence_suppressed_total": len(all_precedence_suppressed),
         "n_fvg_examples_provided": len(fvg_examples),
         "n_ifvg_examples_provided": len(ifvg_examples),
         "n_rb_confirmed_examples_provided": len(rb_confirmed_examples),
         "n_rb_rejected_examples_provided": len(rb_rejected_examples),
+        "validation": {
+            "n_confirmed_rb": len(confirmed_rbs),
+            "n_confirmed_rb_with_first_tap": n_with_tap,
+            "n_confirmed_rb_deactivated": n_deactivated,
+            "min_activation_to_first_tap": str(min_act_to_tap),
+            "min_activation_to_deactivation": str(min_act_to_deact),
+            "timestamp_order_violations": violations,
+        },
     }
     with open(os.path.join(OUT, "reproducibility.json"), "w") as fh:
         json.dump(reproducibility, fh, indent=2, default=str)

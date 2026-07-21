@@ -30,11 +30,13 @@ class RBCandidateRecord:
     source_ohlc: tuple
 
     relevant_wick_length: float
+    opposite_wick_length: float
     real_body_length: float
     body_was_zero: bool
     total_range: float
     wick_body_ratio: float
     wick_range_ratio: float
+    dominant_wick_ratio: float   # relevant_wick / max(opposite_wick, 1 tick) -- grading only
     atr_at_source_close: float | None
 
     zone_lo: float
@@ -103,6 +105,7 @@ def detect_rejection_blocks(bars, tf: int, series, atr, registry) -> list[RBCand
 
         # 1) advance confirmed/active RBs under the common traversal contract
         still: list[RBCandidateRecord] = []
+        tapped_directions: set[str] = set()   # existing-structure precedence (spec Part 5)
         for rb in active:
             if c.segment_id != rb.segment_id:
                 rb.deactivation_ts = candle_ts_et(series[i - 1]) if i > 0 else rb.activation_ts
@@ -119,6 +122,7 @@ def detect_rejection_blocks(bars, tf: int, series, atr, registry) -> list[RBCand
                 reached = c.high >= lo
                 pen = max(0.0, c.high - hi)
             if reached:
+                tapped_directions.add(rb.direction)
                 if rb.first_tap_ts is None:
                     rb.first_tap_ts = ts
                     rb.touched = True
@@ -151,23 +155,55 @@ def detect_rejection_blocks(bars, tf: int, series, atr, registry) -> list[RBCand
         rng = c.high - c.low
         eff_body = max(body, NQ_TICK)  # numerical-stability floor for the ratio only
         eps = 1e-9  # absorb float arithmetic drift at an exact-floor edge
+        one_tick = NQ_TICK
 
+        # Dominant-wick direction selection (spec Part 4): the candle's
+        # direction follows whichever wick is strictly longer, never both.
+        # Equal-length wicks are diagnostic/ambiguous only -- no active RB.
         candidates = []
-        if lower_wick > 0 and (lower_wick / eff_body) >= CANDIDATE_FLOOR - eps:
-            candidates.append(("bullish", lower_wick, c.low, body_lo))
-        if upper_wick > 0 and (upper_wick / eff_body) >= CANDIDATE_FLOOR - eps:
-            candidates.append(("bearish", upper_wick, body_hi, c.high))
+        if lower_wick > upper_wick and lower_wick > 0 and (lower_wick / eff_body) >= CANDIDATE_FLOOR - eps:
+            candidates.append(("bullish", lower_wick, upper_wick, c.low, body_lo))
+        elif upper_wick > lower_wick and upper_wick > 0 and (upper_wick / eff_body) >= CANDIDATE_FLOOR - eps:
+            candidates.append(("bearish", upper_wick, lower_wick, body_hi, c.high))
+        elif lower_wick == upper_wick and lower_wick > 0 and (lower_wick / eff_body) >= CANDIDATE_FLOOR - eps:
+            registry.equal_wick_ambiguous_rbs.append({
+                "timeframe": tf, "source_seq": i, "source_ts": candle_ts_et(c),
+                "source_ohlc": (c.open, c.high, c.low, c.close),
+                "lower_wick": lower_wick, "upper_wick": upper_wick,
+                "wick_body_ratio": lower_wick / eff_body,
+                "reason": "equal_wick_ambiguous",
+            })
 
-        for direction, wick, zlo, zhi in candidates:
+        # Existing-structure precedence (spec Part 5): a candle whose wick
+        # only reproduces a tap/reaction against an already-active
+        # same-direction RB must not spawn a new overlapping RB from that
+        # reaction -- the tap was already recorded on the original RB in
+        # step 1 above (rb.first_tap_ts/max_penetration_after_activation).
+        filtered = []
+        for cand in candidates:
+            direction = cand[0]
+            if direction in tapped_directions:
+                registry.precedence_suppressed_rbs.append({
+                    "timeframe": tf, "source_seq": i, "source_ts": candle_ts_et(c),
+                    "direction": direction, "source_ohlc": (c.open, c.high, c.low, c.close),
+                    "reason": "existing_active_same_direction_rb_tapped",
+                })
+                continue
+            filtered.append(cand)
+        candidates = filtered
+
+        for direction, wick, opposite_wick, zlo, zhi in candidates:
             pid = registry.new_id("RB2")
             rec = RBCandidateRecord(
                 id=pid, timeframe=tf, segment_id=c.segment_id, direction=direction,
                 source_seq=i, source_ts=candle_ts_et(c),
                 source_ohlc=(c.open, c.high, c.low, c.close),
-                relevant_wick_length=wick, real_body_length=body,
+                relevant_wick_length=wick, opposite_wick_length=opposite_wick,
+                real_body_length=body,
                 body_was_zero=(body == 0.0), total_range=rng,
                 wick_body_ratio=wick / eff_body,
                 wick_range_ratio=(wick / rng) if rng > 0 else None,
+                dominant_wick_ratio=wick / max(opposite_wick, one_tick),
                 atr_at_source_close=a, zone_lo=zlo, zone_hi=zhi,
             )
             window_raw = series[i + 1:i + 1 + CONFIRM_WINDOW]

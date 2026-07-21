@@ -12,7 +12,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ..data.bars import NQ_TICK
-from .colour import colour, same_colour, BULLISH, BEARISH
+from .colour import colour_state, eligible_same_colour, BULLISH, BEARISH, \
+    EXACT_DOJI_COLOUR_UNRESOLVED
 from .timeframes import candle_series, atr_series, candle_ts_et, INTRADAY_LIFETIME_TFS
 from .traversal import zone_step, DEACTIVATED_CLOSE_THROUGH
 
@@ -151,18 +152,35 @@ def detect_fvgs(bars, tf: int, registry) -> list[FVGRecord]:
         a, b, cc = series[i - 2], series[i - 1], c
         if not (a.segment_id == b.segment_id == cc.segment_id):
             continue
-        if not same_colour(a, b, cc):
-            continue
-        col = colour(a)
-        direction = None
-        lo = hi = 0.0
-        if col == BULLISH and cc.low > a.high:
-            direction, lo, hi = BULLISH, a.high, cc.low
-        elif col == BEARISH and cc.high < a.low:
-            direction, lo, hi = BEARISH, cc.high, a.low
-        if direction is None:
+
+        # Raw geometry, independent of colour eligibility -- computed first
+        # so a doji-blocked triple can still be logged to the diagnostic
+        # raw-gap inventory even though it may not become an FVGRecord.
+        geom_direction = None
+        geom_lo = geom_hi = 0.0
+        if cc.low > a.high:
+            geom_direction, geom_lo, geom_hi = BULLISH, a.high, cc.low
+        elif cc.high < a.low:
+            geom_direction, geom_lo, geom_hi = BEARISH, cc.high, a.low
+        if geom_direction is None:
             continue
 
+        a_state, b_state, c_state = colour_state(a), colour_state(b), colour_state(cc)
+        eligible = eligible_same_colour(a, b, cc) and a_state == geom_direction
+        has_doji = EXACT_DOJI_COLOUR_UNRESOLVED in (a_state, b_state, c_state)
+
+        if not eligible:
+            if has_doji:
+                registry.doji_blocked_fvgs.append({
+                    "timeframe": tf, "a_seq": i - 2, "b_seq": i - 1, "c_seq": i,
+                    "a_ts": candle_ts_et(a), "b_ts": candle_ts_et(b), "c_ts": candle_ts_et(cc),
+                    "a_colour_state": a_state, "b_colour_state": b_state, "c_colour_state": c_state,
+                    "geometry_direction": geom_direction, "lo": geom_lo, "hi": geom_hi,
+                    "exclusion_reason": "EXACT_DOJI_COLOUR_UNRESOLVED",
+                })
+            continue
+
+        direction, lo, hi = geom_direction, geom_lo, geom_hi
         width = hi - lo
         a_close = atr[i]
         width_atr = (width / a_close) if a_close and a_close > 0 else None
@@ -175,7 +193,7 @@ def detect_fvgs(bars, tf: int, registry) -> list[FVGRecord]:
             a_ohlc=(a.open, a.high, a.low, a.close),
             b_ohlc=(b.open, b.high, b.low, b.close),
             c_ohlc=(cc.open, cc.high, cc.low, cc.close),
-            a_colour=colour(a), b_colour=colour(b), c_colour=colour(cc),
+            a_colour=a_state, b_colour=b_state, c_colour=c_state,
             lo=lo, hi=hi, width_points=width, width_ticks=width / NQ_TICK,
             atr_at_c_close=a_close, width_atr=width_atr, size_bin=size_bin(width_atr),
             formation_ts=ts_c,

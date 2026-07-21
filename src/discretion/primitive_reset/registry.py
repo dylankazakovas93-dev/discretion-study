@@ -14,6 +14,12 @@ class ResetRegistry:
         self.fvgs: dict[str, object] = {}
         self.ifvgs: dict[str, object] = {}
         self.rbs: dict[str, object] = {}
+        # Diagnostic-only inventories: geometry-qualifying triples/candles
+        # that were excluded from the active population for a disclosed
+        # reason, never treated as SETUP_ELIGIBLE_FVG or an active RB.
+        self.doji_blocked_fvgs: list[dict] = []
+        self.equal_wick_ambiguous_rbs: list[dict] = []
+        self.precedence_suppressed_rbs: list[dict] = []
 
     def new_id(self, prefix: str) -> str:
         n = self._counters.get(prefix, 0) + 1

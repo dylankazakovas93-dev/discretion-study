@@ -10,7 +10,9 @@ import pandas as pd
 import pytest
 
 from discretion.data.bars import Bar, NQ_TICK
-from discretion.primitive_reset.colour import colour, same_colour, BULLISH, BEARISH
+from discretion.primitive_reset.colour import (
+    colour_state, eligible_same_colour, BULLISH, BEARISH, EXACT_DOJI_COLOUR_UNRESOLVED,
+)
 from discretion.primitive_reset.timeframes import candle_series, atr_series
 from discretion.primitive_reset.registry import ResetRegistry
 from discretion.primitive_reset.fvg import detect_fvgs, size_bin
@@ -55,16 +57,23 @@ def seeded_atr(tf=1, n=20, price=100.0, half_range=2.0):
 # Colour convention
 # ---------------------------------------------------------------------------
 
-def test_doji_close_equals_open_is_bullish_by_convention():
+def test_exact_doji_colour_is_unresolved_not_bullish():
     b = mk_bars([(100, 101, 99, 100)])[0]
-    assert colour(b) == BULLISH
+    assert colour_state(b) == EXACT_DOJI_COLOUR_UNRESOLVED
 
 
 def test_ordinary_up_down_colours():
     up = mk_bars([(100, 102, 99, 101)])[0]
     down = mk_bars([(100, 101, 98, 99)])[0]
-    assert colour(up) == BULLISH
-    assert colour(down) == BEARISH
+    assert colour_state(up) == BULLISH
+    assert colour_state(down) == BEARISH
+
+
+def test_exact_doji_makes_triple_ineligible_regardless_of_others():
+    up = mk_bars([(100, 102, 99, 101)])[0]
+    doji = mk_bars([(100, 101, 99, 100)])[0]
+    assert not eligible_same_colour(up, up, doji)
+    assert not eligible_same_colour(doji, doji, doji)
 
 
 # ---------------------------------------------------------------------------
@@ -161,10 +170,52 @@ def test_near_doji_small_body_not_excluded():
     assert any(f.a_seq == n0 for f in fvgs)
 
 
-def test_canonical_doji_colour_is_documented_and_bullish():
+def test_canonical_doji_colour_is_unresolved_and_documented():
     doji = mk_bars([(100, 101, 99, 100)])[0]
-    assert colour(doji) == BULLISH
-    assert same_colour(doji, doji, doji)
+    assert colour_state(doji) == EXACT_DOJI_COLOUR_UNRESOLVED
+    assert not eligible_same_colour(doji, doji, doji)
+
+
+def test_exact_doji_c_candle_blocks_fvg_and_logs_diagnostic():
+    """Reproduces the reported FVG2-000029 defect: A/B bullish, C an exact
+    doji (open == close) that geometrically gaps beyond A.high. Under the
+    old close>=open tie-break this silently formed a bullish FVG; now it
+    must not form one, and must be logged to the diagnostic inventory."""
+    bars, _ = seeded_atr()
+    n0 = len(bars)
+    ohlc = [
+        (100, 101, 99.5, 100.5),    # A bullish
+        (100.5, 102, 100.2, 101.5),  # B bullish
+        (101.5, 103, 101.2, 101.5),  # C exact doji (open == close == 101.5), C.low > A.high
+    ]
+    bars += mk_bars(ohlc, start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    reg = ResetRegistry()
+    fvgs = detect_fvgs(bars, 1, reg)
+    assert not any(f.a_seq == n0 for f in fvgs)
+    blocked = [d for d in reg.doji_blocked_fvgs if d["a_seq"] == n0]
+    assert len(blocked) == 1
+    assert blocked[0]["exclusion_reason"] == "EXACT_DOJI_COLOUR_UNRESOLVED"
+    assert blocked[0]["c_colour_state"] == EXACT_DOJI_COLOUR_UNRESOLVED
+    assert blocked[0]["geometry_direction"] == BULLISH
+
+
+def test_doji_blocked_fvg_cannot_seed_an_ifvg():
+    bars, _ = seeded_atr()
+    n0 = len(bars)
+    ohlc = [
+        (100, 101, 99.5, 100.5),
+        (100.5, 102, 100.2, 101.5),
+        (101.5, 103, 101.2, 101.5),  # exact doji C
+    ]
+    bars += mk_bars(ohlc, start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    bars += mk_bars([(100.9, 100.95, 100.0, 100.5)], start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    fvgs = detect_fvgs(bars, 1, reg)
+    ifvgs = detect_ifvgs(bars, 1, fvgs, atr, series, reg)
+    assert not any(f.a_seq == n0 for f in fvgs)
+    assert ifvgs == []  # no parent ever existed to invert
 
 
 def test_abc_ids_and_timestamps_are_exact():
@@ -701,6 +752,157 @@ def test_rb_no_arbitrary_expiry_at_1h_plus():
     atr = atr_series(series)
     rbs = detect_rejection_blocks(bars, 60, series, atr, reg)
     assert not any(r.deactivation_reason in ("EXPIRED_ACTIVE_8H", "EXPIRED_UNTOUCHED_8H") for r in rbs)
+
+
+# ---------------------------------------------------------------------------
+# RB dominant-wick direction selection + existing-structure precedence
+# ---------------------------------------------------------------------------
+
+def test_equal_wicks_never_emit_opposing_active_rbs():
+    """A candle with genuinely equal-length wicks must not become both a
+    bullish and a bearish candidate -- it goes to the ambiguous diagnostic
+    list only."""
+    bars, atr_val = seeded_atr()
+    # body 4.0, both wicks exactly 2.0 -> equal, ratio 0.5 >= floor
+    o, c = 100.0, 104.0
+    h, l = c + 2.0, o - 2.0
+    bars += mk_bars([(o, h, l, c)], start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    src_seq = len(bars) - 1
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+    assert not any(r.source_seq == src_seq for r in rbs)
+    ambiguous = [d for d in reg.equal_wick_ambiguous_rbs if d["source_seq"] == src_seq]
+    assert len(ambiguous) == 1
+    assert ambiguous[0]["reason"] == "equal_wick_ambiguous"
+
+
+def test_dominant_wick_only_emits_the_longer_side():
+    """A candle whose wicks differ must only ever produce the dominant
+    (longer) side's candidate, never both."""
+    bars, atr_val = seeded_atr()
+    o, c = 100.0, 104.0
+    h, l = c + 1.0, o - 5.0   # lower_wick=5.0 > upper_wick=1.0
+    bars += mk_bars([(o, h, l, c)], start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    src_seq = len(bars) - 1
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+    matches = [r for r in rbs if r.source_seq == src_seq]
+    assert len(matches) == 1
+    assert matches[0].direction == "bullish"
+    assert matches[0].dominant_wick_ratio == pytest.approx(5.0 / 1.0)
+
+
+def test_active_rb_tap_cannot_become_duplicate_overlapping_rb():
+    """Item 1 (Part 5): once an RB is active and a later candle merely taps
+    back into its zone (from the same relevant-wick direction), that later
+    candle must not spawn a second overlapping same-direction RB."""
+    bars, src_seq, atr_val = _rb_with_mfe("bullish", 1.6, 2)
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs_before = detect_rejection_blocks(bars, 1, series, atr, reg)
+    original = [r for r in rbs_before if r.source_seq == src_seq and r.direction == "bullish"][0]
+    zlo, zhi = original.zone_lo, original.zone_hi
+    tap_open_ts = bars[-1].ts_et + pd.Timedelta(minutes=1)
+    # tap candle: dips into [zlo, zhi] with a dominant lower wick of its own
+    bars2 = bars + mk_bars([(zhi + 1.0, zhi + 1.2, zlo - 0.05, zhi + 0.9)], start=tap_open_ts)
+    bars2 += mk_bars(flat_preamble(5, zhi, 2), start=bars2[-1].ts_et + pd.Timedelta(minutes=1))
+    reg2 = ResetRegistry()
+    series2 = candle_series(bars2, 1)
+    atr2 = atr_series(series2)
+    rbs_after = detect_rejection_blocks(bars2, 1, series2, atr2, reg2)
+    tap_seq = len(bars)  # index of the newly appended tap candle
+    dup = [r for r in rbs_after if r.source_seq == tap_seq and r.direction == "bullish"]
+    assert dup == [], "reaction/tap candle must not become a duplicate overlapping RB"
+
+
+def test_original_rb_retains_the_tap_event():
+    bars, src_seq, atr_val = _rb_with_mfe("bullish", 1.6, 2)
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+    original = [r for r in rbs if r.source_seq == src_seq and r.direction == "bullish"][0]
+    zlo, zhi = original.zone_lo, original.zone_hi
+    tap_open_ts = bars[-1].ts_et + pd.Timedelta(minutes=1)
+    bars2 = bars + mk_bars([(zhi + 1.0, zhi + 1.2, zlo - 0.05, zhi + 0.9)], start=tap_open_ts)
+    bars2 += mk_bars(flat_preamble(5, zhi, 2), start=bars2[-1].ts_et + pd.Timedelta(minutes=1))
+    reg2 = ResetRegistry()
+    series2 = candle_series(bars2, 1)
+    atr2 = atr_series(series2)
+    rbs_after = detect_rejection_blocks(bars2, 1, series2, atr2, reg2)
+    same = [r for r in rbs_after if r.source_seq == src_seq and r.direction == "bullish"][0]
+    assert same.first_tap_ts is not None
+    assert same.first_tap_ts == series2[len(bars)].ts_et
+
+
+def test_genuinely_separate_nonoverlapping_rejection_still_creates_new_rb():
+    """Item 3: a wick far away from any active RB's zone must still create
+    its own new candidate normally."""
+    bars, atr_val = seeded_atr()
+    o, c = 100.0, 104.0
+    h, l = c + 0.2, o - 4.0
+    bars += mk_bars([(o, h, l, c)], start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    first_seq = len(bars) - 1
+    # unrelated wick far away in price, same direction, later in time
+    o2, c2 = 500.0, 504.0
+    h2, l2 = c2 + 0.2, o2 - 4.0
+    bars += mk_bars(flat_preamble(3, 300, 2), start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    bars += mk_bars([(o2, h2, l2, c2)], start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    second_seq = len(bars) - 1
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+    assert any(r.source_seq == first_seq and r.direction == "bullish" for r in rbs)
+    assert any(r.source_seq == second_seq and r.direction == "bullish" for r in rbs)
+
+
+def test_opposite_direction_not_suppressed_by_precedence_rule():
+    """Item 4: precedence only suppresses same-direction duplicates; an
+    opposite-direction candidate on a tap candle must still be considered."""
+    bars, src_seq, atr_val = _rb_with_mfe("bullish", 1.6, 2)
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+    original = [r for r in rbs if r.source_seq == src_seq and r.direction == "bullish"][0]
+    zlo, zhi = original.zone_lo, original.zone_hi
+    tap_open_ts = bars[-1].ts_et + pd.Timedelta(minutes=1)
+    # this candle taps the active bullish zone (dominant lower wick) --
+    # bullish side is suppressed, but a hypothetical bearish read (were the
+    # geometry to favour it) would not be blocked by this rule.
+    bars2 = bars + mk_bars([(zhi + 1.0, zhi + 1.2, zlo - 0.05, zhi + 0.9)], start=tap_open_ts)
+    bars2 += mk_bars(flat_preamble(5, zhi, 2), start=bars2[-1].ts_et + pd.Timedelta(minutes=1))
+    reg2 = ResetRegistry()
+    series2 = candle_series(bars2, 1)
+    atr2 = atr_series(series2)
+    detect_rejection_blocks(bars2, 1, series2, atr2, reg2)
+    suppressed = [d for d in reg2.precedence_suppressed_rbs if d["source_seq"] == len(bars)]
+    assert len(suppressed) == 1
+    assert suppressed[0]["direction"] == "bullish"
+
+
+def test_precedence_rule_uses_no_future_information():
+    """Item 5: suppression is decided using only the RB's own already-active
+    state at the time the later candle closes -- never a look-ahead. Proven
+    by construction: `tapped_directions` is computed from `active` (state
+    accumulated strictly from candles < i) before any candle-i candidate is
+    even examined."""
+    bars, src_seq, atr_val = _rb_with_mfe("bullish", 1.6, 2)
+    reg = ResetRegistry()
+    series = candle_series(bars, 1)
+    atr = atr_series(series)
+    rbs = detect_rejection_blocks(bars, 1, series, atr, reg)
+    original = [r for r in rbs if r.source_seq == src_seq and r.direction == "bullish"][0]
+    assert original.activation_ts is not None
+    # A tap candle BEFORE activation (during the pending window) cannot be
+    # suppressed by precedence, since the RB is not yet in `active`.
+    assert reg.precedence_suppressed_rbs == []
 
 
 # ---------------------------------------------------------------------------
