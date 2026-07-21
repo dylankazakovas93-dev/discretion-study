@@ -14,6 +14,14 @@ testing, no adaptive evidence, no historical rerun. See
   confirmation.
 - `rb_rejected_candidates.csv` — every RB candidate that did not confirm
   (with a mechanical `rejection_reason`).
+- `fvg_doji_blocked.csv` — geometry-valid FVG triples excluded because an
+  A/B/C candle was an exact doji (`open == close`); diagnostic only, never
+  an active FVG or iFVG parent.
+- `rb_equal_wick_ambiguous.csv` — source candles with exactly equal-length
+  wicks; diagnostic only, never an active RB.
+- `rb_precedence_suppressed.csv` — reaction candles that merely tapped an
+  already-active same-direction RB, suppressed from becoming a duplicate
+  overlapping RB.
 - `structure_lifecycle_events.csv` — every FVG/iFVG/RB lifecycle timestamp
   (formed/touched/inverted/expired/deactivated), one row per event.
 - `reproducibility.json` — counts and provenance for this run.

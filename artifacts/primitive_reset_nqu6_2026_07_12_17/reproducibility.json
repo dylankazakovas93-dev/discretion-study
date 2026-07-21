@@ -16,54 +16,83 @@
   "per_timeframe_counts": {
     "1": {
       "n_completed_candles": 6900,
-      "n_fvgs": 817,
-      "n_ifvgs": 429,
-      "n_rb_candidates": 9614,
-      "n_rb_confirmed": 2231
+      "n_fvgs": 799,
+      "n_ifvgs": 416,
+      "n_rb_candidates": 4786,
+      "n_rb_confirmed": 1188,
+      "n_fvg_doji_blocked": 54,
+      "n_rb_equal_wick_ambiguous": 119,
+      "n_rb_precedence_suppressed": 1101
     },
     "3": {
       "n_completed_candles": 2300,
       "n_fvgs": 263,
       "n_ifvgs": 131,
-      "n_rb_candidates": 3307,
-      "n_rb_confirmed": 786
+      "n_rb_candidates": 1648,
+      "n_rb_confirmed": 406,
+      "n_fvg_doji_blocked": 3,
+      "n_rb_equal_wick_ambiguous": 21,
+      "n_rb_precedence_suppressed": 343
     },
     "5": {
       "n_completed_candles": 1380,
       "n_fvgs": 154,
       "n_ifvgs": 62,
-      "n_rb_candidates": 1954,
-      "n_rb_confirmed": 443
+      "n_rb_candidates": 1017,
+      "n_rb_confirmed": 238,
+      "n_fvg_doji_blocked": 3,
+      "n_rb_equal_wick_ambiguous": 13,
+      "n_rb_precedence_suppressed": 178
     },
     "15": {
       "n_completed_candles": 460,
-      "n_fvgs": 41,
+      "n_fvgs": 40,
       "n_ifvgs": 20,
-      "n_rb_candidates": 642,
-      "n_rb_confirmed": 132
+      "n_rb_candidates": 339,
+      "n_rb_confirmed": 62,
+      "n_fvg_doji_blocked": 1,
+      "n_rb_equal_wick_ambiguous": 1,
+      "n_rb_precedence_suppressed": 41
     },
     "30": {
       "n_completed_candles": 230,
       "n_fvgs": 22,
       "n_ifvgs": 7,
-      "n_rb_candidates": 320,
-      "n_rb_confirmed": 68
+      "n_rb_candidates": 173,
+      "n_rb_confirmed": 38,
+      "n_fvg_doji_blocked": 0,
+      "n_rb_equal_wick_ambiguous": 0,
+      "n_rb_precedence_suppressed": 21
     },
     "60": {
       "n_completed_candles": 115,
       "n_fvgs": 13,
       "n_ifvgs": 3,
-      "n_rb_candidates": 163,
-      "n_rb_confirmed": 49
+      "n_rb_candidates": 82,
+      "n_rb_confirmed": 19,
+      "n_fvg_doji_blocked": 0,
+      "n_rb_equal_wick_ambiguous": 0,
+      "n_rb_precedence_suppressed": 15
     }
   },
-  "n_fvg_total": 1310,
-  "n_ifvg_total": 652,
-  "n_rb_candidates_total": 16000,
-  "n_rb_confirmed_total": 3709,
-  "n_rb_rejected_total": 12291,
+  "n_fvg_total": 1291,
+  "n_ifvg_total": 639,
+  "n_rb_candidates_total": 8045,
+  "n_rb_confirmed_total": 1951,
+  "n_rb_rejected_total": 6094,
+  "n_fvg_doji_blocked_total": 61,
+  "n_rb_equal_wick_ambiguous_total": 154,
+  "n_rb_precedence_suppressed_total": 1699,
   "n_fvg_examples_provided": 5,
   "n_ifvg_examples_provided": 5,
   "n_rb_confirmed_examples_provided": 5,
-  "n_rb_rejected_examples_provided": 3
+  "n_rb_rejected_examples_provided": 4,
+  "validation": {
+    "n_confirmed_rb": 1951,
+    "n_confirmed_rb_with_first_tap": 1684,
+    "n_confirmed_rb_deactivated": 1951,
+    "min_activation_to_first_tap": "0 days 00:01:00",
+    "min_activation_to_deactivation": "0 days 00:01:00",
+    "timestamp_order_violations": 0
+  }
 }

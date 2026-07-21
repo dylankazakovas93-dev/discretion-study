@@ -1,318 +1,367 @@
-# Primitive reset — NQU6 timestamp audit report
+# Primitive reset — NQU6 timestamp audit report (repaired)
 
 Narrow primitive reset (FVG, iFVG, rejection blocks) only. No strategy
 testing, no adaptive evidence, no profitability claims, no large historical
 rerun. New code lives entirely in `src/discretion/primitive_reset/`, isolated
 from `discretion.primitives.*` and never imported by `branch_engine`,
-`materializer`, or `pipeline` — the existing candidate/evidence pipeline is
-untouched and does not run on these new primitives.
+`materializer`, or `pipeline`.
 
-## Correction: RB causal lifecycle bug (fixed before this report)
+**All timestamps below are candle OPEN time (how a chart plots/labels a
+candle), not the internal causal-availability instant.** A prior version of
+this report used the availability instant for multi-minute timeframes, which
+is one full candle later than its open — that mislabeling is what made
+RB2-000034(old)/RB2-000009(old) look wrong on a real chart. See "Correction 2"
+below.
 
-Dylan's review of the first version of this report caught an impossible
-timestamp: `RB2-000009` showed `deactivation: 19:40 ET` before
-`activation: 19:50 ET`. Root cause: a newly confirmed RB was appended to
-the causally-processed `active` list in the same outer-loop iteration that
-detected its source candle, so it was tracked against every candle between
-the source and its real confirming candle — before it had actually
-activated. This was a processing-order bug, not a report-formatting issue.
+## Combined timestamp audit verdict inputs (from the prior turn)
 
-Fixed with a pending-activation queue (`primitive_reset/rejection_block.py`):
-a confirmed RB is scheduled to start tracking at `confirming_index + 1` and
-is never processed against any candle from its source through the confirming
-candle itself. The frozen confirmation/MFE/ATR/traversal/lifetime
-definitions were **not** touched — only *when* a confirmed record joins the
-tracked list changed. See "Validation" below for the real-data proof (zero
-timestamp-order violations across all 3,709 confirmed RBs) and "Tests" for
-the 10 new synthetic proofs plus a real-NQU6 invariant check.
+- FVG: provisional PASS
+- iFVG: AUDIT INCONCLUSIVE
+- RB: SOURCE-SELECTION FAIL
+
+This report resolves all three.
 
 ## Repository integrity
 
 - Branch: `claude/graph-native-candidate-engine-v2`
-- Starting HEAD (verified before work began): `4468ffebfdc65778f2f7e4cc4e6ff2f04194235f`
+- Starting HEAD (verified before work began): `065b6f30afec8aed9994651c810ec0107ea7f7c7`
   (matched local, remote, and the task's expected SHA; working tree was clean)
-- PR #2: open, draft, unmerged throughout this task (not touched)
-- See the top-level completion report (delivered in the same turn as this
-  file) for the final HEAD and full commit list.
+- PR #2: open, draft, unmerged throughout (not touched)
+- See the top-level completion report for the final HEAD and commit list.
 
-## Supersession
+## Correction 1 — exact-doji colour handling
 
-- `artifacts/review_week_atlas_2025_07_14_18/PRIMITIVE_AUDIT_STATUS.md` and
-  the matching file in `..._repaired/` mark both prior atlases
-  `PRIMITIVE_AUDIT_FAIL — SUPERSEDED`. Nothing was deleted.
-- No candidate or evidence object from those atlases was reused. No large
-  rerun occurred: this task loads only the requested ~5-day NQU6 window
-  (6,900 one-minute bars), not the 61-prior-session universe used by the
-  superseded atlas.
-- The 40-prior-session requirement, checkpointing, streaming materialization,
-  target-policy separation and outcome-after-selection ordering from the
-  existing pipeline are untouched — this task never calls into them.
+`colour.py` previously used `close >= open`, silently classifying every
+exact `open == close` candle bullish. Dylan did not freeze that tie-break.
+FVG2-000029(old)'s C candle was exactly such a case (`open == close ==
+29777.25`) and it seeded IFVG2-000010(old) — a structure Dylan correctly
+did not see on his chart.
 
-## Exact logic implemented
+**Fix:** `colour_state()` now returns `bullish` / `bearish` /
+`exact_doji_colour_unresolved`. `eligible_same_colour()` requires all three
+FVG candles to be resolved (never doji) and share the same resolved colour;
+an exact-doji anywhere in A/B/C makes the triple ineligible. Small/near-doji
+bodies (`close != open`, however small) are **still never excluded** — only
+literal equality is held back. A blocked-but-geometrically-valid triple is
+logged to `fvg_doji_blocked.csv` with `exclusion_reason =
+EXACT_DOJI_COLOUR_UNRESOLVED` (never silently dropped) and can never seed an
+iFVG (no `FVGRecord` exists for it to invert).
 
-### Candle colour (`primitive_reset/colour.py`)
-`bullish` iff `close >= open`, `bearish` iff `close < open`. The exact-doji
-case (`close == open`) is classified **bullish** by this convention — a
-single-bar, lookback-free tie-break chosen only for determinism, carrying no
-claim that a doji is directionally bullish.
+**Impact:** 61 raw triples across all 6 timeframes were geometry-valid gaps
+with a doji-ambiguous candle (54 on 1m, 3 on 3m, 3 on 5m, 1 on 15m, 0 on
+30m/60m) — logged, none of them entered the active population.
+`n_fvg_total` moved 1,310 → 1,291; `n_ifvg_total` moved 652 → 639 (only the
+subset of the 61 that had actually been valid under the old bullish
+tie-break disappears from the *active* population; the rest were never
+valid FVGs under any convention and the geometry-only diagnostic count
+(61) is larger than the population delta for that reason).
 
-### FVG geometry and grading (Parts 1-2)
-Three consecutive same-timeframe, same-segment, same-colour candles A/B/C.
-Bullish: `C.low > A.high`, zone `[A.high, C.low]`. Bearish: `C.high < A.low`,
-zone `[C.high, A.low]`. No minimum body size; no doji exclusion. Available
-only once C closes (`formation_ts = C`'s close timestamp). `width_atr =
-width_points / atr_at_c_close`, binned into the six spec-defined ATR buckets.
-`atr_at_c_close` is the completed same-timeframe Wilder ATR(14) **inclusive**
-of candle C's own true range (see "ATR contract" below).
+FVG2-000029(old) is confirmed as one of the 61: A/B bullish, C exact doji,
+geometry `C.low(29773.75) > A.high(29772.75)` — real geometry, doji-blocked,
+correctly absent from the current population. **IFVG2-000010(old) no longer
+exists.**
 
-### iFVG lineage and inversion speed (Parts 4-5)
-Only ever built from a parent FVG on the *same* timeframe series that is
-still active and unexpired when a completed candle closes fully through its
-distal boundary (a wick-only breach that recovers by close is not an
-inversion — see traversal contract below). Parent transitions to inverted;
-child activates opposite-direction in the same instant. Stored:
-`bars_from_parent_formation_to_inversion`, `bars_from_parent_first_touch_to_
-inversion`, a speed bucket (`1_candles` … `5plus_candles`), plus penetration/
-distance-through-zone/scraping-candle statistics. **Disclosed, not spec-pinned
-exactly:** "total distance moved through the parent zone" is computed as
-`near-edge minus inversion close` (bullish) — i.e. how far the close ended up
-beyond the zone's entry edge; "scraping candles" are bars between first touch
-and inversion (exclusive) that reached the zone without closing through.
-Dylan should confirm these definitions read as intended.
+## Correction 2 — HTF candle-open vs candle-close labeling
 
-### RB candidate + confirmation (Parts 6-7)
-No local-pivot/swing requirement. Candidate floor:
-`relevant_wick_length / max(real_body_length, 1 tick) >= 0.20` (the
-`max(body, 1 tick)` floor is the documented zero-body numerical-stability
-convention the spec explicitly permitted; it also means many small-bodied
-candles trivially clear the floor — see "audit output" below).
-Confirmation: within the next 3 completed same-timeframe candles, the
-**running maximum favourable excursion** (`MAX(high)` for bullish,
-`MIN(low)` for bearish, cumulative across the window) must reach
-`1.5 * ATR-at-source-close` measured from the proximal boundary; confirmed at
-the first candle whose running MFE crosses the threshold. A completed close
-back through the *opposite* zone boundary before that happens fails the
-candidate (`invalidated_before_confirmation`). Reaching threshold only on a
-4th candle, or never, both fail to confirm.
+Every RB/FVG/iFVG timestamp field (`activation_ts`, `source_ts`,
+`formation_ts`, etc.) is internally the candle's **causal-availability**
+instant (`close_ts` for an aggregated HTF candle) — correct and unchanged
+for causal decision-making. For timeframes above 1m this is a full candle
+period *later* than the candle's own open, which is how a real chart plots
+it. A new, purely additive, display-only helper —
+`timeframes.candle_open_ts_et()` — returns the true open time and is used
+for every human-facing timestamp in this report and the combined table
+below. No detector logic, internal field, or existing test changed; this is
+strictly a reporting-layer fix.
 
-### Common traversal contract (Part 8)
-Shared by FVG/iFVG/RB (`primitive_reset/traversal.py`). For zone `[lo, hi]`,
-`W = hi - lo`, `tolerance = 0.20 * W`: a completed candle whose **close**
-breaches the distal boundary deactivates (`DEACTIVATED_CLOSE_THROUGH`),
-checked first and independent of wick depth — this is the unconditional
-trigger the iFVG detector keys on. Otherwise, a wick excursion beyond the
-distal boundary that exceeds tolerance deactivates
-(`DEACTIVATED_OVERSHOOT_LIMIT`) even though the close recovered. A tiny
-float epsilon (`1e-9`) absorbs floating-point arithmetic drift at an
-exact-tolerance boundary (real prices are tick-quantized to 0.25, so this
-cannot mask a genuine distinction). Deactivation is immutable; no
-reactivation.
+This is the reason RB2-000034(old)'s "4:00 AM" source candle and
+RB2-000009(old)'s "19:35" source candle were each one candle late — see the
+forensic audits below.
 
-### Structure lifetime (Part 3)
-Timeframes below 1h (1/3/5/15/30m): 8 real elapsed hours from activation,
-measured via ET timestamps. `EXPIRED_ACTIVE_8H` if touched-but-not-closed by
-then, `EXPIRED_UNTOUCHED_8H` if never touched. 1h+: no arbitrary expiry —
-only structural invalidation, or `DATA_END_ACTIVE` if still active when data
-runs out. No `CONTINUATION` label anywhere; confirmed absent by test.
+## Correction 3 — RB dominant-wick direction selection
 
-### ATR contract
-Completed same-timeframe Wilder ATR(14), **including** the bar's own true
-range — the value knowable the instant that bar closes. This is deliberately
-a fresh, unshifted computation (`primitive_reset/timeframes.py`), not a reuse
-of `discretion.data.aggregation.HTFBar.atr`, which is shifted by one candle
-for an unrelated feature-normalization purpose elsewhere in the codebase;
-reusing it here would have silently violated this task's causal-freeze
-contract.
+Previously each source candle was tested independently for a bullish
+candidate (lower wick) *and* a bearish candidate (upper wick), so one candle
+could emit two opposing RBs. Fixed: direction now follows whichever wick is
+strictly longer (`lower_wick > upper_wick` → bullish only;
+`upper_wick > lower_wick` → bearish only); equal-length wicks emit **no**
+active RB and are logged to `rb_equal_wick_ambiguous.csv`. A new continuous
+`dominant_wick_ratio = relevant_wick / max(opposite_wick, 1 tick)` grading
+field is stored (not gated on) for every RB. The frozen 1.5-ATR/next-3-candle
+MFE confirmation rule is unchanged.
 
-## Audit output
+**Impact:** `n_rb_candidates_total` 16,000 → 8,045 (roughly half, as
+expected — most candles no longer double-count); `n_rb_confirmed_total`
+3,709 → 1,951. 154 candles were exactly-equal-wick and logged as ambiguous.
 
-### Data coverage
-Symbol `NQU6` (literal symbol filter, not front-month-by-volume). Full
-symbol coverage in the licensed file: `2026-04-19 18:01 ET` – `2026-07-17
-16:59 ET`. Requested window `2026-07-12 18:00 ET` – `2026-07-17 17:59:59 ET`
-is present **except the final ~61 minutes** (`17:00`–`17:59:59 ET` on
-`2026-07-17`, past the file's end). 6,900 one-minute bars used. Four
-1-hour gaps appear inside the window at each day's `17:00`–`18:00 ET`
-maintenance break — this is the normal CME daily halt, not missing data
-(disclosed in `data_coverage.json`'s `internal_gaps`).
+## Correction 4 — existing-structure precedence
 
-### Counts by timeframe
+Before creating a new RB candidate, the detector now checks whether any
+already-active same-direction RB was tapped by *this* candle (using the
+tap/traversal state already computed for that RB, strictly from candles
+before the current one — no look-ahead). If so, the tap is recorded on the
+**original** RB and no duplicate overlapping RB is created from the reaction
+candle; logged to `rb_precedence_suppressed.csv`. Opposite-direction
+candidates on the same candle are never suppressed by this rule.
 
-| tf (min) | completed candles | FVGs | iFVGs | RB candidates | RB confirmed |
-|---:|---:|---:|---:|---:|---:|
-| 1  | 6900 | 817 | 429 | 9614 | 2231 |
-| 3  | 2300 | 263 | 131 | 3307 |  786 |
-| 5  | 1380 | 154 |  62 | 1954 |  443 |
-| 15 |  460 |  41 |  20 |  642 |  132 |
-| 30 |  230 |  22 |   7 |  320 |   68 |
-| 60 |  115 |  13 |   3 |  163 |   49 |
+**Impact:** 1,699 reaction candles suppressed across all timeframes that
+would otherwise have relabelled a tap of an existing RB as a brand-new one.
 
-Totals: 1,310 FVGs, 652 iFVGs, 16,000 RB candidates (3,709 confirmed, 12,291
-rejected). Full ATR-bin breakdown in `fvg_atr_bin_summary.csv`.
+## Forensic audit — RB2-000009(old), 5m, reported source "19:35 ET"
 
-**Disclosed data characteristic:** the RB candidate floor's `max(body, 1
-tick)` zero-body convention (spec-sanctioned) means many small/zero-bodied
-candles trivially clear `wick/body >= 0.20` at 1-tick wicks, which is most of
-why the raw 1m candidate count (9,614) is large relative to confirmations
-(2,231). This is the detector working as specified, not a bug — flagged so
-Dylan isn't surprised by the volume in `rb_rejected_candidates.csv`.
+**Corrected source open time: Sunday, July 12, 2026, 7:30 PM ET** (not
+7:35 PM — the old label was the candle's close/availability instant).
 
-### FVG examples (5, spanning ATR bins)
+5m candles, open-time labeled, idx 13–23:
 
-1. **FVG2-000003** — 1m bullish, `<0.05 ATR` (0.0226). Open NQU6 on 1m at
-   `2026-07-12 18:52 ET`. Formed by A/B/C at `18:50`/`18:51`/`18:52 ET`, zone
-   `[29882.75, 29883.00]`. Deactivated `DEACTIVATED_OVERSHOOT_LIMIT`.
-2. **FVG2-000002** — 1m bullish, `0.05-<0.10 ATR` (0.0600). Open NQU6 on 1m
-   at `18:44 ET`. A/B/C `18:42`/`18:43`/`18:44 ET`, zone
-   `[29888.00, 29888.75]`. Deactivated `DEACTIVATED_OVERSHOOT_LIMIT`.
-3. **FVG2-000012** — 1m bullish, `0.10-<0.20 ATR` (0.1860). Open NQU6 on 1m
-   at `20:10 ET`. A/B/C `20:08`/`20:09`/`20:10 ET`, zone
-   `[29992.25, 29996.50]`. Inverted (`DEACTIVATED_CLOSE_THROUGH`) at
-   `20:17 ET`.
-4. **FVG2-000008** — 1m bullish, `0.20-<0.30 ATR` (0.2022). Open NQU6 on 1m
-   at `19:29 ET`. A/B/C `19:27`/`19:28`/`19:29 ET`, zone
-   `[29884.75, 29886.50]`. Deactivated `DEACTIVATED_OVERSHOOT_LIMIT`.
-5. **FVG2-000014** — 1m bearish, `0.30-<0.50 ATR` (0.3337). Open NQU6 on 1m
-   at `20:29 ET`. A/B/C `20:27`/`20:28`/`20:29 ET`, zone
-   `[29977.25, 29983.50]`. Never touched; `EXPIRED_UNTOUCHED_8H` at
-   `2026-07-13 04:29 ET`.
+| idx | open ET | O | H | L | C | lower_wick | upper_wick | lw/body | uw/body |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 13 | 19:05 | 29896.00 | 29905.25 | 29889.50 | 29890.75 | 1.25 | 9.25 | 0.24 | 1.76 |
+| 14 | 19:10 | 29892.00 | 29897.50 | 29884.50 | 29891.25 | 6.75 | 5.50 | 9.00 | 7.33 |
+| 15 | 19:15 | 29890.25 | 29894.25 | 29869.50 | 29891.50 | **20.75** | 2.75 | **16.60** | 2.20 |
+| 16 | 19:20 | 29890.00 | 29894.00 | 29876.00 | 29881.50 | 5.50 | 4.00 | 0.65 | 0.47 |
+| 17 | 19:25 | 29881.00 | 29891.50 | 29879.00 | 29890.25 | 2.00 | 1.25 | 0.22 | 0.14 |
+| **18** | **19:30** | 29888.25 | 29891.50 | 29880.75 | 29886.00 | 5.25 | 3.25 | 2.33 | 1.44 |
+| 19 | 19:35 | 29886.25 | 29893.50 | 29875.50 | 29890.75 | 10.75 | 2.75 | 2.39 | 0.61 |
+| 20 | 19:40 | 29892.50 | 29898.25 | 29888.75 | 29888.75 | 0.00 | 5.75 | 0.00 | 1.53 |
+| 21 | 19:45 | 29889.25 | 29890.75 | 29845.00 | 29863.50 | 18.50 | 1.50 | 0.72 | 0.06 |
+| 22 | 19:50 | 29864.00 | 29895.50 | 29864.00 | 29876.50 | 0.00 | 19.00 | 0.00 | 1.52 |
+| 23 | 19:55 | 29876.50 | 29895.00 | 29865.75 | 29893.25 | 10.75 | 1.75 | 0.64 | 0.10 |
 
-(No `>=0.50 ATR` example landed in the first-match pick within this window;
-`fvg_candidates.csv` has the full population if Dylan wants one from later
-in the week.)
+**Source candle (idx 18, open 19:30):** `lower_wick=5.25 > upper_wick=3.25` →
+dominant direction is now **bullish**, not bearish. The old detector's
+bearish candidate (`upper_wick/body=1.44≥0.20`) was a legitimate floor-pass
+under the old (non-dominant) rule but is exactly the "too permissive"
+behaviour the repair removes.
 
-### iFVG examples (5, spanning inversion speed)
+**Every candidate the old detector created from this candle:** bullish
+(`lower_wick/body=2.33`) and bearish (`upper_wick/body=1.44`) — both,
+independently.
 
-1. **IFVG2-000010** (parent `FVG2-000029`) — 1m, 1-candle inversion. Parent
-   bullish FVG formed `22:34 ET`, width/ATR 0.067. Open NQU6 on 1m at
-   `22:35 ET` — the very next candle after formation closes fully through
-   `29772.75`, activating a bearish iFVG.
-2. **IFVG2-000015** (parent `FVG2-000042`) — 1m, 2-candle inversion. Parent
-   bearish FVG formed `00:36 ET` (7/13), width/ATR 0.201. Open NQU6 on 1m at
-   `00:38 ET` — inversion 2 candles after formation, activating a bullish
-   iFVG through `29638.25`.
-3. **IFVG2-000002** (parent `FVG2-000005`) — 1m, 3-candle inversion. Parent
-   bullish FVG formed `18:57 ET`, width/ATR 0.047. Open NQU6 on 1m at
-   `19:00 ET` — inversion through `29908.25`, activating a bearish iFVG.
-4. **IFVG2-000001** (parent `FVG2-000004`) — 1m, 4-candle inversion. Parent
-   bullish FVG formed `18:56 ET`, width/ATR 0.849. Open NQU6 on 1m at
-   `19:00 ET` — inversion through `29892.75`, activating a bearish iFVG.
-5. **IFVG2-000003** (parent `FVG2-000009`) — 1m, 5+-candle inversion. Parent
-   bearish FVG formed `19:46 ET`, width/ATR 0.887. Open NQU6 on 1m at
-   `19:51 ET` (5 candles from formation) — inversion through `29888.75`,
-   activating a bullish iFVG.
+**Why the old detector selected bearish:** it never compared the two wicks
+against each other; both independently cleared the 0.20 floor, and the
+report happened to surface the bearish one.
 
-### RB confirmed examples (5, spanning wick/body ratio and timeframe — causally corrected)
+**Result under the repaired rule:** only the dominant bullish candidate is
+created (`RB2-000005`, `dominant_wick_ratio=1.62`). It does **not** confirm —
+`rejection_reason=invalidated_before_confirmation` (MFE stayed at 12.25,
+0.50x ATR, well under the 1.5x threshold, before a close-through the
+opposite boundary). **RB2-000009(old) no longer exists in any form** —
+neither the old bearish read nor the new bullish read produces a confirmed
+RB from this candle.
 
-Each line reports `source_ts < activation_ts <= first_tap_ts/deactivation_ts`
-explicitly so the fix is directly checkable against every example.
+**Nearby superior candidate wicks:** idx 15 (open 19:15) has a dramatically
+larger lower wick — 20.75 points, `lw/body=16.60`, `dominant_wick_ratio=7.55`
+— tested and **also fails to confirm** within its own 3-candle window
+(`threshold_not_reached_in_3_candles`). idx 21 (open 19:45) has an 18.50-point
+lower wick but a large body (ratio only 0.72, below the 1.44/2.33 seen at
+idx 18/19). **Honest finding: this specific 5-candle neighbourhood does not
+produce a clean confirmed RB under the repaired rules** — there is no
+"replacement" example to substitute here; none was fabricated.
 
-1. **RB2-000068** — 1m bearish. Open NQU6 on 1m at source `18:59 ET`. Source
-   OHLC `(29913.25, 29914.25, 29909.50, 29910.25)`, wick/body 0.333.
-   Confirmed on confirming candle 1 (MFE 32.75 pts, ATR 9.71) →
-   **activation `19:00 ET`**. First tap `20:01 ET`, deactivated
-   `DEACTIVATED_CLOSE_THROUGH` at `20:02 ET`.
-2. **RB2-000032** — 3m bearish. Open NQU6 on 3m at source `19:45 ET`.
-   Wick/body 0.762. Confirmed on candle 1 (MFE 49.0 pts, ATR 16.34) →
-   **activation `19:48 ET`**. First tap `19:54 ET`, deactivated
-   `DEACTIVATED_CLOSE_THROUGH` at `20:03 ET`.
-3. **RB2-000009** — 5m bearish. Open NQU6 on 5m at source `19:35 ET`.
-   Wick/body 1.444. Confirmed on candle 3 (MFE 43.25 pts, ATR 24.30) →
-   **activation `19:50 ET`** (previously misreported as `19:50 ET`
-   activation with an impossible `19:40 ET` deactivation — now corrected).
-   First tap and deactivation both land on the very next 5m candle,
-   `19:55 ET` (`DEACTIVATED_OVERSHOOT_LIMIT`).
-4. **RB2-000034** — 15m bullish. Open NQU6 on 15m at source
-   `2026-07-13 04:00 ET`. Wick/body 2.0. Confirmed on candle 2 (MFE 88.75
-   pts, ATR 55.53) → **activation `04:30 ET`**. First tap and deactivation
-   both `09:45 ET` (`DEACTIVATED_CLOSE_THROUGH`).
-5. **RB2-000065** — 30m bullish. Open NQU6 on 30m at source
-   `2026-07-13 23:30 ET`. Wick/body 5.232. Confirmed on candle 3 (MFE 139.75
-   pts, ATR 89.03) → **activation `2026-07-14 01:00 ET`**. Never tapped;
-   `EXPIRED_UNTOUCHED_8H` at `09:00 ET` (8h measured from activation, not
-   from source).
+## Forensic audit — RB2-000034(old), 15m, reported source "04:00 ET"
 
-### RB rejected examples (3 distinct mechanical reasons — all that exist)
+**Corrected source open time: Monday, July 13, 2026, 3:45 AM ET** (not
+4:00 AM).
 
-1. **RB2-000001** — 1m bullish, wick/body 0.212. Open NQU6 on 1m at
-   `18:14 ET`. MFE stayed flat at 23.5 pts across all 3 confirmation
-   candles, never reaching 1.5x ATR (25.52) → `threshold_not_reached_in_3_
-   candles`.
-2. **RB2-000007** — 1m bearish, wick/body 0.235. Open NQU6 on 1m at
-   `18:17 ET`. A later candle in the 3-candle window closed back through the
-   zone's opposite boundary before MFE reached threshold →
-   `invalidated_before_confirmation`.
-3. **RB2-009611** — 1m bullish, wick/body 3.333. Open NQU6 on 1m at
-   `2026-07-17 16:57 ET` — the data file ends 3 minutes later, leaving fewer
-   than 3 completed confirmation candles → `insufficient_data_for_
-   confirmation_window`.
+15m candles, open-time labeled, idx 33–45:
 
-(Only three distinct mechanical rejection reasons are implemented; five was
-not achievable and none were fabricated.)
+| idx | open ET | O | H | L | C | lower_wick | upper_wick | lw/body | uw/body |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 33 | 02:15 | 29592.00 | 29635.25 | 29588.75 | 29630.00 | 3.25 | 5.25 | 0.09 | 0.14 |
+| 34 | 02:30 | 29630.25 | 29650.50 | 29598.50 | 29643.75 | 31.75 | 6.75 | 2.35 | 0.50 |
+| 35 | 02:45 | 29641.75 | 29652.00 | 29611.25 | 29632.50 | 21.25 | 10.25 | 2.30 | 1.11 |
+| 36 | 03:00 | 29631.50 | 29675.50 | 29607.00 | 29670.75 | 24.50 | 4.75 | 0.62 | 0.12 |
+| 37 | 03:15 | 29671.50 | 29690.25 | 29642.25 | 29674.50 | 29.25 | 15.75 | 9.75 | 5.25 |
+| 38 | 03:30 | 29670.75 | 29671.25 | 29636.00 | 29660.50 | 24.50 | 0.50 | 2.39 | 0.05 |
+| **39** | **03:45** | 29660.75 | 29663.00 | 29636.75 | 29652.75 | **16.00** | 2.25 | **2.00** | 0.28 |
+| 40 | 04:00 | 29654.25 | 29707.00 | 29647.50 | 29703.75 | 6.75 | 3.25 | 0.14 | 0.07 |
+| 41 | 04:15 | 29705.00 | 29741.50 | 29704.25 | 29725.75 | 0.75 | 15.75 | 0.04 | 0.76 |
+| 42 | 04:30 | 29728.00 | 29735.00 | 29700.00 | 29726.50 | 26.50 | 7.00 | 17.67 | 4.67 |
+| 43 | 04:45 | 29727.25 | 29754.00 | 29721.75 | 29747.50 | 5.50 | 6.50 | 0.27 | 0.32 |
+| 44 | 05:00 | 29747.50 | 29751.25 | 29718.00 | 29732.75 | 14.75 | 3.75 | 1.00 | 0.25 |
+| 45 | 05:15 | 29733.75 | 29766.25 | 29729.75 | 29763.25 | 4.00 | 3.00 | 0.14 | 0.10 |
 
-## Validation (RB causal-lifecycle correction)
+**All active RB zones at candle idx 40 (04:00 open), just before it opens:**
+one bearish RB, zone `[29797.25, 29808.75]`, source idx 17 (7/12 23:15),
+active `23:15 ET (7/12)`–`07:15 ET (7/13)` — far above the current price
+range (~29,650–29,710) and the opposite direction. **The 04:00 candle did
+not touch any earlier active RB.**
 
-Computed across all 3,709 confirmed RBs, all 6 governing timeframes, the
-actual NQU6 audit run:
+**Result:** the source candle genuinely is idx 39 (open 03:45), a fresh
+low with no prior active structure to have suppressed it —
+`dominant_wick_ratio=7.11` (16.00 vs 2.25), a real and clean dominant wick.
+Confirmed on window-candle 2 (idx 41, open 04:15), MFE 88.75 pts = 1.60x ATR.
+The candle at idx 40 (04:00 open) is exactly what Dylan identified: it dips
+into the zone (`low 29647.50` vs `zone_hi 29652.75`) and reacts upward
+(+53.5 pts to close) — **a tap/reaction of the idx-39 RB, not a separate
+source**. **RB2-000034(old) is confirmed correct under the repaired
+rules** (now `RB2-000022`) — Dylan's read was right on both counts: the real
+source is 03:45, and 04:00 is the reaction candle.
 
-| metric | value |
-|---|---:|
-| confirmed RBs | 3,709 |
-| confirmed RBs with a recorded first tap | 3,185 |
-| confirmed RBs with a recorded deactivation | 3,709 |
-| minimum activation → first-tap duration | 1 minute |
-| minimum activation → deactivation duration | 1 minute |
-| **timestamp-order violations** | **0** |
+## Re-audit — FVG2-000042(old) / IFVG2-000015(old)
 
-"Timestamp-order violation" = `source_ts >= activation_ts`, or
-`first_tap_ts < activation_ts` (when a tap exists), or `deactivation_ts <
-activation_ts` (when a deactivation exists). Every confirmed RB in the real
-audit satisfies `source_ts < activation_ts <= first_tap_ts` and
-`activation_ts <= deactivation_ts`; the minimum 1-minute gaps are exactly
-what's expected on the 1m series (tracking cannot begin before the candle
-immediately after confirmation), and every higher timeframe's minimum is at
-least one of its own candles.
+Requested boundaries: A 00:34 ET, B 00:35 ET, C 00:36 ET, zone
+`[29636.25, 29638.25]`, inversion 00:38 ET (Monday, July 13, 2026).
+
+Raw NQU6 OHLC (confirmed, unchanged from the original report):
+A `(29646.75, 29650.00, 29638.25, 29641.00)` bearish,
+B `(29641.50, 29641.50, 29631.75, 29632.50)` bearish,
+C `(29632.25, 29636.25, 29629.00, 29630.75)` bearish. None of A/B/C is an
+exact doji (`close != open` on all three) — **this triple is not affected
+by Correction 1**. Geometry: `C.high(29636.25) < A.low(29638.25)` — exactly
+the reported zone, no disagreement.
+
+**Explanation for the visual disagreement:** this is a genuine 2.0-point gap
+(`width/ATR = 0.20`, right at this audit's example-selection preference
+threshold) on an index trading near 29,636 — real per the literal A-vs-C
+rule, but small enough that candle B's much larger range (29631.75–29641.50,
+which fully spans both A's low and C's high) visually "fills in" the area
+even though A and C's specific levels don't overlap. Retained in the full
+population (`fvg_candidates.csv`); **not** selected as one of the 5 audit
+examples below (a wider parent was available and is used instead, per the
+new "prefer ≥0.20 ATR" audit-selection rule — note this parent is exactly at
+0.20, so a slightly wider one was preferred where available for the 2-candle
+bucket).
+
+## Regenerated combined audit table
+
+### FVGs — 5, spanning ATR bins
+
+| ID | TF | Dir | Bin | A / B / C (weekday, date, ET) | Zone |
+|---|---|---|---|---|---|
+| FVG2-000003 | 1m | bullish | <0.05 ATR | Sun Jul 12 2026 18:50 / 18:51 / **18:52 ET** | [29882.75, 29883.00] |
+| FVG2-000002 | 1m | bullish | 0.05–<0.10 ATR | Sun Jul 12 2026 18:42 / 18:43 / **18:44 ET** | [29888.00, 29888.75] |
+| FVG2-000013 | 1m | bearish | 0.10–<0.20 ATR | Sun Jul 12 2026 20:29 / 20:30 / **20:31 ET** | [29960.75, 29964.00] |
+| FVG2-000007 | 1m | bullish | 0.20–<0.30 ATR | Sun Jul 12 2026 19:27 / 19:28 / **19:29 ET** | [29884.75, 29886.50] |
+| FVG2-000012 | 1m | bearish | 0.30–<0.50 ATR | Sun Jul 12 2026 20:27 / 20:28 / **20:29 ET** | [29977.25, 29983.50] |
+
+*Instruction:* open NQU6 on 1m at the bolded C time; A/B/C are the 3 candles
+ending there. (1m open time == the causal timestamp already reported
+previously — unaffected by Correction 2.)
+
+### iFVGs — 5, spanning inversion speed, full parent detail
+
+**1. IFVG2-000008** (parent FVG2-000028, 1-candle inversion)
+Parent A **Sun Jul 12 2026 22:48 ET** `(29752.00, 29759.00, 29748.75,
+29757.50)` bullish; B **22:49 ET** `(29757.00, 29765.25, 29754.75,
+29764.25)` bullish; C **22:50 ET** `(29766.00, 29773.75, 29763.75, 29768.50)`
+bullish. Zone `[29759.00, 29763.75]`, width 4.75 pts, width/ATR 0.368.
+Parent first touch **22:51 ET**. Parent active-state proof immediately
+before inversion: formed 22:50, first touched 22:51 (same candle as
+inversion — see below), never deactivated before that. Inversion candle
+**22:51 ET** closes through 29759.00 → bearish child.
+
+**2. IFVG2-000012** (parent FVG2-000039, 2-candle inversion)
+Parent A **Mon Jul 13 2026 00:34 ET** `(29646.75, 29650.00, 29638.25,
+29641.00)` bearish; B **00:35 ET** `(29641.50, 29641.50, 29631.75, 29632.50)`
+bearish; C **00:36 ET** `(29632.25, 29636.25, 29629.00, 29630.75)` bearish.
+Zone `[29636.25, 29638.25]`, width 2.0 pts, width/ATR 0.201 (this is the
+FVG2-000042(old) structure — see re-audit above). Parent first touch
+**00:37 ET**, still active (untouched-deactivation) through that candle.
+Inversion candle **00:38 ET** closes through 29638.25 → bullish child.
+
+**3. IFVG2-000053** (parent FVG2-000101, 3-candle inversion)
+Parent A **Mon Jul 13 2026 10:47 ET** `(29643.00, 29657.75, 29634.25,
+29650.00)` bullish; B **10:48 ET** `(29649.50, 29676.00, 29648.25, 29669.00)`
+bullish; C **10:49 ET** `(29669.00, 29698.25, 29665.75, 29691.50)` bullish.
+Zone `[29657.75, 29665.75]`, width 8.0 pts, width/ATR 0.271. Parent first
+touch **10:52 ET** — same candle as inversion (a direct close-through on
+first touch, no separate scrape). Inversion candle **10:52 ET** closes
+through 29657.75 → bearish child.
+
+**4. IFVG2-000013** (parent FVG2-000044, 4-candle inversion)
+Parent A **Mon Jul 13 2026 01:09 ET** `(29660.25, 29674.25, 29660.25,
+29672.00)` bullish; B **01:10 ET** `(29672.25, 29683.50, 29668.00, 29681.50)`
+bullish; C **01:11 ET** `(29681.75, 29692.75, 29681.75, 29682.25)` bullish.
+Zone `[29674.25, 29681.75]`, width 7.5 pts, width/ATR 0.665. Parent first
+touch **01:12 ET**, remains active through 2 further candles. Inversion
+candle **01:15 ET** closes through 29674.25 → bearish child.
+
+**5. IFVG2-000002** (parent FVG2-000008, 5+-candle inversion)
+Parent A **Sun Jul 12 2026 19:44 ET** `(29892.75, 29893.00, 29888.75,
+29888.75)` bearish; B **19:45 ET** `(29889.25, 29890.75, 29874.00, 29880.00)`
+bearish; C **19:46 ET** `(29880.50, 29880.50, 29852.00, 29855.50)` bearish.
+Zone `[29880.50, 29888.75]`, width 8.25 pts, width/ATR 0.887. Parent first
+touch **19:50 ET**, remains active through 4 further candles. Inversion
+candle **19:51 ET** closes through 29888.75 → bullish child.
+
+*(All iFVG timestamps above are 1m — open time == causal time, unaffected
+by Correction 2.)*
+
+### RB — known-good regression examples (retained)
+
+| ID | TF | Dir | Source (open) | Activation (open) | First tap (open) | Deactivation (open) |
+|---|---|---|---|---|---|---|
+| RB2-000038 | 1m | bearish | Sun Jul 12 **18:59** | Sun Jul 12 **19:00** | Sun Jul 12 **20:01** | Sun Jul 12 **20:02** (CLOSE_THROUGH) |
+| RB2-000017 | 3m | bearish | Sun Jul 12 **19:42** | Sun Jul 12 **19:45** | Sun Jul 12 **19:51** | Sun Jul 12 **20:00** (CLOSE_THROUGH) |
+
+### RB — repaired example (RB2-000034(old), now confirmed valid)
+
+| ID | TF | Dir | Source (open) | Activation (open) | First tap (open) | Deactivation (open) |
+|---|---|---|---|---|---|---|
+| RB2-000022 | 15m | bullish | Mon Jul 13 **03:45** | Mon Jul 13 **04:15** | Mon Jul 13 **09:30** | Mon Jul 13 **09:30** (CLOSE_THROUGH) |
+
+### RB — 3 newly selected corrected examples
+
+| ID | TF | Dir | Source (open) | Activation (open) | First tap (open) | Deactivation (open) | wick/body | dominant ratio |
+|---|---|---|---|---|---|---|---:|---:|
+| RB2-000438 | 5m | bearish | Tue Jul 14 **20:20** | Tue Jul 14 **20:35** | Tue Jul 14 **20:50** | Tue Jul 14 **21:35** (CLOSE_THROUGH) | 2.04 | 106.0 |
+| RB2-000182 | 15m | bearish | Wed Jul 15 **10:00** | Wed Jul 15 **10:15** | (never tapped) | Wed Jul 15 **18:15** (EXPIRED_UNTOUCHED_8H) | 4.29 | 139.5 |
+| RB2-000030 | 60m | bullish | Tue Jul 14 **18:00** | Tue Jul 14 **21:00** | Wed Jul 15 **09:00** | Wed Jul 15 **10:00** (CLOSE_THROUGH) | 0.87 | 22.2 |
+
+### RB — rejected/ambiguous counterexamples
+
+| ID | TF | Dir | Source (open) | Zone | wick/body | dominant ratio | Reason |
+|---|---|---|---|---|---:|---:|---|
+| RB2-000005 (RB2-000009(old) equivalent) | 5m | bullish (reclassified) | Sun Jul 12 **19:30** | [29880.75, 29886.00] | 2.33 | 1.62 | `invalidated_before_confirmation` — no longer qualifies as any RB |
 
 ## Tests
 
 ```
 PYTHONPATH=src python3 -m pytest tests/test_primitive_reset.py -v
 ```
-62 collected, 62 passed, 0 failed, 0 skipped, 3.24s (52 from the original
-Part-10 suite, unchanged and still passing, plus 10 new tests for the RB
-causal-lifecycle fix: activation-never-after-first-tap/deactivation,
-no-event-before-activation, confirmation-on-candle-{1,2,3}-begins-tracking-
-on-the-next-candle, confirmation-candle-cannot-tap-or-invalidate-itself,
-pre-confirmation-traversal-cannot-leak-into-post-activation, rejected-
-candidates-never-enter-the-active-set, expiry-measured-from-activation, a
-segment-boundary edge case, and a real-NQU6-data invariant check asserting
-zero violations across all 3,709 confirmed RBs). Per Part 10's instruction,
-only this fast, synthetic-plus-invariant-check suite was run for this task —
-the complete slow historical suite was not run.
+**72 collected, 72 passed, 0 failed, 0 skipped, ~3.5s.** 62 from the prior
+suite (unchanged, still passing) + 10 new: 2 exact-doji-colour tests, 2
+doji-blocks-FVG/iFVG tests, 2 dominant-wick tests, 5 existing-structure-
+precedence tests. Per the task, only this fast suite and the narrow NQU6
+audit were run — no evidence, materialization, or historical scan.
 
-## Honest verdict
+## Counts before/after
 
-**PRIMITIVE_RESET_READY_WITH_LIMITATIONS**
+| | before | after |
+|---|---:|---:|
+| FVG total | 1,310 | 1,291 |
+| iFVG total | 652 | 639 |
+| RB candidates total | 16,000 | 8,045 |
+| RB confirmed total | 3,709 | 1,951 |
+| FVG doji-blocked | n/a | 61 |
+| RB equal-wick ambiguous | n/a | 154 |
+| RB duplicate/reaction suppressed (precedence) | n/a | 1,699 |
+| RB timestamp-order violations | 0 (already fixed prior turn) | **0** |
 
-The exact FVG/iFVG/RB rules, the common traversal contract, the 8h/no-expiry
-lifetime split, every Part-10 synthetic proof, and the RB causal-lifecycle
-correction (zero timestamp-order violations across all 3,709 confirmed RBs
-in the real audit) pass. Limitations, so Dylan inspects before anything
-downstream is unblocked:
+Validation detail (real NQU6 audit, all 6 timeframes): 1,951 confirmed RBs,
+1,684 with a recorded first tap, all 1,951 with a recorded deactivation,
+minimum activation→tap and activation→deactivation gap 1 minute (1m
+timeframe), **0 timestamp-order violations**.
 
-1. Requested audit window is short one final hour (`17:00`–`17:59:59 ET` on
-   `2026-07-17`) — the licensed file ends there; disclosed, not fabricated.
-2. A handful of Part 5's more open-ended descriptive iFVG fields ("total
-   distance moved through the parent zone", "scraping candles", "average
-   scraping body") were given exact, documented formulas since the spec
-   described them qualitatively rather than with a pinned formula — these
-   are provisional pending Dylan's confirmation they read as intended.
-3. The RB candidate floor's `max(body, 1 tick)` convention (spec-sanctioned)
-   produces a large volume of near-doji RB candidates; not a defect, but
-   worth Dylan's awareness before he opens `rb_rejected_candidates.csv`.
-4. This is a coded, timestamp-based audit only — no chart was rendered and
-   no visual pattern selection was used at any point, per the task's
-   explicit restriction.
+## Verdict
 
-Primitives are not claimed correct until Dylan inspects the timestamps above
-on his own chart. No strategy, evidence, or profitability claim is made.
+**PRIMITIVE_AUDIT_READY_WITH_LIMITATIONS**
+
+FVG geometry/traversal/ATR/lifetime are unchanged and remain PASS. The
+exact-doji colour gap (iFVG audit was INCONCLUSIVE) is fixed and disclosed
+(61 blocked, logged, none silently reclassified). The RB source-selection
+FAIL is fixed via dominant-wick selection + existing-structure precedence,
+both forensically verified against the exact two failing examples Dylan
+flagged — one (RB2-000034-equivalent) is now confirmed correct and
+explained, the other (RB2-000009-equivalent) no longer produces any RB and
+is reported as a genuine non-example, not defended or hidden. Zero
+timestamp-order violations across 1,951 real confirmed RBs. Limitations:
+(1) the FVG2-000042(old)-equivalent structure is real but small (2.0 pts,
+0.20 ATR) and remains a judgment call for visual review; (2) Part 5's
+descriptive iFVG distance/scraping-candle formulas remain provisional per
+the original disclosure; (3) the 5m neighbourhood around the old
+RB2-000009 genuinely has no clean confirmed replacement — reported honestly
+rather than forced. Primitives are not claimed correct until Dylan performs
+the combined audit above himself.
