@@ -91,6 +91,7 @@ def main():
     result = {
         "engine": branch_result["engine"], "episodes": branch_result["episodes"],
         "branches": branch_result["branches"], "log": branch_result["log"],
+        "triggers": branch_result["triggers"],
         "graph_candidates": handoff["cands_in_week"],
         "graph_rejected": handoff["rej_in_week"],
         "occluded_by_tf": handoff["occluded_by_tf"],
