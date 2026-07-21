@@ -287,19 +287,21 @@ def main():
 
     def pick_ifvg_examples(ifvgs, n=5):
         # Audit-example selection rule only (not a universal FVG threshold,
-        # spec Part 3): prefer a parent width >= 0.20 ATR per speed bucket
-        # where one exists, so the visual audit doesn't default to a
-        # near-invisible micro-gap parent when a clearer one is available.
+        # spec Part 3): per speed bucket, pick the iFVG with the WIDEST parent
+        # (largest parent_width_atr) so the visual audit gets the most clearly
+        # inspectable gap, never a near-invisible micro-gap parent. Dylan
+        # flagged the borderline 0.20-ATR (2-point) 2-candle example as
+        # unusable on a real chart; widest-parent selection replaces it with a
+        # much larger, unambiguous gap. Detector logic is untouched.
         by_speed = {}
         for iv in ifvgs:
             by_speed.setdefault(iv.inversion_speed_bucket, []).append(iv)
         out = []
         for bucket in ("1_candles", "2_candles", "3_candles", "4_candles", "5plus_candles"):
-            items = by_speed.get(bucket, [])
-            wide = [x for x in items if (x.parent_width_atr or 0) >= 0.20]
-            pick = wide[0] if wide else (items[0] if items else None)
-            if pick is not None:
-                out.append(pick)
+            items = sorted(by_speed.get(bucket, []),
+                           key=lambda x: -(x.parent_width_atr or 0))
+            if items:
+                out.append(items[0])
             if len(out) >= n:
                 break
         return out[:n]

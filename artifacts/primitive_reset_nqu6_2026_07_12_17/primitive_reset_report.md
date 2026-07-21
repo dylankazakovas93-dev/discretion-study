@@ -242,52 +242,67 @@ previously — unaffected by Correction 2.)
 
 ### iFVGs — 5, spanning inversion speed, full parent detail
 
-**1. IFVG2-000008** (parent FVG2-000028, 1-candle inversion)
-Parent A **Sun Jul 12 2026 22:48 ET** `(29752.00, 29759.00, 29748.75,
-29757.50)` bullish; B **22:49 ET** `(29757.00, 29765.25, 29754.75,
-29764.25)` bullish; C **22:50 ET** `(29766.00, 29773.75, 29763.75, 29768.50)`
-bullish. Zone `[29759.00, 29763.75]`, width 4.75 pts, width/ATR 0.368.
-Parent first touch **22:51 ET**. Parent active-state proof immediately
-before inversion: formed 22:50, first touched 22:51 (same candle as
-inversion — see below), never deactivated before that. Inversion candle
-**22:51 ET** closes through 29759.00 → bearish child.
+Selection is now **widest parent per speed bucket** (audit-example rule only,
+not a detector threshold), replacing the earlier "first parent ≥0.20 ATR"
+rule that surfaced the 2.0-point (0.20 ATR) 2-candle example Dylan correctly
+called unusable on a chart. Every parent below is a clean same-colour triple
+with **no exact doji**, and every gap is large enough to read directly.
 
-**2. IFVG2-000012** (parent FVG2-000039, 2-candle inversion)
-Parent A **Mon Jul 13 2026 00:34 ET** `(29646.75, 29650.00, 29638.25,
-29641.00)` bearish; B **00:35 ET** `(29641.50, 29641.50, 29631.75, 29632.50)`
-bearish; C **00:36 ET** `(29632.25, 29636.25, 29629.00, 29630.75)` bearish.
-Zone `[29636.25, 29638.25]`, width 2.0 pts, width/ATR 0.201 (this is the
-FVG2-000042(old) structure — see re-audit above). Parent first touch
-**00:37 ET**, still active (untouched-deactivation) through that candle.
-Inversion candle **00:38 ET** closes through 29638.25 → bullish child.
+**1. IFVG2-000039** (parent FVG2-000082, 1-candle inversion)
+Parent A **Mon Jul 13 2026 7:18 AM ET** `(29780.00, 29780.75, 29765.50,
+29766.50)` bearish; B **7:19 AM ET** `(29766.75, 29767.50, 29754.00,
+29755.00)` bearish; C **7:20 AM ET** `(29753.25, 29755.00, 29741.50,
+29746.00)` bearish. Zone `[29755.00, 29765.50]`, width **10.5 pts**, width/ATR
+0.943. Parent formed at C (7:20), remained active with no close-through until
+the very next candle. Inversion candle **7:21 AM ET**
+`(29744.75, 29769.00, 29744.75, 29769.00)` closes fully through the distal
+boundary 29765.50 → **bullish** child.
 
-**3. IFVG2-000053** (parent FVG2-000101, 3-candle inversion)
-Parent A **Mon Jul 13 2026 10:47 ET** `(29643.00, 29657.75, 29634.25,
-29650.00)` bullish; B **10:48 ET** `(29649.50, 29676.00, 29648.25, 29669.00)`
-bullish; C **10:49 ET** `(29669.00, 29698.25, 29665.75, 29691.50)` bullish.
-Zone `[29657.75, 29665.75]`, width 8.0 pts, width/ATR 0.271. Parent first
-touch **10:52 ET** — same candle as inversion (a direct close-through on
-first touch, no separate scrape). Inversion candle **10:52 ET** closes
-through 29657.75 → bearish child.
+**2. IFVG2-000274** (parent FVG2-000524, 2-candle inversion) — *replaces the
+disputed 2.0-pt example*
+Parent A **Thu Jul 16 2026 2:04 AM ET** `(29709.75, 29713.00, 29703.75,
+29708.50)` bearish; B **2:05 AM ET** `(29707.50, 29719.75, 29671.75,
+29674.00)` bearish; C **2:06 AM ET** `(29674.00, 29677.75, 29654.50,
+29666.75)` bearish. Zone `[29677.75, 29703.75]`, width **26.0 pts**, width/ATR
+1.616. Parent formed at C (2:06), stayed active through the next candle, then
+inverted. Inversion candle **2:08 AM ET** `(29651.50, 29733.00, 29646.50,
+29708.25)` closes fully through 29703.75 → **bullish** child. This is a large,
+unambiguous 26-point gap — directly inspectable, unlike the old pick.
 
-**4. IFVG2-000013** (parent FVG2-000044, 4-candle inversion)
-Parent A **Mon Jul 13 2026 01:09 ET** `(29660.25, 29674.25, 29660.25,
-29672.00)` bullish; B **01:10 ET** `(29672.25, 29683.50, 29668.00, 29681.50)`
-bullish; C **01:11 ET** `(29681.75, 29692.75, 29681.75, 29682.25)` bullish.
-Zone `[29674.25, 29681.75]`, width 7.5 pts, width/ATR 0.665. Parent first
-touch **01:12 ET**, remains active through 2 further candles. Inversion
-candle **01:15 ET** closes through 29674.25 → bearish child.
+**3. IFVG2-000006** (parent FVG2-000019, 3-candle inversion, **3m**)
+Parent A **Mon Jul 13 2026 1:18 AM ET** `(29656.75, 29661.25, 29633.25,
+29633.25)` bearish; B **1:21 AM ET** `(29634.50, 29637.00, 29597.00,
+29602.25)` bearish; C **1:24 AM ET** `(29602.25, 29606.00, 29589.75,
+29591.00)` bearish. Zone `[29606.00, 29633.25]`, width **27.25 pts**, width/ATR
+1.259. Parent formed at C (1:24 open), remained active through 2 further 3m
+candles. Inversion candle **1:33 AM ET open** `(29577.75, 29640.25, 29576.50,
+29635.00)` closes fully through 29633.25 → **bullish** child. *(3m timestamps
+are candle-open, per Correction 2 — open the 3m chart at these times.)*
 
-**5. IFVG2-000002** (parent FVG2-000008, 5+-candle inversion)
-Parent A **Sun Jul 12 2026 19:44 ET** `(29892.75, 29893.00, 29888.75,
-29888.75)` bearish; B **19:45 ET** `(29889.25, 29890.75, 29874.00, 29880.00)`
-bearish; C **19:46 ET** `(29880.50, 29880.50, 29852.00, 29855.50)` bearish.
-Zone `[29880.50, 29888.75]`, width 8.25 pts, width/ATR 0.887. Parent first
-touch **19:50 ET**, remains active through 4 further candles. Inversion
-candle **19:51 ET** closes through 29888.75 → bullish child.
+**4. IFVG2-000280** (parent FVG2-000534, 4-candle inversion)
+Parent A **Thu Jul 16 2026 2:54 AM ET** `(29670.75, 29675.25, 29666.25,
+29675.25)` bullish; B **2:55 AM ET** `(29674.50, 29687.50, 29672.25,
+29685.25)` bullish; C **2:56 AM ET** `(29686.25, 29694.00, 29686.25,
+29689.25)` bullish. Zone `[29675.25, 29686.25]`, width **11.0 pts**, width/ATR
+1.091. Parent formed at C (2:56), first touched 2:57, remained active through
+3 further candles. Inversion candle **3:00 AM ET** `(29684.75, 29686.50,
+29648.50, 29650.00)` closes fully through 29675.25 → **bearish** child.
 
-*(All iFVG timestamps above are 1m — open time == causal time, unaffected
-by Correction 2.)*
+**5. IFVG2-000131** (parent FVG2-000254, 5+-candle inversion)
+Parent A **Tue Jul 14 2026 8:29 AM ET** `(29653.25, 29694.00, 29652.50,
+29694.00)` bullish; B **8:30 AM ET** `(29694.00, 29908.25, 29677.00,
+29901.25)` bullish; C **8:31 AM ET** `(29903.50, 29921.75, 29858.75,
+29906.00)` bullish. Zone `[29694.00, 29858.75]`, width **164.75 pts**,
+width/ATR 4.953 — the July-14 08:30 cash-open ramp gap. Parent formed at C
+(8:31), first touched 8:35, remained active for **93** 1-minute candles.
+Inversion candle **10:04 AM ET** `(29722.00, 29733.00, 29690.00, 29692.00)`
+closes fully through 29694.00 → **bearish** child. (A slow, large inversion —
+maximally visible. The previously-verified compact 5-bar example IFVG2-000002
+at Sun Jul 12 7:46–7:51 PM ET remains valid in `ifvg_candidates.csv` if a
+tighter 5-candle representative is preferred.)
+
+*(1m timestamps are candle-open == causal time; only the 3m example (#3)
+required Correction-2 open-time conversion.)*
 
 ### RB — known-good regression examples (retained)
 
