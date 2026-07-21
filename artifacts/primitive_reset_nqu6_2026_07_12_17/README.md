@@ -10,10 +10,13 @@ testing, no adaptive evidence, no historical rerun. See
 - `fvg_candidates.csv` — every detected FVG, all 6 governing timeframes.
 - `fvg_atr_bin_summary.csv` — FVG counts by timeframe x size bin.
 - `ifvg_candidates.csv` — every detected iFVG.
-- `rb_confirmed_candidates.csv` — every RB candidate that reached 1.5x-ATR
-  confirmation.
-- `rb_rejected_candidates.csv` — every RB candidate that did not confirm
-  (with a mechanical `rejection_reason`).
+- `rb_candidates.csv` — every LIVE rejection block (all dominant-wick
+  floor-passers), with an `activated` column (did its MFE reach 1.5x-ATR
+  within 3 candles), `first_tap_was_activated`, `n_taps`, and lifecycle. A
+  rejection block is a usable structure regardless of activation.
+- `rb_tap_events.csv` — one row per tap of an RB, each stamped
+  `was_activated_at_tap`: the causal "at time of taking, was this RB
+  activated" ledger.
 - `fvg_doji_blocked.csv` — geometry-valid FVG triples excluded because an
   A/B/C candle was an exact doji (`open == close`); diagnostic only, never
   an active FVG or iFVG parent.

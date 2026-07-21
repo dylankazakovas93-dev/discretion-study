@@ -151,12 +151,28 @@ def _rb_row(r):
         "mfe_after_1": r.mfe_after_1, "mfe_after_2": r.mfe_after_2, "mfe_after_3": r.mfe_after_3,
         "mfe_after_1_atr": r.mfe_after_1_atr, "mfe_after_2_atr": r.mfe_after_2_atr,
         "mfe_after_3_atr": r.mfe_after_3_atr,
-        "confirming_candle_number": r.confirming_candle_number,
-        "confirmed": r.confirmed, "rejection_reason": r.rejection_reason,
-        "activation_ts_et": r.activation_ts, "first_tap_ts_et": r.first_tap_ts,
-        "max_penetration_after_activation": r.max_penetration_after_activation,
+        # activation is now a descriptive status, not a gate
+        "activated": r.activated,
+        "activation_candle_number": r.activation_candle_number,
+        "activation_ts_et": r.activation_ts,
+        # tap / lifecycle -- causal at-time-of-tap activation status
+        "first_tap_ts_et": r.first_tap_ts,
+        "first_tap_was_activated": r.first_tap_was_activated,
+        "n_taps": len(r.tap_events),
+        "max_penetration": r.max_penetration,
         "deactivation_ts_et": r.deactivation_ts, "deactivation_reason_final": r.deactivation_reason,
     }
+
+
+def _rb_tap_rows(r):
+    """One row per tap of an RB, each stamped with whether the RB was
+    activated at that moment -- the causal 'at time of taking' ledger."""
+    return [{
+        "rb_id": r.id, "timeframe": r.timeframe, "direction": r.direction,
+        "zone_lo": r.zone_lo, "zone_hi": r.zone_hi,
+        "tap_seq": ev["seq"], "tap_ts_et": ev["ts"],
+        "was_activated_at_tap": ev["was_activated"],
+    } for ev in r.tap_events]
 
 
 def main():
@@ -187,8 +203,9 @@ def main():
         all_precedence_suppressed += reg.precedence_suppressed_rbs
         per_tf_counts[tf] = {
             "n_completed_candles": len(series), "n_fvgs": len(fvgs),
-            "n_ifvgs": len(ifvgs), "n_rb_candidates": len(rbs),
-            "n_rb_confirmed": sum(1 for r in rbs if r.confirmed),
+            "n_ifvgs": len(ifvgs), "n_rb_live": len(rbs),
+            "n_rb_activated": sum(1 for r in rbs if r.activated),
+            "n_rb_not_activated": sum(1 for r in rbs if not r.activated),
             "n_fvg_doji_blocked": len(reg.doji_blocked_fvgs),
             "n_rb_equal_wick_ambiguous": len(reg.equal_wick_ambiguous_rbs),
             "n_rb_precedence_suppressed": len(reg.precedence_suppressed_rbs),
@@ -212,12 +229,23 @@ def main():
     write_csv(os.path.join(OUT, "ifvg_candidates.csv"), ifvg_rows,
               list(ifvg_rows[0].keys()) if ifvg_rows else ["id", "parent_fvg_id"])
 
-    rb_confirmed_rows = [_rb_row(r) for r in all_rbs if r.confirmed]
-    rb_rejected_rows = [_rb_row(r) for r in all_rbs if not r.confirmed]
-    write_csv(os.path.join(OUT, "rb_confirmed_candidates.csv"), rb_confirmed_rows,
-              list(rb_confirmed_rows[0].keys()) if rb_confirmed_rows else ["id"])
-    write_csv(os.path.join(OUT, "rb_rejected_candidates.csv"), rb_rejected_rows,
-              list(rb_rejected_rows[0].keys()) if rb_rejected_rows else ["id"])
+    # All live RBs (usable structures) in one ledger with an `activated`
+    # column; every floor-passing dominant-wick candle is here, activated or
+    # not. The prior confirmed/rejected split is retired (there is no longer a
+    # "rejected" RB -- a non-activated RB is still a live structure).
+    rb_rows = [_rb_row(r) for r in all_rbs]
+    write_csv(os.path.join(OUT, "rb_candidates.csv"), rb_rows,
+              list(rb_rows[0].keys()) if rb_rows else ["id"])
+    # Per-tap causal ledger: at each tap, was the RB activated at that moment?
+    tap_rows = [row for r in all_rbs for row in _rb_tap_rows(r)]
+    write_csv(os.path.join(OUT, "rb_tap_events.csv"), tap_rows,
+              list(tap_rows[0].keys()) if tap_rows else
+              ["rb_id", "timeframe", "tap_seq", "tap_ts_et", "was_activated_at_tap"])
+    # Retire the superseded split files if a prior run left them behind.
+    for stale in ("rb_confirmed_candidates.csv", "rb_rejected_candidates.csv"):
+        p = os.path.join(OUT, stale)
+        if os.path.exists(p):
+            os.remove(p)
 
     # diagnostic-only inventories (never SETUP_ELIGIBLE / never an active RB)
     write_csv(os.path.join(OUT, "fvg_doji_blocked.csv"), all_doji_blocked,
@@ -269,6 +297,12 @@ def main():
                 lifecycle_rows.append({"family": "RB", "id": r.id, "timeframe": r.timeframe,
                                         "event": kind, "ts_et": ts,
                                         "deactivation_reason": r.deactivation_reason})
+        # per-tap events with causal activation status
+        for ev in r.tap_events:
+            lifecycle_rows.append({
+                "family": "RB", "id": r.id, "timeframe": r.timeframe,
+                "event": "TAP_ACTIVATED" if ev["was_activated"] else "TAP_NOT_ACTIVATED",
+                "ts_et": ev["ts"], "deactivation_reason": r.deactivation_reason})
     write_csv(os.path.join(OUT, "structure_lifecycle_events.csv"), lifecycle_rows,
               ["family", "id", "timeframe", "event", "ts_et", "deactivation_reason"])
 
@@ -306,30 +340,21 @@ def main():
                 break
         return out[:n]
 
-    # Known-good regression examples from the prior (pre-repair) audit,
-    # identified by (timeframe, source_seq, direction) -- stable across the
-    # repair even though their assigned IDs shifted (equal-wick/doji-blocked
-    # entries no longer consume id numbers, so downstream ids renumbered).
+    # Known-good regression examples, identified by (timeframe, source_seq,
+    # direction) so they are stable across ID renumbering.
     KNOWN_GOOD = [(1, 59, "bearish"), (3, 34, "bearish")]
-    # Forensic counterexample explicitly requested for re-audit (spec Part 6):
-    # its dominant-wick direction may differ from the old (pre-repair) call,
-    # so matched by (timeframe, source_seq) only, not the old direction.
-    FORENSIC_REJECTED = [(5, 18)]
 
-    def pick_rb_confirmed(rbs, n=5):
-        confirmed = [r for r in rbs if r.confirmed]
+    def pick_rb_activated(rbs, n=5):
+        activated = [r for r in rbs if r.activated]
         out = []
         for tf, seq, direction in KNOWN_GOOD:
-            match = [r for r in confirmed if r.timeframe == tf and r.source_seq == seq
+            match = [r for r in activated if r.timeframe == tf and r.source_seq == seq
                      and r.direction == direction]
             if match:
                 out.append(match[0])
-        # 3 new examples spanning 5m/15m/60m with a non-degenerate wick/body
-        # ratio (excludes the near-doji eff_body-floor extremes) and strong
-        # dominance, distinct from the known-good/forensic set above.
         used = {(r.timeframe, r.source_seq) for r in out}
         for tf in (5, 15, 60):
-            cands = [r for r in confirmed if r.timeframe == tf
+            cands = [r for r in activated if r.timeframe == tf
                      and (r.timeframe, r.source_seq) not in used
                      and 0.5 <= r.wick_body_ratio <= 5.0]
             cands.sort(key=lambda r: -r.dominant_wick_ratio)
@@ -340,51 +365,63 @@ def main():
                 break
         return out[:n]
 
-    def pick_rb_rejected(rbs, n=5):
-        rejected = [r for r in rbs if not r.confirmed]
+    def pick_rb_not_activated_tapped(rbs, n=5):
+        # The newly-usable class: live RBs that never activated but WERE
+        # tapped (a fresh wick that reacted without the 1.5-ATR move). Spread
+        # across timeframes, prefer a clean wick/body ratio and a first tap
+        # that occurred before any activation (was_activated == False).
+        cands = [r for r in rbs if not r.activated and r.first_tap_ts is not None
+                 and r.first_tap_was_activated is False and 0.5 <= r.wick_body_ratio <= 5.0]
         out = []
-        for tf, seq in FORENSIC_REJECTED:
-            match = [r for r in rejected if r.timeframe == tf and r.source_seq == seq]
-            if match:
-                out.append(match[0])
-        by_reason = {}
-        for r in rejected:
-            by_reason.setdefault(r.rejection_reason, []).append(r)
-        for reason, items in by_reason.items():
-            if items and not any(x.timeframe == items[0].timeframe
-                                  and x.source_seq == items[0].source_seq for x in out):
-                out.append(items[0])
+        seen_tf = set()
+        cands.sort(key=lambda r: (r.timeframe in seen_tf, -r.dominant_wick_ratio))
+        for r in cands:
+            if r.timeframe in seen_tf:
+                continue
+            out.append(r)
+            seen_tf.add(r.timeframe)
             if len(out) >= n:
                 break
+        # top up with any remaining if fewer than n distinct timeframes
+        if len(out) < n:
+            for r in sorted(cands, key=lambda r: -r.dominant_wick_ratio):
+                if r not in out:
+                    out.append(r)
+                if len(out) >= n:
+                    break
         return out[:n]
 
     fvg_examples = pick_fvg_examples(all_fvgs)
     ifvg_examples = pick_ifvg_examples(all_ifvgs)
-    rb_confirmed_examples = pick_rb_confirmed(all_rbs)
-    rb_rejected_examples = pick_rb_rejected(all_rbs)
+    rb_activated_examples = pick_rb_activated(all_rbs)
+    rb_not_activated_examples = pick_rb_not_activated_tapped(all_rbs)
 
     n_fvg_missing_atr = sum(1 for f in all_fvgs if f.atr_at_c_close is None)
 
-    confirmed_rbs = [r for r in all_rbs if r.confirmed]
+    # Validation of the causal lifecycle invariants over every live RB.
     violations = 0
-    n_with_tap = n_deactivated = 0
-    for r in confirmed_rbs:
-        if not (r.source_ts < r.activation_ts):
-            violations += 1
+    n_activated = n_tapped = n_deactivated = 0
+    n_first_tap_before_activation = 0
+    for r in all_rbs:
+        if r.activated:
+            n_activated += 1
+            if not (r.source_ts < r.activation_ts):
+                violations += 1
         if r.first_tap_ts is not None:
-            n_with_tap += 1
-            if not (r.activation_ts <= r.first_tap_ts):
+            n_tapped += 1
+            if not (r.source_ts < r.first_tap_ts):
+                violations += 1
+            if r.first_tap_was_activated is False:
+                n_first_tap_before_activation += 1
+            if r.first_tap_was_activated != r.was_activated_at(r.first_tap_seq):
                 violations += 1
         if r.deactivation_ts is not None:
             n_deactivated += 1
-            if not (r.activation_ts <= r.deactivation_ts):
+            if not (r.source_ts <= r.deactivation_ts):
                 violations += 1
-    min_act_to_tap = min(
-        (r.first_tap_ts - r.activation_ts for r in confirmed_rbs if r.first_tap_ts is not None),
-        default=None)
-    min_act_to_deact = min(
-        (r.deactivation_ts - r.activation_ts for r in confirmed_rbs if r.deactivation_ts is not None),
-        default=None)
+        for ev in r.tap_events:
+            if ev["was_activated"] != r.was_activated_at(ev["seq"]):
+                violations += 1
 
     reproducibility = {
         "data_file": DATA_FILE, "symbol": SYMBOL,
@@ -392,23 +429,23 @@ def main():
         "governing_timeframes": list(TIMEFRAMES),
         "per_timeframe_counts": per_tf_counts,
         "n_fvg_total": len(all_fvgs), "n_ifvg_total": len(all_ifvgs),
-        "n_rb_candidates_total": len(all_rbs),
-        "n_rb_confirmed_total": sum(1 for r in all_rbs if r.confirmed),
-        "n_rb_rejected_total": sum(1 for r in all_rbs if not r.confirmed),
+        "n_rb_live_total": len(all_rbs),
+        "n_rb_activated_total": sum(1 for r in all_rbs if r.activated),
+        "n_rb_not_activated_total": sum(1 for r in all_rbs if not r.activated),
         "n_fvg_doji_blocked_total": len(all_doji_blocked),
         "n_rb_equal_wick_ambiguous_total": len(all_equal_wick),
         "n_rb_precedence_suppressed_total": len(all_precedence_suppressed),
         "n_fvg_examples_provided": len(fvg_examples),
         "n_ifvg_examples_provided": len(ifvg_examples),
-        "n_rb_confirmed_examples_provided": len(rb_confirmed_examples),
-        "n_rb_rejected_examples_provided": len(rb_rejected_examples),
+        "n_rb_activated_examples_provided": len(rb_activated_examples),
+        "n_rb_not_activated_examples_provided": len(rb_not_activated_examples),
         "validation": {
-            "n_confirmed_rb": len(confirmed_rbs),
-            "n_confirmed_rb_with_first_tap": n_with_tap,
-            "n_confirmed_rb_deactivated": n_deactivated,
-            "min_activation_to_first_tap": str(min_act_to_tap),
-            "min_activation_to_deactivation": str(min_act_to_deact),
-            "timestamp_order_violations": violations,
+            "n_rb_live": len(all_rbs),
+            "n_rb_activated": n_activated,
+            "n_rb_tapped": n_tapped,
+            "n_rb_deactivated": n_deactivated,
+            "n_rb_first_tap_before_activation": n_first_tap_before_activation,
+            "causal_invariant_violations": violations,
         },
     }
     with open(os.path.join(OUT, "reproducibility.json"), "w") as fh:
@@ -419,8 +456,8 @@ def main():
     return {
         "coverage": coverage, "per_tf_counts": per_tf_counts,
         "fvg_examples": fvg_examples, "ifvg_examples": ifvg_examples,
-        "rb_confirmed_examples": rb_confirmed_examples,
-        "rb_rejected_examples": rb_rejected_examples,
+        "rb_activated_examples": rb_activated_examples,
+        "rb_not_activated_examples": rb_not_activated_examples,
         "n_fvg_missing_atr": n_fvg_missing_atr,
     }
 

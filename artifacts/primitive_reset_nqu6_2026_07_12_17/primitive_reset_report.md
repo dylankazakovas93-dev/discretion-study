@@ -120,11 +120,51 @@ suppressed by this rule; with multiple active same-direction RBs, suppression
 fires if the candidate overlaps *any* tapped zone (the suppression record
 cites the specific overlapping RB). No future information is used.
 
-**Impact:** overlap-qualified suppression is **1,550** (down from the
-direction-only 1,699 — 149 direction-matched taps whose zones did not
-actually overlap are now correctly allowed as new candidates). RB candidates
-8,045 → **8,194**, confirmed 1,951 → **1,972**. Timestamp-order violations
-remain **0** across all 1,972 confirmed RBs.
+**Impact:** overlap-qualified suppression was 1,699 → 1,550 (149
+direction-matched taps whose zones did not actually overlap were re-allowed).
+That figure changes again under Correction 6 below (all candidates now live).
+
+## Correction 6 — activation is no longer a usability gate (RB lifecycle)
+
+Per Dylan: a rejection block should be a usable structure the moment its
+source candle closes, not only if it later produces a 1.5x-ATR move. Many
+valid RBs are tapped and react on the very next candle without ever making
+that move; gating usability on activation discarded exactly those.
+
+**Change (rejection_block.py, then frozen):** every dominant-wick candle that
+clears the 0.20 floor becomes a **live** RB from its source-candle close and
+is tracked forward under the common traversal contract. The 1.5x-ATR /
+next-3-candle MFE rule is still computed — exactly as before, now
+incrementally during forward processing — but only sets a descriptive
+**`activated`** status (with `activation_seq`/`activation_candle_number`);
+it never gates whether the RB exists. Each tap is stamped
+**`was_activated`** = the RB's activated state at that candle, so a setup
+taken at a tap can be labelled activated / not-activated **causally, with no
+look-ahead** (`RBCandidateRecord.was_activated_at(seq)`). The 8h intraday
+lifetime is re-anchored from activation to source-candle close (its new
+birth); the 0.20 floor, dominant-wick selection, the MFE computation itself,
+the traversal contract and overlap precedence are unchanged.
+
+**Consequences (NQU6 audit):**
+- **5,165 live RBs** total — **1,132 activated**, **4,033 not-activated**.
+- **4,384** live RBs had their *first* tap occur before (or without)
+  activation — the newly-usable "fresh wick that reacted" class.
+- Precedence-suppressed rose **1,550 → 4,579**: because *all* dominant-wick
+  candles are now live (not just the ~2k that used to activate), far more
+  reaction candles tap-and-overlap an existing live RB and are correctly
+  suppressed as duplicates. This is the frozen overlap-precedence rule acting
+  over a larger live population, not a rule change — it means choppy zones
+  keep one structural RB instead of one per candle. Flagged for awareness.
+- **0** causal-invariant violations across all 5,165 live RBs (source <
+  first-tap; source ≤ deactivation; activation, when set, after source; every
+  tap's `was_activated` equals `was_activated_at(tap_seq)`).
+
+The two forensic audits below predate this change (they were about
+dominant-wick *direction* selection, which is unchanged); RB2-000009's source
+candle is still bullish-dominant, and RB2-000034's is still the 03:45 source
+— both conclusions stand. Under the new model a non-activating RB is retained
+as a live structure rather than dropped, so "no longer qualifies as any RB"
+now reads "is a live, not-activated RB".
 
 ## Forensic audit — RB2-000009(old), 5m, reported source "19:35 ET"
 
@@ -339,94 +379,90 @@ Correction 2.)*
 *(1m timestamps are candle-open == causal time; the 3m example (#3) and the
 5m example (#6) required Correction-2 open-time conversion.)*
 
-### RB — known-good regression examples (retained)
+### RB — ACTIVATED examples (reached 1.5x ATR within 3 candles)
 
-| ID | TF | Dir | Source (open) | Activation (open) | First tap (open) | Deactivation (open) |
-|---|---|---|---|---|---|---|
-| RB2-000039 | 1m | bearish | Sun Jul 12 **18:59** | Sun Jul 12 **19:00** | Sun Jul 12 **20:01** | Sun Jul 12 **20:02** (CLOSE_THROUGH) |
-| RB2-000017 | 3m | bearish | Sun Jul 12 **19:42** | Sun Jul 12 **19:45** | Sun Jul 12 **19:51** | Sun Jul 12 **20:00** (CLOSE_THROUGH) |
+Note the `1st tap activated?` column: an RB can be tapped *before* it
+activates (RB2-000272 below), and that first tap is correctly stamped
+not-activated even though the RB later activates.
 
-*(IDs renumber slightly across regenerations as diagnostic entries stop
-consuming ID slots — these two are the same known-good structures identified
-by timeframe + source candle, not new ones.)*
+| ID | TF | Dir | Source (open) | Activated (open) | 1st tap (open) | 1st tap activated? | Deactivation (open) |
+|---|---|---|---|---|---|---|---|
+| RB2-000272 | 5m | bearish | Tue Jul 14 **8:20 PM** | Tue Jul 14 **8:35 PM** | Tue Jul 14 **8:25 PM** | **No** | Tue Jul 14 **9:35 PM** (CLOSE_THROUGH) |
+| RB2-000102 | 15m | bearish | Wed Jul 15 **10:00 AM** | Wed Jul 15 **10:15 AM** | Wed Jul 15 **10:15 AM** | **Yes** | Wed Jul 15 **6:00 PM** (EXPIRED_ACTIVE_8H) |
+| RB2-000033 | 60m | bearish | Thu Jul 16 **5:00 AM** | Thu Jul 16 **7:00 AM** | never tapped | — | Fri Jul 17 **4:00 PM** (DATA_END_ACTIVE) |
 
-### RB — repaired example (RB2-000034(old), now confirmed valid)
+### RB — NOT-ACTIVATED examples (newly usable: tapped and reacted without the 1.5x-ATR move)
 
-| ID | TF | Dir | Source (open) | Activation (open) | First tap (open) | Deactivation (open) |
-|---|---|---|---|---|---|---|
-| RB2-000022 | 15m | bullish | Mon Jul 13 **03:45** | Mon Jul 13 **04:15** | Mon Jul 13 **09:30** | Mon Jul 13 **09:30** (CLOSE_THROUGH) |
+These are the class the activation-gate removal unlocks — a fresh dominant
+wick that price returns to and reacts from, but which never made the 1.5x-ATR
+move. Every first tap here is stamped **not-activated** (causal at the tap).
 
-### RB — 3 newly selected corrected examples
+| ID | TF | Dir | Source (open) | Zone | 1st tap (open) | 1st tap activated? | n taps | Deactivation |
+|---|---|---|---|---|---|---|---:|---|
+| RB2-000045 | 15m | bearish | Mon Jul 13 **10:00 PM** | [29447.25, 29489.00] | Mon Jul 13 **10:30 PM** | No | 5 | CLOSE_THROUGH |
+| RB2-000485 | 5m | bullish | Thu Jul 16 **11:05 AM** | [29366.00, 29392.75] | Thu Jul 16 **11:10 AM** | No | 1 | CLOSE_THROUGH |
+| RB2-000952 | 3m | bearish | Fri Jul 17 **4:27 AM** | [28609.75, 28634.25] | Fri Jul 17 **4:30 AM** | No | 5 | CLOSE_THROUGH |
+| RB2-002318 | 1m | bearish | Thu Jul 16 **10:02 AM** | [29393.50, 29417.75] | Thu Jul 16 **10:03 AM** | No | 3 | CLOSE_THROUGH |
+| RB2-000012 | 30m | bullish | Mon Jul 13 **10:00 AM** | [29488.50, 29631.00] | Mon Jul 13 **10:30 AM** | No | 6 | CLOSE_THROUGH |
 
-| ID | TF | Dir | Source (open) | Activation (open) | First tap (open) | Deactivation (open) | wick/body | dominant ratio |
-|---|---|---|---|---|---|---|---:|---:|
-| RB2-000443 | 5m | bearish | Tue Jul 14 **20:20** | Tue Jul 14 **20:35** | Tue Jul 14 **20:50** | Tue Jul 14 **21:35** (CLOSE_THROUGH) | 2.04 | 106.0 |
-| RB2-000185 | 15m | bearish | Wed Jul 15 **10:00** | Wed Jul 15 **10:15** | (never tapped) | Wed Jul 15 **18:15** (EXPIRED_UNTOUCHED_8H) | 4.29 | 139.5 |
-| RB2-000030 | 60m | bullish | Tue Jul 14 **18:00** | Tue Jul 14 **21:00** | Wed Jul 15 **09:00** | Wed Jul 15 **10:00** (CLOSE_THROUGH) | 0.87 | 22.2 |
-
-### RB — rejected/ambiguous counterexamples
-
-| ID | TF | Dir | Source (open) | Zone | wick/body | dominant ratio | Reason |
-|---|---|---|---|---|---:|---:|---|
-| RB2-000005 (RB2-000009(old) equivalent) | 5m | bullish (reclassified) | Sun Jul 12 **19:30** | [29880.75, 29886.00] | 2.33 | 1.62 | `invalidated_before_confirmation` — no longer qualifies as any RB |
+*(Full per-tap activation status for every RB is in `rb_tap_events.csv`; all
+live RBs with activation flags are in `rb_candidates.csv`.)*
 
 ## Tests
 
 ```
 PYTHONPATH=src python3 -m pytest tests/test_primitive_reset.py -v
 ```
-**74 collected, 74 passed, 0 failed, 0 skipped.** 62 from the original suite +
-10 from the doji/dominant-wick/precedence repair + **2 new** for the
-overlap-qualification fix (same-direction tap of a non-overlapping zone is
-allowed; with multiple active same-direction RBs, suppression fires only if
-the candidate overlaps a tapped zone). Per the task, only this fast suite and
-the narrow NQU6 audit were run — no evidence, materialization, or historical
-scan.
+**69 collected, 69 passed, 0 failed, 0 skipped.** The RB-lifecycle change
+retired the obsolete pending-activation-queue tests (activation no longer
+gates tracking) and added new ones: a non-activated RB is still live and
+tappable; a tap before activation is stamped not-activated while a later tap
+after activation is stamped activated; `was_activated_at` never reports
+activation early; 8h lifetime is measured from source; and a real-NQU6
+invariant check over all 5,165 live RBs (0 causal violations). Per the task,
+only this fast suite and the narrow NQU6 audit were run — no evidence,
+materialization, or historical scan.
 
-## Counts before/after
+## Counts (current, after the RB-lifecycle change)
 
-The doji / dominant-wick / equal-wick columns are unchanged by this patch
-(the overlap fix touches only RB precedence). RB candidate/confirmed/
-suppressed counts shift only from the overlap qualification.
+FVG / iFVG counts are unchanged by the RB-lifecycle change. "RB live" now
+means every dominant-wick floor-passer (usable regardless of activation);
+"activated" is the descriptive 1.5x-ATR subset.
 
-| | pre-repair | after doji+dom-wick+precedence | after overlap fix (this patch) |
-|---|---:|---:|---:|
-| FVG total | 1,310 | 1,291 | 1,291 |
-| iFVG total | 652 | 639 | 639 |
-| RB candidates total | 16,000 | 8,045 | **8,194** |
-| RB confirmed total | 3,709 | 1,951 | **1,972** |
-| FVG doji-blocked | n/a | 61 | 61 |
-| RB equal-wick ambiguous | n/a | 154 | 154 |
-| RB precedence-suppressed | n/a | 1,699 | **1,550** (overlap-qualified) |
-| RB timestamp-order violations | 0 | 0 | **0** |
+| | value | note |
+|---|---:|---|
+| FVG total | 1,291 | 19 removed from eligibility by exact-doji rule |
+| iFVG total | 639 | 13 removed (children of those FVGs) |
+| FVG doji-blocked (diagnostic) | 61 | superset of geometry-valid triples with a doji |
+| **RB live total** | **5,165** | all dominant-wick floor-passers, usable |
+| RB activated | 1,132 | reached 1.5x ATR within 3 candles |
+| RB not-activated | 4,033 | live & usable, never made the 1.5x-ATR move |
+| RB first-tap-before-activation | 4,384 | the newly-usable "fresh wick reacted" class |
+| RB equal-wick ambiguous (diagnostic) | 154 | no active RB |
+| RB precedence-suppressed | 4,579 | reaction candles overlapping an existing live RB |
+| RB causal-invariant violations | **0** | source<tap, source≤deact, activation after source, tap flags causal |
 
-Exact-doji removed-from-eligibility (unchanged by this patch): **19** FVGs and
-**13** iFVGs (61 is the diagnostic superset of all geometry-valid triples
-containing a doji).
-
-Validation detail (real NQU6 audit, all 6 timeframes, this patch): **1,972**
-confirmed RBs, **1,706** with a recorded first tap, all 1,972 with a recorded
-deactivation, minimum activation→tap and activation→deactivation gap 1 minute
-(1m), **0 timestamp-order violations**.
+Precedence-suppressed rose from 1,550 (previous, over the ~2k activated-only
+population) to 4,579 because the overlap-precedence rule now runs over all
+5,165 live RBs — same frozen rule, larger live population (disclosed under
+Correction 6).
 
 ## Verdict
 
 **PRIMITIVE_AUDIT_READY_WITH_LIMITATIONS**
 
-FVG geometry/traversal/ATR/lifetime are unchanged and remain PASS. The
-exact-doji colour gap (iFVG audit was INCONCLUSIVE) is fixed and disclosed
-(61 blocked, logged, none silently reclassified). The RB source-selection
-FAIL is fixed via dominant-wick selection + existing-structure precedence,
-now with the precedence rule correctly gated on actual zone overlap
-(Correction 5), both forensically verified against the exact two failing
-examples Dylan flagged — one (RB2-000034-equivalent) is now confirmed correct
-and explained, the other (RB2-000009-equivalent) no longer produces any RB
-and is reported as a genuine non-example, not defended or hidden. Zero
-timestamp-order violations across 1,972 real confirmed RBs. Limitations:
-(1) the FVG2-000042(old)-equivalent structure is real but small (2.0 pts,
-0.20 ATR) and remains a judgment call for visual review; (2) Part 5's
-descriptive iFVG distance/scraping-candle formulas remain provisional per
-the original disclosure; (3) the 5m neighbourhood around the old
-RB2-000009 genuinely has no clean confirmed replacement — reported honestly
-rather than forced. Primitives are not claimed correct until Dylan performs
-the combined audit above himself.
+FVG, iFVG and RB primitives are all verified by Dylan on NQU6 and now
+**frozen** (`src/discretion/primitive_reset/__init__.py` records the frozen
+contract). FVG geometry/ATR/traversal/lifetime unchanged; exact-doji colour
+gap fixed and disclosed; RB direction via dominant-wick with overlap-gated
+precedence; and rejection blocks are now usable from source-candle close with
+activation tracked as a causal, look-ahead-free status (Correction 6), so a
+setup can label an RB activated / not-activated at the moment it is taken.
+Zero causal-invariant violations across all 5,165 live RBs. Limitations:
+(1) removing the activation gate greatly enlarges the live RB population and,
+via the frozen overlap-precedence rule, raises suppression to 4,579 — choppy
+zones keep one structural RB rather than one per candle (flagged, not a rule
+change); (2) the small 2.0-pt iFVG-parent case and Part 5's provisional
+iFVG distance/scraping formulas remain as previously disclosed. The primitives
+are frozen and audit-ready; edge is not claimed and requires the deliberately-
+deferred historical/adaptive-evidence machinery.
