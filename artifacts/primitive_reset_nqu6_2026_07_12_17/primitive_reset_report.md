@@ -96,16 +96,35 @@ expected — most candles no longer double-count); `n_rb_confirmed_total`
 
 ## Correction 4 — existing-structure precedence
 
-Before creating a new RB candidate, the detector now checks whether any
+Before creating a new RB candidate, the detector checks whether an
 already-active same-direction RB was tapped by *this* candle (using the
 tap/traversal state already computed for that RB, strictly from candles
-before the current one — no look-ahead). If so, the tap is recorded on the
+before the current one — no look-ahead) **and whose zone the proposed new
+wick zone overlaps** (see Correction 5). If so, the tap is recorded on the
 **original** RB and no duplicate overlapping RB is created from the reaction
 candle; logged to `rb_precedence_suppressed.csv`. Opposite-direction
 candidates on the same candle are never suppressed by this rule.
 
-**Impact:** 1,699 reaction candles suppressed across all timeframes that
-would otherwise have relabelled a tap of an existing RB as a brand-new one.
+## Correction 5 — precedence requires actual zone overlap
+
+The first version of Correction 4 suppressed a new candidate whenever *any*
+active same-direction RB was tapped, keyed on direction alone — broader than
+the frozen rule, which requires the reaction to actually re-enter the
+existing RB's zone. Fixed: the detector now retains the exact tapped active
+RB objects (not just their directions) and suppresses a proposed candidate
+`[zlo, zhi]` only when a tapped same-direction RB `[old_lo, old_hi]` satisfies
+inclusive interval intersection `max(zlo, old_lo) <= min(zhi, old_hi)`. A
+same-direction tap of a *different, non-overlapping* zone now proceeds to a
+new candidate normally; opposite-direction candidates are still never
+suppressed by this rule; with multiple active same-direction RBs, suppression
+fires if the candidate overlaps *any* tapped zone (the suppression record
+cites the specific overlapping RB). No future information is used.
+
+**Impact:** overlap-qualified suppression is **1,550** (down from the
+direction-only 1,699 — 149 direction-matched taps whose zones did not
+actually overlap are now correctly allowed as new candidates). RB candidates
+8,045 → **8,194**, confirmed 1,951 → **1,972**. Timestamp-order violations
+remain **0** across all 1,972 confirmed RBs.
 
 ## Forensic audit — RB2-000009(old), 5m, reported source "19:35 ET"
 
@@ -226,7 +245,12 @@ bucket).
 
 ## Regenerated combined audit table
 
-### FVGs — 5, spanning ATR bins
+### FVGs — 5, a refreshed one-per-ATR-bin sample
+
+These are one representative FVG per ATR size bin (the first match per bin),
+**a refreshed sample — not literally the same five examples Dylan approved
+earlier**. The full FVG population is in `fvg_candidates.csv`; the geometry,
+ATR and bin definitions are unchanged (frozen).
 
 | ID | TF | Dir | Bin | A / B / C (weekday, date, ET) | Zone |
 |---|---|---|---|---|---|
@@ -297,19 +321,34 @@ width/ATR 4.953 — the July-14 08:30 cash-open ramp gap. Parent formed at C
 (8:31), first touched 8:35, remained active for **93** 1-minute candles.
 Inversion candle **10:04 AM ET** `(29722.00, 29733.00, 29690.00, 29692.00)`
 closes fully through 29694.00 → **bearish** child. (A slow, large inversion —
-maximally visible. The previously-verified compact 5-bar example IFVG2-000002
-at Sun Jul 12 7:46–7:51 PM ET remains valid in `ifvg_candidates.csv` if a
-tighter 5-candle representative is preferred.)
+maximally visible, but 93 bars is far beyond a "just over 5" representative;
+see #6 for a clean compact one.)
 
-*(1m timestamps are candle-open == causal time; only the 3m example (#3)
-required Correction-2 open-time conversion.)*
+**6. IFVG2-000002** (parent FVG2-000001, **5m**, 6-candle inversion — clean
+compact companion to #5, retained per request)
+Parent A **Sun Jul 12 2026 7:55 PM ET** `(29876.50, 29895.00, 29865.75,
+29893.25)` bullish; B **8:00 PM ET** `(29892.00, 29986.25, 29871.50,
+29965.50)` bullish; C **8:05 PM ET** `(29967.00, 30007.75, 29953.50,
+29995.50)` bullish. Zone `[29895.00, 29953.50]`, width **58.5 pts**, width/ATR
+1.756 — a clean, large, doji-free gap. Parent formed at C (8:05 open), first
+touched 8:30, remained active for **6** 5-minute candles. Inversion candle
+**8:35 PM ET open** `(29912.00, 29928.50, 29886.00, 29894.00)` closes fully
+through 29895.00 → **bearish** child. *(5m timestamps are candle-open, per
+Correction 2.)*
+
+*(1m timestamps are candle-open == causal time; the 3m example (#3) and the
+5m example (#6) required Correction-2 open-time conversion.)*
 
 ### RB — known-good regression examples (retained)
 
 | ID | TF | Dir | Source (open) | Activation (open) | First tap (open) | Deactivation (open) |
 |---|---|---|---|---|---|---|
-| RB2-000038 | 1m | bearish | Sun Jul 12 **18:59** | Sun Jul 12 **19:00** | Sun Jul 12 **20:01** | Sun Jul 12 **20:02** (CLOSE_THROUGH) |
+| RB2-000039 | 1m | bearish | Sun Jul 12 **18:59** | Sun Jul 12 **19:00** | Sun Jul 12 **20:01** | Sun Jul 12 **20:02** (CLOSE_THROUGH) |
 | RB2-000017 | 3m | bearish | Sun Jul 12 **19:42** | Sun Jul 12 **19:45** | Sun Jul 12 **19:51** | Sun Jul 12 **20:00** (CLOSE_THROUGH) |
+
+*(IDs renumber slightly across regenerations as diagnostic entries stop
+consuming ID slots — these two are the same known-good structures identified
+by timeframe + source candle, not new ones.)*
 
 ### RB — repaired example (RB2-000034(old), now confirmed valid)
 
@@ -321,8 +360,8 @@ required Correction-2 open-time conversion.)*
 
 | ID | TF | Dir | Source (open) | Activation (open) | First tap (open) | Deactivation (open) | wick/body | dominant ratio |
 |---|---|---|---|---|---|---|---:|---:|
-| RB2-000438 | 5m | bearish | Tue Jul 14 **20:20** | Tue Jul 14 **20:35** | Tue Jul 14 **20:50** | Tue Jul 14 **21:35** (CLOSE_THROUGH) | 2.04 | 106.0 |
-| RB2-000182 | 15m | bearish | Wed Jul 15 **10:00** | Wed Jul 15 **10:15** | (never tapped) | Wed Jul 15 **18:15** (EXPIRED_UNTOUCHED_8H) | 4.29 | 139.5 |
+| RB2-000443 | 5m | bearish | Tue Jul 14 **20:20** | Tue Jul 14 **20:35** | Tue Jul 14 **20:50** | Tue Jul 14 **21:35** (CLOSE_THROUGH) | 2.04 | 106.0 |
+| RB2-000185 | 15m | bearish | Wed Jul 15 **10:00** | Wed Jul 15 **10:15** | (never tapped) | Wed Jul 15 **18:15** (EXPIRED_UNTOUCHED_8H) | 4.29 | 139.5 |
 | RB2-000030 | 60m | bullish | Tue Jul 14 **18:00** | Tue Jul 14 **21:00** | Wed Jul 15 **09:00** | Wed Jul 15 **10:00** (CLOSE_THROUGH) | 0.87 | 22.2 |
 
 ### RB — rejected/ambiguous counterexamples
@@ -336,29 +375,39 @@ required Correction-2 open-time conversion.)*
 ```
 PYTHONPATH=src python3 -m pytest tests/test_primitive_reset.py -v
 ```
-**72 collected, 72 passed, 0 failed, 0 skipped, ~3.5s.** 62 from the prior
-suite (unchanged, still passing) + 10 new: 2 exact-doji-colour tests, 2
-doji-blocks-FVG/iFVG tests, 2 dominant-wick tests, 5 existing-structure-
-precedence tests. Per the task, only this fast suite and the narrow NQU6
-audit were run — no evidence, materialization, or historical scan.
+**74 collected, 74 passed, 0 failed, 0 skipped.** 62 from the original suite +
+10 from the doji/dominant-wick/precedence repair + **2 new** for the
+overlap-qualification fix (same-direction tap of a non-overlapping zone is
+allowed; with multiple active same-direction RBs, suppression fires only if
+the candidate overlaps a tapped zone). Per the task, only this fast suite and
+the narrow NQU6 audit were run — no evidence, materialization, or historical
+scan.
 
 ## Counts before/after
 
-| | before | after |
-|---|---:|---:|
-| FVG total | 1,310 | 1,291 |
-| iFVG total | 652 | 639 |
-| RB candidates total | 16,000 | 8,045 |
-| RB confirmed total | 3,709 | 1,951 |
-| FVG doji-blocked | n/a | 61 |
-| RB equal-wick ambiguous | n/a | 154 |
-| RB duplicate/reaction suppressed (precedence) | n/a | 1,699 |
-| RB timestamp-order violations | 0 (already fixed prior turn) | **0** |
+The doji / dominant-wick / equal-wick columns are unchanged by this patch
+(the overlap fix touches only RB precedence). RB candidate/confirmed/
+suppressed counts shift only from the overlap qualification.
 
-Validation detail (real NQU6 audit, all 6 timeframes): 1,951 confirmed RBs,
-1,684 with a recorded first tap, all 1,951 with a recorded deactivation,
-minimum activation→tap and activation→deactivation gap 1 minute (1m
-timeframe), **0 timestamp-order violations**.
+| | pre-repair | after doji+dom-wick+precedence | after overlap fix (this patch) |
+|---|---:|---:|---:|
+| FVG total | 1,310 | 1,291 | 1,291 |
+| iFVG total | 652 | 639 | 639 |
+| RB candidates total | 16,000 | 8,045 | **8,194** |
+| RB confirmed total | 3,709 | 1,951 | **1,972** |
+| FVG doji-blocked | n/a | 61 | 61 |
+| RB equal-wick ambiguous | n/a | 154 | 154 |
+| RB precedence-suppressed | n/a | 1,699 | **1,550** (overlap-qualified) |
+| RB timestamp-order violations | 0 | 0 | **0** |
+
+Exact-doji removed-from-eligibility (unchanged by this patch): **19** FVGs and
+**13** iFVGs (61 is the diagnostic superset of all geometry-valid triples
+containing a doji).
+
+Validation detail (real NQU6 audit, all 6 timeframes, this patch): **1,972**
+confirmed RBs, **1,706** with a recorded first tap, all 1,972 with a recorded
+deactivation, minimum activation→tap and activation→deactivation gap 1 minute
+(1m), **0 timestamp-order violations**.
 
 ## Verdict
 
@@ -368,11 +417,12 @@ FVG geometry/traversal/ATR/lifetime are unchanged and remain PASS. The
 exact-doji colour gap (iFVG audit was INCONCLUSIVE) is fixed and disclosed
 (61 blocked, logged, none silently reclassified). The RB source-selection
 FAIL is fixed via dominant-wick selection + existing-structure precedence,
-both forensically verified against the exact two failing examples Dylan
-flagged — one (RB2-000034-equivalent) is now confirmed correct and
-explained, the other (RB2-000009-equivalent) no longer produces any RB and
-is reported as a genuine non-example, not defended or hidden. Zero
-timestamp-order violations across 1,951 real confirmed RBs. Limitations:
+now with the precedence rule correctly gated on actual zone overlap
+(Correction 5), both forensically verified against the exact two failing
+examples Dylan flagged — one (RB2-000034-equivalent) is now confirmed correct
+and explained, the other (RB2-000009-equivalent) no longer produces any RB
+and is reported as a genuine non-example, not defended or hidden. Zero
+timestamp-order violations across 1,972 real confirmed RBs. Limitations:
 (1) the FVG2-000042(old)-equivalent structure is real but small (2.0 pts,
 0.20 ATR) and remains a judgment call for visual review; (2) Part 5's
 descriptive iFVG distance/scraping-candle formulas remain provisional per

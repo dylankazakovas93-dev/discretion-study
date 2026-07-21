@@ -888,11 +888,10 @@ def test_opposite_direction_not_suppressed_by_precedence_rule():
 
 
 def test_precedence_rule_uses_no_future_information():
-    """Item 5: suppression is decided using only the RB's own already-active
-    state at the time the later candle closes -- never a look-ahead. Proven
-    by construction: `tapped_directions` is computed from `active` (state
-    accumulated strictly from candles < i) before any candle-i candidate is
-    even examined."""
+    """Item 5: suppression is decided using only already-active RB state at
+    the time the later candle closes -- never a look-ahead. Proven by
+    construction: `tapped_rbs` is accumulated from `active` (state built
+    strictly from candles < i) before any candle-i candidate is examined."""
     bars, src_seq, atr_val = _rb_with_mfe("bullish", 1.6, 2)
     reg = ResetRegistry()
     series = candle_series(bars, 1)
@@ -903,6 +902,74 @@ def test_precedence_rule_uses_no_future_information():
     # A tap candle BEFORE activation (during the pending window) cannot be
     # suppressed by precedence, since the RB is not yet in `active`.
     assert reg.precedence_suppressed_rbs == []
+
+
+def test_same_direction_tap_of_nonoverlapping_zone_is_allowed():
+    """Item 2 (the fix): a candle that 'taps' an active same-direction RB but
+    whose OWN proposed candidate zone does not intersect that RB's zone must
+    NOT be suppressed. Constructed with a bullish candle sitting entirely
+    below the active bullish RB [96,100]: its low <= the RB's top (so the
+    RB registers a reach), yet its own zone [85,90] is disjoint from
+    [96,100]. Under the old direction-only rule this was wrongly suppressed."""
+    bars, src_seq, atr_val = _rb_with_mfe("bullish", 1.6, 2)  # active RB zone [96,100]
+    reg0 = ResetRegistry()
+    s0 = candle_series(bars, 1); a0 = atr_series(s0)
+    rbs0 = detect_rejection_blocks(bars, 1, s0, a0, reg0)
+    orig = [r for r in rbs0 if r.source_seq == src_seq and r.direction == "bullish"][0]
+    assert (orig.zone_lo, orig.zone_hi) == (96.0, 100.0)
+    t_open = bars[-1].ts_et + pd.Timedelta(minutes=1)
+    # bullish, dominant lower wick, entirely below the RB; zone [85, 90]
+    bars2 = bars + mk_bars([(90.0, 90.2, 85.0, 90.1)], start=t_open)
+    bars2 += mk_bars(flat_preamble(5, 88, 2), start=bars2[-1].ts_et + pd.Timedelta(minutes=1))
+    reg = ResetRegistry()
+    s = candle_series(bars2, 1); a = atr_series(s)
+    rbs = detect_rejection_blocks(bars2, 1, s, a, reg)
+    tseq = len(bars)
+    new = [r for r in rbs if r.source_seq == tseq and r.direction == "bullish"]
+    assert len(new) == 1, "non-overlapping same-direction candidate must be allowed"
+    assert (new[0].zone_lo, new[0].zone_hi) == (85.0, 90.0)
+    assert not any(d["source_seq"] == tseq for d in reg.precedence_suppressed_rbs)
+
+
+def test_multiple_active_same_direction_suppress_if_any_tapped_zone_overlaps():
+    """Item 4: with two active same-direction RBs both tapped by the source
+    candle, suppress the new candidate if it overlaps ANY tapped same-
+    direction zone (even if it misses the other). Two adjacent confirmed
+    bullish RBs [93,97] and [95,98]; a later candle taps both but its tiny
+    candidate zone [94,94.5] overlaps only [93,97] -> suppressed, citing that
+    specific RB."""
+    bars, _ = seeded_atr()
+    # two consecutive bullish lower-wick sources (S2 forms while S1 is still
+    # pending, so S2 is not itself suppressed), then a shared up-move confirms
+    # both without price crossing back down.
+    base = bars[-1].ts_et + pd.Timedelta(minutes=1)
+    s1 = (97.0, 97.6, 93.0, 97.5)   # zone [93,97]
+    s2 = (98.0, 98.6, 95.0, 98.5)   # zone [95,98]
+    up = [(98.5, 110.0, 98.4, 109.5), (109.5, 111.0, 109.0, 110.5),
+          (110.5, 111.5, 110.0, 111.0)]   # big MFE, confirms both
+    bars += mk_bars([s1, s2] + up, start=base)
+    s1_seq = len(bars) - 5
+    s2_seq = len(bars) - 4
+    # bring price back down to the zones (close stays >= 93 so [93,97] survives)
+    bars += mk_bars([(108.0, 108.2, 96.5, 97.0), (97.0, 97.2, 96.0, 96.5)],
+                    start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    # tiny-body bullish tap candle: low 94 taps both zones; zone [94, 94.5]
+    tap = (94.5, 94.7, 94.0, 94.6)
+    bars += mk_bars([tap], start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    tseq = len(bars) - 1
+    bars += mk_bars(flat_preamble(5, 96, 2), start=bars[-1].ts_et + pd.Timedelta(minutes=1))
+    reg = ResetRegistry()
+    s = candle_series(bars, 1); a = atr_series(s)
+    rbs = detect_rejection_blocks(bars, 1, s, a, reg)
+    r1 = [r for r in rbs if r.source_seq == s1_seq and r.direction == "bullish"]
+    r2 = [r for r in rbs if r.source_seq == s2_seq and r.direction == "bullish"]
+    assert r1 and r1[0].confirmed and (r1[0].zone_lo, r1[0].zone_hi) == (93.0, 97.0)
+    assert r2 and r2[0].confirmed and (r2[0].zone_lo, r2[0].zone_hi) == (95.0, 98.0)
+    # the tap candle's bullish candidate must be suppressed (overlaps [93,97])
+    assert not any(r.source_seq == tseq and r.direction == "bullish" for r in rbs)
+    supp = [d for d in reg.precedence_suppressed_rbs if d["source_seq"] == tseq]
+    assert len(supp) == 1
+    assert supp[0]["overlapping_rb_zone_lo"] == 93.0 and supp[0]["overlapping_rb_zone_hi"] == 97.0
 
 
 # ---------------------------------------------------------------------------

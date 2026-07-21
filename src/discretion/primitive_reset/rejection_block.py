@@ -105,7 +105,10 @@ def detect_rejection_blocks(bars, tf: int, series, atr, registry) -> list[RBCand
 
         # 1) advance confirmed/active RBs under the common traversal contract
         still: list[RBCandidateRecord] = []
-        tapped_directions: set[str] = set()   # existing-structure precedence (spec Part 5)
+        # Existing-structure precedence (spec Part 5): retain the exact active
+        # RB objects tapped by THIS candle, not merely their directions, so
+        # suppression below can require actual zone overlap.
+        tapped_rbs: list[RBCandidateRecord] = []
         for rb in active:
             if c.segment_id != rb.segment_id:
                 rb.deactivation_ts = candle_ts_et(series[i - 1]) if i > 0 else rb.activation_ts
@@ -122,7 +125,7 @@ def detect_rejection_blocks(bars, tf: int, series, atr, registry) -> list[RBCand
                 reached = c.high >= lo
                 pen = max(0.0, c.high - hi)
             if reached:
-                tapped_directions.add(rb.direction)
+                tapped_rbs.append(rb)
                 if rb.first_tap_ts is None:
                     rb.first_tap_ts = ts
                     rb.touched = True
@@ -176,17 +179,29 @@ def detect_rejection_blocks(bars, tf: int, series, atr, registry) -> list[RBCand
 
         # Existing-structure precedence (spec Part 5): a candle whose wick
         # only reproduces a tap/reaction against an already-active
-        # same-direction RB must not spawn a new overlapping RB from that
-        # reaction -- the tap was already recorded on the original RB in
-        # step 1 above (rb.first_tap_ts/max_penetration_after_activation).
+        # same-direction RB whose zone the proposed new wick zone OVERLAPS
+        # must not spawn a new overlapping RB from that reaction -- the tap
+        # was already recorded on the original RB in step 1 above
+        # (rb.first_tap_ts/max_penetration_after_activation). A same-direction
+        # tap of a DIFFERENT, non-overlapping zone still yields a new
+        # candidate; opposite-direction candidates are never suppressed here.
         filtered = []
         for cand in candidates:
-            direction = cand[0]
-            if direction in tapped_directions:
+            direction, wick, opposite_wick, zlo, zhi = cand
+            overlapped = next(
+                (rb for rb in tapped_rbs
+                 if rb.direction == direction
+                 and max(zlo, rb.zone_lo) <= min(zhi, rb.zone_hi)),   # inclusive intersection
+                None)
+            if overlapped is not None:
                 registry.precedence_suppressed_rbs.append({
                     "timeframe": tf, "source_seq": i, "source_ts": candle_ts_et(c),
                     "direction": direction, "source_ohlc": (c.open, c.high, c.low, c.close),
-                    "reason": "existing_active_same_direction_rb_tapped",
+                    "proposed_zone_lo": zlo, "proposed_zone_hi": zhi,
+                    "overlapping_rb_id": overlapped.id,
+                    "overlapping_rb_zone_lo": overlapped.zone_lo,
+                    "overlapping_rb_zone_hi": overlapped.zone_hi,
+                    "reason": "overlapping_active_same_direction_rb_tapped",
                 })
                 continue
             filtered.append(cand)
