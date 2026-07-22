@@ -18,6 +18,8 @@ from .common import (WIDTH_ATR_BINS, WICKBODY_BINS, RR_BINS, DELAY_BINS,
                      _bin, _avail, _tf_start_seq, MIN_EXECUTABLE_RR)
 from . import reaction_states as rs
 from .sessions import time_window_fields
+from .atr_floors import (atr1m_at_trigger, atr5m_at_trigger, stop_floor, target_floor_ok,
+                         TARGET_BELOW_5M_ATR, ATR_FLOOR_UNAVAILABLE)
 from ..data.cme_session import session_date
 
 # entry-rule -> (offset-key in classification, frozen reaction_state label)
@@ -81,11 +83,23 @@ class Variant:
     rb_activation_only_after_trigger: object
     # setup
     entry_price: float
-    stop_price: float
+    stop_price: float                 # raw structural stop (invalidation)
     stop_anchor_desc: str
     targets: dict
     considered_targets: list
     target_exclusion_counts: dict
+    # ATR(24) absolute-volatility floors (causal, completed candles only)
+    atr_1m_24: object
+    atr_5m_24: object
+    raw_stop_price: float
+    raw_stop_distance: float
+    effective_stop_price: float
+    effective_stop_distance: float
+    stop_widened_by_atr_floor: bool
+    target_distance: object
+    target_distance_atr5_multiple: object
+    atr_floor_target_ok: bool
+    natural_rr: object                # recalculated with the effective stop
     executable: bool
     rejection_reason: str
     fingerprint: dict = field(default_factory=dict)
@@ -122,13 +136,20 @@ def _fingerprint(v: Variant):
         "interaction_to_trigger_delay_bin": _bin(v.interaction_to_trigger_delay, DELAY_BINS),
         "target_family": (prim.family if prim else "none"),
         "target_tf": (prim.timeframe if prim else "none"),
-        "natural_rr_bin": _bin(prim.natural_rr if prim else None, RR_BINS),
+        # RR binned on the EFFECTIVE (ATR-floored) stop -- part of the match key
+        "natural_rr_bin": _bin(v.natural_rr, RR_BINS),
+        # stored for transparency (NOT matching keys -- absolute floats)
+        "atr_1m_24": v.atr_1m_24, "atr_5m_24": v.atr_5m_24,
     }
 
 
 def build_variants(episode_id, ctx, trigger_tf, series, atr, bars, i_idx, cls,
-                   resolve_fn, confluence_ids):
-    """Return the list of frozen Variant records for this physical episode."""
+                   resolve_fn, confluence_ids, atrf):
+    """Return the list of frozen Variant records for this physical episode.
+
+    ``atrf`` supplies causal ATR(24) references: {"a1": atr24_1m aligned to
+    ``bars``, "a5": atr24_5m aligned to the 5m series, "avail5": ascending 5m
+    availability-seq array}."""
     direction = ctx["direction"]
     ctx_tf = ctx["context_tf"]
     zone_lo, zone_hi = ctx["context_zone"]
@@ -171,11 +192,26 @@ def build_variants(episode_id, ctx, trigger_tf, series, atr, bars, i_idx, cls,
                 entry_seq, direction, entry_price, stop_price, ctx_tf,
                 ctx["context_family"], set(confluence_ids))
         prim = selected.get("NEAREST_OPPOSING_VALID_STRUCTURE")
+
+        # ---- causal ATR(24) absolute-volatility floors ----
+        atr_1m = atr1m_at_trigger(atrf["a1"], entry_seq)
+        atr_5m = atr5m_at_trigger(atrf["a5"], atrf["avail5"], entry_seq)
+        sf = stop_floor(entry_price, direction, stop_price, atr_1m)
+        eff_dist = sf["effective_stop_distance"]
+        tgt_dist = round(abs(prim.surface - entry_price), 4) if prim else None
+        tgt_atr5_mult = (round(tgt_dist / atr_5m, 4) if (tgt_dist is not None and atr_5m) else None)
+        floor_target_ok = target_floor_ok(tgt_dist, atr_5m)
+        natural_rr = (round(tgt_dist / eff_dist, 4) if (tgt_dist is not None and eff_dist > 0) else None)
+
         if not valid_stop:
             reason = "NO_STRUCTURAL_STOP"
         elif prim is None:
             reason = "NO_CAUSAL_OPPOSING_TARGET"
-        elif prim.natural_rr is None or prim.natural_rr < MIN_EXECUTABLE_RR:
+        elif atr_1m is None or atr_5m is None:
+            reason = ATR_FLOOR_UNAVAILABLE
+        elif not floor_target_ok:
+            reason = TARGET_BELOW_5M_ATR
+        elif natural_rr is None or natural_rr < MIN_EXECUTABLE_RR:
             reason = "INSUFFICIENT_NATURAL_RR"
         else:
             reason = ""
@@ -212,6 +248,14 @@ def build_variants(episode_id, ctx, trigger_tf, series, atr, bars, i_idx, cls,
             entry_price=entry_price, stop_price=stop_price, stop_anchor_desc=stop_desc,
             targets=selected, considered_targets=considered,
             target_exclusion_counts=excl_counts,
+            atr_1m_24=(round(atr_1m, 4) if atr_1m is not None else None),
+            atr_5m_24=(round(atr_5m, 4) if atr_5m is not None else None),
+            raw_stop_price=sf["raw_stop_price"], raw_stop_distance=sf["raw_stop_distance"],
+            effective_stop_price=sf["effective_stop_price"],
+            effective_stop_distance=sf["effective_stop_distance"],
+            stop_widened_by_atr_floor=sf["stop_widened_by_atr_floor"],
+            target_distance=tgt_dist, target_distance_atr5_multiple=tgt_atr5_mult,
+            atr_floor_target_ok=floor_target_ok, natural_rr=natural_rr,
             executable=executable, rejection_reason=reason,
         )
         v.fingerprint = _fingerprint(v)

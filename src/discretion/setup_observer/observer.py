@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 
 from ..primitive_reset.timeframes import candle_series, atr_series, candle_ts_et, TIMEFRAMES
 from ..primitive_reset.registry import ResetRegistry
+from ..data.atr import wilder_atr
 from ..primitive_reset.fvg import detect_fvgs
 from ..primitive_reset.ifvg import detect_ifvgs
 from ..primitive_reset.rejection_block import detect_rejection_blocks
@@ -181,6 +182,11 @@ def observe(bars):
                    for tf in TIMEFRAMES}
     contexts = _contexts(fvgs, ifvgs, rbs, series, ts_index)
 
+    # causal ATR(24) references for the absolute-volatility floors
+    atrf = {"a1": wilder_atr(bars, 24),
+            "a5": wilder_atr(series[5], 24),
+            "avail5": [c.available_seq for c in series[5]]}
+
     def resolve(entry_seq, direction, entry_price, stop_price, ctf, cfam, excl):
         return resolve_targets(table, entry_seq, direction, entry_price,
                                stop_price, ctf, cfam, excl)
@@ -240,7 +246,7 @@ def observe(bars):
             eid += 1
             episode_id = f"EP-{eid:05d}"
             vs = build_variants(episode_id, primary["ctx"], primary["ttf"], series, atr,
-                                bars, primary["i_idx"], primary["cls"], resolve, confluence_ids)
+                                bars, primary["i_idx"], primary["cls"], resolve, confluence_ids, atrf)
             if not vs:
                 eid -= 1
                 continue

@@ -113,12 +113,20 @@ def _var_row(v):
         "day_of_week": v.day_of_week, "session_date_et": v.session_date_et,
         "rb_wick_body": v.rb_wick_body, "rb_activated_at_trigger": v.rb_activated_at_trigger,
         "rb_activation_only_after_trigger": v.rb_activation_only_after_trigger,
-        "entry_price": v.entry_price, "stop_price": v.stop_price,
+        "entry_price": v.entry_price,
+        "atr_1m_24": v.atr_1m_24, "atr_5m_24": v.atr_5m_24,
+        "raw_stop_price": v.raw_stop_price, "raw_stop_distance": v.raw_stop_distance,
+        "effective_stop_price": v.effective_stop_price,
+        "effective_stop_distance": v.effective_stop_distance,
+        "stop_widened_by_atr_floor": v.stop_widened_by_atr_floor,
         "stop_anchor_desc": v.stop_anchor_desc,
         "target_family": (prim.family if prim else None),
         "target_tf": (prim.timeframe if prim else None),
         "target_surface": (prim.surface if prim else None),
-        "natural_rr": (prim.natural_rr if prim else None),
+        "target_distance": v.target_distance,
+        "target_distance_atr5_multiple": v.target_distance_atr5_multiple,
+        "atr_floor_target_ok": v.atr_floor_target_ok,
+        "natural_rr": v.natural_rr,
         "target_exclusion_counts": json.dumps(v.target_exclusion_counts, sort_keys=True),
         "executable": v.executable, "rejection_reason": v.rejection_reason,
     }
@@ -211,7 +219,7 @@ def main():
          [_ep_row(e) for e in obs_eps], EP_FIELDS)
     wcsv(os.path.join(OUT, "observation_week_variants_pre_outcome.csv"),
          [_var_row(v) for v in obs_vars], var_fields)
-    fp_fields = ["variant_id", "episode_id"] + EXACT_FIELDS
+    fp_fields = ["variant_id", "episode_id"] + EXACT_FIELDS + ["atr_1m_24", "atr_5m_24"]
     wcsv(os.path.join(OUT, "observation_week_fingerprints.csv"),
          [_fp_row(v) for v in obs_vars], fp_fields)
     # target-candidate ledgers are emitted for EXECUTABLE variants (those with a
@@ -269,11 +277,18 @@ def main():
             "direction": v.direction, "lane": v.lane, "session": v.session,
             "context_tf": v.context_tf, "trigger_tf": v.trigger_tf,
             "is_multi_timeframe": v.is_multi_timeframe,
-            "entry_ts": v.entry_ts, "entry_price": v.entry_price, "stop_price": v.stop_price,
+            "entry_ts": v.entry_ts, "entry_price": v.entry_price,
+            "atr_1m_24": v.atr_1m_24, "atr_5m_24": v.atr_5m_24,
+            "raw_stop_price": v.raw_stop_price, "raw_stop_distance": v.raw_stop_distance,
+            "effective_stop_price": v.effective_stop_price,
+            "effective_stop_distance": v.effective_stop_distance,
+            "stop_widened_by_atr_floor": v.stop_widened_by_atr_floor,
             "target_surface": (prim.surface if prim else None),
             "target_family": (prim.family if prim else None),
             "target_tf": (prim.timeframe if prim else None),
-            "natural_rr": (prim.natural_rr if prim else None),
+            "target_distance": v.target_distance,
+            "target_distance_atr5_multiple": v.target_distance_atr5_multiple,
+            "natural_rr": v.natural_rr,
         }
         if matched_ids and v.executable:
             rec = dict(base, match_mode=("EXACT" if m["EXACT"] else "REDUCED_FAMILY"),
@@ -291,8 +306,11 @@ def main():
 
     act_fields = ["episode_id", "variant_id", "entry_variant", "reaction_state", "match_mode",
                   "playbook_items", "direction", "lane", "session", "context_tf", "trigger_tf",
-                  "is_multi_timeframe", "entry_ts", "entry_price", "stop_price",
-                  "target_surface", "target_family", "target_tf", "natural_rr"]
+                  "is_multi_timeframe", "entry_ts", "entry_price",
+                  "atr_1m_24", "atr_5m_24", "raw_stop_price", "raw_stop_distance",
+                  "effective_stop_price", "effective_stop_distance", "stop_widened_by_atr_floor",
+                  "target_surface", "target_family", "target_tf", "target_distance",
+                  "target_distance_atr5_multiple", "natural_rr"]
     wcsv(os.path.join(OUT, "application_week_actionable_matches.csv"),
          [rec for _, _, rec in actionable], act_fields)
     wcsv(os.path.join(OUT, "application_week_rejected_matches.csv"), rejected,
@@ -486,10 +504,19 @@ def _write_app_cards(actionable, playbook):
                          f"(wick/body {v.rb_wick_body})\n")
         lines.append(f"- **Exact entry rule:** {_rule_instruction(v.entry_variant, v.reaction_state)}\n")
         lines.append(f"- **Entry:** {v.entry_price} (next 1m bar open)\n")
-        lines.append(f"- **Stop:** {v.stop_price} — {v.stop_anchor_desc}\n")
+        widened = " (widened by ATR floor)" if v.stop_widened_by_atr_floor else " (structural, ATR floor not binding)"
+        lines.append(f"- **Raw structural stop:** {v.raw_stop_price} — {v.stop_anchor_desc} "
+                     f"(distance {v.raw_stop_distance} pts)\n")
+        lines.append(f"- **1m ATR(24):** {v.atr_1m_24} pts\n")
+        lines.append(f"- **Effective (ATR-floored) stop:** {v.effective_stop_price} "
+                     f"(distance {v.effective_stop_distance} pts){widened}\n")
         if prim:
             lines.append(f"- **Target:** {prim.surface} (opposing {prim.family} {prim.timeframe}m, "
-                         f"{prim.policy}) | **natural RR:** {prim.natural_rr}\n")
+                         f"{prim.policy})\n")
+            lines.append(f"- **Target distance:** {v.target_distance} pts | **5m ATR(24):** "
+                         f"{v.atr_5m_24} pts | **target-distance / 5m-ATR:** "
+                         f"{v.target_distance_atr5_multiple}×\n")
+            lines.append(f"- **Recalculated natural RR (vs effective stop):** {v.natural_rr}\n")
         other = [f"{p}={tc.surface}" for p, tc in v.targets.items()
                  if p != "NEAREST_OPPOSING_VALID_STRUCTURE" and p != "ANY_SURFACE_DIAGNOSTIC"]
         if other:

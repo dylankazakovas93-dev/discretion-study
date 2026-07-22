@@ -37,8 +37,9 @@ def process_outcome(v, bars):
     prim = v.targets.get("NEAREST_OPPOSING_VALID_STRUCTURE") if v.targets else None
     if not v.executable or prim is None:
         return None
-    direction, entry, stop, target = v.direction, v.entry_price, v.stop_price, prim.surface
-    risk = abs(entry - stop)
+    # execution uses the EFFECTIVE (ATR-floored) stop, never the raw structural one
+    direction, entry, stop, target = v.direction, v.entry_price, v.effective_stop_price, prim.surface
+    risk = v.effective_stop_distance
     if risk <= 0:
         return None
     n = len(bars)
