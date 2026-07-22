@@ -1,0 +1,45 @@
+{
+  "symbol": "NQU6",
+  "window_et": [
+    "2026-07-05 18:00:00-04:00",
+    "2026-07-10 16:59:59-04:00"
+  ],
+  "n_bars": 6900,
+  "n_structures": 7031,
+  "n_trigger_events": 5671,
+  "n_executable_setups": 284,
+  "n_rejected_triggers": 5387,
+  "trigger_family_counts": {
+    "RB_TAP": 5015,
+    "IFVG_ACTIVATION": 656
+  },
+  "trigger_timeframe_counts": {
+    "1": 3415,
+    "3": 1142,
+    "5": 696,
+    "15": 242,
+    "30": 120,
+    "60": 56
+  },
+  "rejection_reason_counts": {
+    "NO_CAUSAL_TARGET": 35,
+    "NO_STRUCTURAL_STOP": 1335,
+    "INSUFFICIENT_NATURAL_RR": 4002,
+    "SUPPRESSED_BY_OCCUPANCY": 15
+  },
+  "min_executable_rr": 0.5,
+  "first12_trigger_ids": [
+    "TRIG-00001",
+    "TRIG-00002",
+    "TRIG-00003",
+    "TRIG-00004",
+    "TRIG-00005",
+    "TRIG-00006",
+    "TRIG-00007",
+    "TRIG-00008",
+    "TRIG-00009",
+    "TRIG-00010",
+    "TRIG-00011",
+    "TRIG-00012"
+  ]
+}
