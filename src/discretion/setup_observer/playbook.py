@@ -1,92 +1,108 @@
-"""Recent-validity playbook: freeze successful observation-week fingerprints
-into authorized playbook items, then match application-week episodes against
-them under three explicitly separate modes (EXACT / REDUCED_FAMILY /
-SIMILARITY_DIAGNOSTIC).
+"""Recent-validity playbook (spec Part 8). Freeze successful observation-week
+entry-variant fingerprints into authorized items, then match application-week
+variants under three explicitly separate modes.
 
-Mechanism demonstration only (two-week proof). No aggregate PF; no threshold
-tuning; application-week outcomes never touch the playbook or the matching.
+Crucially the fingerprint carries BOTH the entry variant and the reaction
+state, so a successful strong-displacement setup can never authorize a tap-entry
+variant, a successful tap entry can never authorize waiting for displacement,
+and a small-rejection setup stays distinct from a strong rejection. Application
+data never touches playbook construction or matching.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-# Categorical fields that must all match for EXACT.
+# EXACT = every categorical + binned fingerprint field.
 EXACT_FIELDS = [
-    "lane", "direction", "context_tf", "trigger_tf", "confirmation_tf", "interaction_tf",
-    "session", "day_of_week", "context_family", "displacement_branch", "confirm_reason",
-    "rb_activation_class", "interaction_to_confirmation_delay", "confluence",
-    "target_family", "target_tf",
-    "fvg_width_atr_bin", "rb_wick_body_bin", "natural_rr_bin", "ifvg_inversion_speed",
+    "lane", "entry_variant", "reaction_state", "direction",
+    "context_tf", "interaction_tf", "reaction_tf", "confirmation_tf", "trigger_tf",
+    "is_multi_timeframe", "session", "day_of_week", "context_family", "confluence",
+    "rb_activation_class", "interaction_to_trigger_delay_bin",
+    "target_family", "target_tf", "natural_rr_bin",
 ]
-# Reduced-family subset.
+# REDUCED_FAMILY = provisional family analogue (spec-mandated minimum set).
 REDUCED_FIELDS = [
-    "lane", "direction", "context_tf", "trigger_tf", "session",
-    "displacement_branch", "rb_activation_class", "target_family",
+    "lane", "entry_variant", "direction", "context_family", "context_tf", "trigger_tf",
+    "session", "reaction_state", "interaction_to_trigger_delay_bin",
+    "rb_activation_class", "target_family", "target_tf", "natural_rr_bin",
 ]
-# Continuous features for the similarity diagnostic.
-SIM_FIELDS = ["context_tf", "trigger_tf", "interaction_to_confirmation_delay"]
+# SIMILARITY_DIAGNOSTIC continuous features (diagnostic only, never actionable).
+SIM_FIELDS = ["context_tf", "trigger_tf", "reaction_state"]
+
+# PATTERN = the setup identity WITHOUT the target/RR executability fields. Used
+# only to surface non-actionable "near" matches into the rejected ledger; it is
+# never an authorization.
+PATTERN_FIELDS = [f for f in REDUCED_FIELDS
+                  if f not in ("target_family", "target_tf", "natural_rr_bin")]
+
+
+def pattern_key(fp):
+    return tuple(fp.get(k) for k in PATTERN_FIELDS)
 
 
 @dataclass
 class PlaybookItem:
     item_id: str
     fingerprint: dict
+    entry_variant: str
+    reaction_state: str
+    source_variant_ids: list
     source_episode_ids: list
-    source_outcomes: list        # [{episode_id, exit_type, r_multiple, points}]
-    rb_activation_requirement: str   # ACTIVATED / NOT_ACTIVATED / EITHER
-    displacement_branch: str
-    interaction_to_confirmation_limit: int
+    source_outcomes: list
+    rb_activation_requirement: str
     target_family: object
     target_tf: object
+    single_observation: bool
     validity_start_et: object
     validity_expiry_et: object
     reduced_key: tuple = field(default_factory=tuple)
+    pattern_k: tuple = field(default_factory=tuple)
 
 
 def _reduced_key(fp):
     return tuple(fp.get(k) for k in REDUCED_FIELDS)
 
 
-def build_playbook(obs_episodes, obs_outcomes, validity_start_et, validity_expiry_et):
-    """Authorized playbook = fingerprints of executable observation episodes
-    whose outcome hit TARGET (successful). Deduplicated by exact fingerprint."""
-    out_by_ep = {o.episode_id: o for o in obs_outcomes}
-    successful = [e for e in obs_episodes
-                  if e.executable and out_by_ep.get(e.episode_id) is not None
-                  and out_by_ep[e.episode_id].success]
+def build_playbook(obs_variants, obs_outcomes, validity_start_et, validity_expiry_et):
+    """Authorized playbook = fingerprints of executable observation-week variants
+    whose outcome hit TARGET. Deduplicated by exact fingerprint."""
+    out_by_v = {o.variant_id: o for o in obs_outcomes}
+    successful = [v for v in obs_variants
+                  if v.executable and out_by_v.get(v.variant_id) is not None
+                  and out_by_v[v.variant_id].success]
 
     grouped = {}
-    for e in successful:
-        key = tuple(e.fingerprint.get(f) for f in EXACT_FIELDS)
-        grouped.setdefault(key, []).append(e)
+    for v in successful:
+        key = tuple(v.fingerprint.get(f) for f in EXACT_FIELDS)
+        grouped.setdefault(key, []).append(v)
 
     items = []
-    for n, (key, eps) in enumerate(sorted(grouped.items(), key=lambda kv: str(kv[0])), start=1):
-        fp = eps[0].fingerprint
-        acts = {e.fingerprint["rb_activation_class"] for e in eps}
+    for n, (key, vs) in enumerate(sorted(grouped.items(), key=lambda kv: str(kv[0])), start=1):
+        fp = vs[0].fingerprint
+        acts = {v.fingerprint["rb_activation_class"] for v in vs}
         req = acts.pop() if len(acts) == 1 else "EITHER"
         items.append(PlaybookItem(
             item_id=f"PB-{n:04d}", fingerprint=fp,
-            source_episode_ids=[e.episode_id for e in eps],
-            source_outcomes=[{"episode_id": e.episode_id, "exit_type": out_by_ep[e.episode_id].exit_type,
-                              "r_multiple": out_by_ep[e.episode_id].r_multiple,
-                              "points": out_by_ep[e.episode_id].points} for e in eps],
-            rb_activation_requirement=req,
-            displacement_branch=fp["displacement_branch"],
-            interaction_to_confirmation_limit=fp["interaction_to_confirmation_delay"],
-            target_family=fp["target_family"], target_tf=fp["target_tf"],
+            entry_variant=fp["entry_variant"], reaction_state=fp["reaction_state"],
+            source_variant_ids=[v.variant_id for v in vs],
+            source_episode_ids=sorted({v.episode_id for v in vs}),
+            source_outcomes=[{"variant_id": v.variant_id, "exit_type": out_by_v[v.variant_id].exit_type,
+                              "r_multiple": out_by_v[v.variant_id].r_multiple,
+                              "points": out_by_v[v.variant_id].points} for v in vs],
+            rb_activation_requirement=req, target_family=fp["target_family"],
+            target_tf=fp["target_tf"], single_observation=(len(vs) == 1),
             validity_start_et=validity_start_et, validity_expiry_et=validity_expiry_et,
-            reduced_key=_reduced_key(fp),
-        ))
+            reduced_key=_reduced_key(fp), pattern_k=pattern_key(fp)))
     return items
 
 
-def match_modes(ep, playbook):
-    """Return dict of matches per mode for an application-week episode.
-    EXACT / REDUCED_FAMILY are categorical; SIMILARITY_DIAGNOSTIC is the
-    nearest playbook item by L1 distance over SIM_FIELDS (diagnostic only)."""
-    fp = ep.fingerprint
+def match_modes(v, playbook):
+    """Return matches per mode for an application-week variant. EXACT and
+    REDUCED_FAMILY are categorical (both preserve entry_variant + reaction_state
+    so cross-authorization is impossible); SIMILARITY_DIAGNOSTIC is the nearest
+    item by L1 distance and is diagnostic only -- never actionable."""
+    fp = v.fingerprint
     exact = [pb.item_id for pb in playbook
              if all(fp.get(f) == pb.fingerprint.get(f) for f in EXACT_FIELDS)]
     reduced = [pb.item_id for pb in playbook if _reduced_key(fp) == pb.reduced_key]

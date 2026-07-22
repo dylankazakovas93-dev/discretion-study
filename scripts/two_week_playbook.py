@@ -1,10 +1,12 @@
 """Two-week ICT setup observer + recent-validity playbook demo (NQU6).
 
-Observation week Jul 5-10 2026: freeze coherent setup episodes/fingerprints,
-THEN attach observation-only outcomes, build a recent-validity playbook from
-the successful fingerprints. Application week Jul 12-17 2026: replay, match
-against the frozen playbook, show cards. Application-week outcomes are NOT
-computed or revealed here.
+Observation week Jul 5-10 2026: freeze coherent physical episodes and their
+frozen entry VARIANTS/fingerprints FIRST, then attach observation-only outcomes,
+then build a recent-validity playbook from the successful variant fingerprints.
+Application week Jul 12-17 2026: replay, match every variant against the frozen
+playbook (diagnostically), and surface only EXECUTABLE + AUTHORIZED variants as
+actionable cards. Non-actionable matches go to a separate rejected ledger.
+Application-week OUTCOMES are never computed or revealed here.
 """
 from __future__ import annotations
 
@@ -12,6 +14,7 @@ import csv
 import json
 import os
 import sys
+from collections import Counter
 
 import pandas as pd
 
@@ -19,9 +22,10 @@ sys.path.insert(0, "src")
 
 from discretion.data.loader import read_raw_csv, DATA_FILES, ET
 from discretion.data.bars import Bar
-from discretion.setup_observer.observer import observe, MIN_EXECUTABLE_RR
+from discretion.setup_observer.observer import observe
+from discretion.setup_observer.common import MIN_EXECUTABLE_RR
 from discretion.setup_observer.outcomes import process_outcome
-from discretion.setup_observer.playbook import build_playbook, match_modes, EXACT_FIELDS
+from discretion.setup_observer.playbook import build_playbook, match_modes, EXACT_FIELDS, pattern_key
 from discretion.setup_observer.sessions import SESSION_BOUNDS
 from discretion.causal_replay.engine import replay as atomic_replay
 
@@ -60,83 +64,130 @@ def load_bars(start_et, end_et):
 
 def wcsv(path, rows, fields):
     with open(path, "w", newline="") as fh:
-        w = csv.DictWriter(fh, fieldnames=fields)
+        w = csv.DictWriter(fh, fieldnames=fields, extrasaction="ignore")
         w.writeheader()
         for r in rows:
             w.writerow(r)
 
 
-def _ep_row(e, bars):
-    prim = next((t for t in e.targets if t.policy == "NEAREST_VALID_STRUCTURE"), None)
+# ---------------------------------------------------------------------------
+# row builders
+# ---------------------------------------------------------------------------
+
+def _ep_row(e):
     return {
-        "episode_id": e.episode_id, "lane": e.lane, "direction": e.direction,
-        "context_tf": e.context_tf, "interaction_tf": e.interaction_tf,
-        "confirmation_tf": e.confirmation_tf, "trigger_tf": e.trigger_tf,
-        "entry_seq": e.entry_seq, "entry_ts_et": bars[e.entry_seq].ts_et,
-        "session": e.session, "et_hour": e.et_hour, "minutes_from_0930": e.minutes_from_0930,
-        "day_of_week": e.day_of_week, "session_date_et": e.session_date_et,
-        "context_id": e.context_id, "context_family": e.context_family,
-        "component_ids": "|".join(e.component_ids), "confluence": e.confluence,
+        "episode_id": e.episode_id, "direction": e.direction, "lane": e.lane,
+        "trigger_tf": e.trigger_tf, "context_tf": e.context_tf,
+        "is_multi_timeframe": e.is_multi_timeframe, "context_family": e.context_family,
+        "context_id": e.context_id, "component_ids": "|".join(e.component_ids),
+        "confluence": e.confluence, "interaction_seq": e.interaction_seq,
         "context_zone_lo": e.context_zone[0], "context_zone_hi": e.context_zone[1],
-        "context_age_bars": e.context_age_bars_at_interaction,
-        "fvg_width_atr": e.fvg_width_atr, "ifvg_inversion_speed": e.ifvg_inversion_speed,
-        "rb_wick_body": e.rb_wick_body, "rb_dominant_ratio": e.rb_dominant_ratio,
-        "rb_activated_at_interaction": e.rb_activated_at_interaction,
-        "rb_activated_at_confirmation": e.rb_activated_at_confirmation,
-        "rb_activated_at_trigger": e.rb_activated_at_trigger,
-        "rb_activation_only_after_setup": e.rb_activation_only_after_setup,
-        "prior_tap_count": e.prior_tap_count,
-        "displacement_branch": e.displacement_branch, "confirm_reason": e.confirm_reason,
-        "interaction_to_confirmation_delay": e.interaction_to_confirmation_delay,
-        "entry_price": e.entry_price, "stop_price": e.stop_price,
-        "target_price": (prim.surface if prim else None),
-        "target_family": (prim.family if prim else None),
-        "target_tf": (prim.timeframe if prim else None),
-        "natural_rr": (prim.natural_rr if prim else None),
-        "executable": e.executable, "rejection_reason": e.rejection_reason,
+        "dominant_state": e.dominant_state, "n_variants": e.n_variants,
+        "n_executable": e.n_executable, "variant_ids": "|".join(e.variant_ids),
     }
 
 
-def _fp_row(e):
-    r = {"episode_id": e.episode_id}
-    r.update(e.fingerprint)
+EP_FIELDS = ["episode_id", "direction", "lane", "trigger_tf", "context_tf",
+             "is_multi_timeframe", "context_family", "context_id", "component_ids",
+             "confluence", "interaction_seq", "context_zone_lo", "context_zone_hi",
+             "dominant_state", "n_variants", "n_executable", "variant_ids"]
+
+
+def _var_row(v):
+    prim = v.targets.get("NEAREST_OPPOSING_VALID_STRUCTURE")
+    return {
+        "episode_id": v.episode_id, "variant_id": v.variant_id,
+        "entry_variant": v.entry_variant, "reaction_state": v.reaction_state,
+        "lane": v.lane, "direction": v.direction, "context_tf": v.context_tf,
+        "interaction_tf": v.interaction_tf, "reaction_tf": v.reaction_tf,
+        "confirmation_tf": v.confirmation_tf, "trigger_tf": v.trigger_tf,
+        "is_multi_timeframe": v.is_multi_timeframe, "context_id": v.context_id,
+        "context_family": v.context_family, "component_ids": "|".join(v.component_ids),
+        "confluence": v.confluence, "context_zone_lo": v.context_zone[0],
+        "context_zone_hi": v.context_zone[1], "context_formation_ts": v.context_formation_ts,
+        "interaction_seq": v.interaction_seq, "interaction_ts": v.interaction_ts,
+        "trigger_seq": v.trigger_seq, "trigger_ts": v.trigger_ts, "entry_seq": v.entry_seq,
+        "entry_ts": v.entry_ts, "interaction_to_trigger_delay": v.interaction_to_trigger_delay,
+        "penetration_depth": v.penetration_depth, "session": v.session, "et_hour": v.et_hour,
+        "minutes_from_0930": v.minutes_from_0930, "minutes_from_1000": v.minutes_from_1000,
+        "day_of_week": v.day_of_week, "session_date_et": v.session_date_et,
+        "rb_wick_body": v.rb_wick_body, "rb_activated_at_trigger": v.rb_activated_at_trigger,
+        "rb_activation_only_after_trigger": v.rb_activation_only_after_trigger,
+        "entry_price": v.entry_price, "stop_price": v.stop_price,
+        "stop_anchor_desc": v.stop_anchor_desc,
+        "target_family": (prim.family if prim else None),
+        "target_tf": (prim.timeframe if prim else None),
+        "target_surface": (prim.surface if prim else None),
+        "natural_rr": (prim.natural_rr if prim else None),
+        "target_exclusion_counts": json.dumps(v.target_exclusion_counts, sort_keys=True),
+        "executable": v.executable, "rejection_reason": v.rejection_reason,
+    }
+
+
+def _fp_row(v):
+    r = {"variant_id": v.variant_id, "episode_id": v.episode_id}
+    r.update(v.fingerprint)
     return r
 
 
-def _lineage_rows(e):
+def _target_rows(v, week):
     rows = []
-    for cid in e.component_ids:
-        rows.append({"episode_id": e.episode_id, "role": "context/component", "structure_id": cid})
-    for t in e.targets:
-        rows.append({"episode_id": e.episode_id, "role": f"target:{t.policy}",
-                     "structure_id": t.structure_id})
+    selected_by_sid = {}
+    for pol, tc in v.targets.items():
+        selected_by_sid.setdefault(tc.structure_id, []).append(pol)
+    for c in v.considered_targets:
+        rows.append({"week": week, "episode_id": v.episode_id, "variant_id": v.variant_id,
+                     "structure_id": c["structure_id"], "family": c["family"], "tf": c["tf"],
+                     "surface": c["surface"], "distance": c["distance"],
+                     "natural_rr": c["natural_rr"], "availability_seq": c["avail"],
+                     "exclusion_reason": c["exclusion_reason"],
+                     "selected_as": "|".join(selected_by_sid.get(c["structure_id"], []))})
     return rows
 
 
-def _target_rows(e):
-    return [{"episode_id": e.episode_id, "policy": t.policy, "structure_id": t.structure_id,
-             "family": t.family, "timeframe": t.timeframe, "surface": t.surface,
-             "distance": t.distance, "freshness_bars": t.freshness_bars,
-             "availability_seq": t.availability_seq, "natural_rr": t.natural_rr}
-            for e2 in [e] for t in e.targets]
+TARGET_FIELDS = ["week", "episode_id", "variant_id", "structure_id", "family", "tf",
+                 "surface", "distance", "natural_rr", "availability_seq",
+                 "exclusion_reason", "selected_as"]
 
 
-def _causal_invariants(episodes, label):
-    v = {"interaction_after_confirmation": 0, "confirmation_after_trigger_entry": 0,
-         "entry_not_after_trigger": 0, "target_after_entry": 0}
-    for e in episodes:
-        if e.interaction_seq > e.confirmation_seq:
-            v["interaction_after_confirmation"] += 1
-        if e.confirmation_seq > e.entry_seq:
-            v["confirmation_after_trigger_entry"] += 1
-        if not (e.entry_seq >= e.confirmation_seq):
-            v["entry_not_after_trigger"] += 1
-        for t in e.targets:
-            if t.availability_seq > e.entry_seq:
+def _lineage_rows(e, variants_by_ep, week):
+    rows = []
+    for cid in e.component_ids:
+        rows.append({"week": week, "episode_id": e.episode_id, "variant_id": "",
+                     "role": "context/component", "structure_id": cid})
+    for v in variants_by_ep.get(e.episode_id, []):
+        if not v.executable:
+            continue
+        for pol, tc in v.targets.items():
+            rows.append({"week": week, "episode_id": e.episode_id, "variant_id": v.variant_id,
+                         "role": f"target:{pol}", "structure_id": tc.structure_id})
+    return rows
+
+
+LINEAGE_FIELDS = ["week", "episode_id", "variant_id", "role", "structure_id"]
+
+
+def _causal_invariants(variants, label):
+    v = {"interaction_after_trigger": 0, "entry_before_trigger": 0,
+         "target_after_entry": 0, "delay_uses_future": 0}
+    for x in variants:
+        if x.interaction_seq > x.trigger_seq:
+            v["interaction_after_trigger"] += 1
+        if x.entry_seq < x.trigger_seq:
+            v["entry_before_trigger"] += 1
+        for tc in x.targets.values():
+            if tc.availability_seq > x.entry_seq:
                 v["target_after_entry"] += 1
-    return {"label": label, "n_episodes": len(episodes), "violations": v,
+        # a variant's frozen reaction trace must not extend past its own trigger
+        if any(m["k"] > x.interaction_to_trigger_delay for m in x.reaction_measures_through_trigger):
+            v["delay_uses_future"] += 1
+    return {"label": label, "n_variants": len(variants), "violations": v,
             "total_violations": sum(v.values())}
 
+
+# ---------------------------------------------------------------------------
+# main
+# ---------------------------------------------------------------------------
 
 def main():
     os.makedirs(OUT, exist_ok=True)
@@ -147,68 +198,109 @@ def main():
                    "session_bounds_et": [{"name": n, "start": s, "end": e} for n, s, e in SESSION_BOUNDS]},
                   fh, indent=2, default=str)
 
-    # ---- observation week: freeze episodes/fingerprints FIRST ----
-    obs_eps, obs_diag = observe(obs_bars)
-    ep_fields = list(_ep_row(obs_eps[0], obs_bars).keys()) if obs_eps else ["episode_id"]
+    var_fields = None
+
+    # ==== OBSERVATION WEEK: freeze episodes + variants + fingerprints FIRST ====
+    obs_eps, obs_vars, obs_diag = observe(obs_bars)
+    obs_by_ep = {}
+    for v in obs_vars:
+        obs_by_ep.setdefault(v.episode_id, []).append(v)
+    var_fields = list(_var_row(obs_vars[0]).keys()) if obs_vars else ["variant_id"]
+
     wcsv(os.path.join(OUT, "observation_week_episodes.csv"),
-         [_ep_row(e, obs_bars) for e in obs_eps], ep_fields)
-    fp_fields = ["episode_id"] + EXACT_FIELDS
+         [_ep_row(e) for e in obs_eps], EP_FIELDS)
+    wcsv(os.path.join(OUT, "observation_week_variants_pre_outcome.csv"),
+         [_var_row(v) for v in obs_vars], var_fields)
+    fp_fields = ["variant_id", "episode_id"] + EXACT_FIELDS
     wcsv(os.path.join(OUT, "observation_week_fingerprints.csv"),
-         [_fp_row(e) for e in obs_eps], fp_fields)
-    lin = [r for e in obs_eps for r in _lineage_rows(e)]
-    wcsv(os.path.join(OUT, "observation_week_component_lineage.csv"), lin,
-         ["episode_id", "role", "structure_id"])
-    tgt = [r for e in obs_eps for r in _target_rows(e)]
-    wcsv(os.path.join(OUT, "observation_week_target_candidates.csv"), tgt,
-         ["episode_id", "policy", "structure_id", "family", "timeframe", "surface",
-          "distance", "freshness_bars", "availability_seq", "natural_rr"])
+         [_fp_row(v) for v in obs_vars], fp_fields)
+    # target-candidate ledgers are emitted for EXECUTABLE variants (those with a
+    # valid opposing target); non-executable variants carry their rejection
+    # reason in the variants ledger instead, which keeps these files tractable.
+    wcsv(os.path.join(OUT, "observation_week_target_candidates.csv"),
+         [r for v in obs_vars if v.executable for r in _target_rows(v, "observation")], TARGET_FIELDS)
 
-    # ---- observation week: outcomes ONLY after episodes frozen ----
-    obs_outcomes = [o for e in obs_eps if (o := process_outcome(e, obs_bars)) is not None]
+    # ==== OBSERVATION OUTCOMES: only after the pre-outcome ledger is immutable ==
+    obs_outcomes = [o for v in obs_vars if (o := process_outcome(v, obs_bars)) is not None]
     wcsv(os.path.join(OUT, "observation_week_outcomes.csv"),
-         [{"episode_id": o.episode_id, "exit_type": o.exit_type, "exit_seq": o.exit_seq,
-           "exit_price": o.exit_price, "mfe_points": o.mfe_points, "mae_points": o.mae_points,
-           "points": o.points, "r_multiple": o.r_multiple, "success": o.success}
-          for o in obs_outcomes],
-         ["episode_id", "exit_type", "exit_seq", "exit_price", "mfe_points", "mae_points",
-          "points", "r_multiple", "success"])
+         [{"variant_id": o.variant_id, "episode_id": o.episode_id, "entry_variant": o.entry_variant,
+           "exit_type": o.exit_type, "exit_seq": o.exit_seq, "exit_price": o.exit_price,
+           "mfe_points": o.mfe_points, "mae_points": o.mae_points, "points": o.points,
+           "r_multiple": o.r_multiple, "success": o.success} for o in obs_outcomes],
+         ["variant_id", "episode_id", "entry_variant", "exit_type", "exit_seq", "exit_price",
+          "mfe_points", "mae_points", "points", "r_multiple", "success"])
 
-    # ---- recent-validity playbook ----
-    playbook = build_playbook(obs_eps, obs_outcomes, validity_start_et=obs_cov.get("last_et"),
+    # ==== RECENT-VALIDITY PLAYBOOK ====
+    playbook = build_playbook(obs_vars, obs_outcomes, validity_start_et=obs_cov.get("last_et"),
                               validity_expiry_et=app_cov.get("last_et"))
     _write_playbook(playbook)
 
-    # ---- application week: replay + match (NO outcomes) ----
-    app_eps, app_diag = observe(app_bars)
+    # ==== APPLICATION WEEK: replay + match (NO outcomes) ====
+    app_eps, app_vars, app_diag = observe(app_bars)
+    app_by_ep = {}
+    for v in app_vars:
+        app_by_ep.setdefault(v.episode_id, []).append(v)
     wcsv(os.path.join(OUT, "application_week_all_episodes_pre_outcome.csv"),
-         [_ep_row(e, app_bars) for e in app_eps], ep_fields)
-    app_lin = [r for e in app_eps for r in _lineage_rows(e)]
-    wcsv(os.path.join(OUT, "application_week_component_lineage.csv"), app_lin,
-         ["episode_id", "role", "structure_id"])
-    app_tgt = [r for e in app_eps for r in _target_rows(e)]
-    wcsv(os.path.join(OUT, "application_week_target_candidates.csv"), app_tgt,
-         ["episode_id", "policy", "structure_id", "family", "timeframe", "surface",
-          "distance", "freshness_bars", "availability_seq", "natural_rr"])
+         [_ep_row(e) for e in app_eps], EP_FIELDS)
+    wcsv(os.path.join(OUT, "application_week_all_variants_pre_outcome.csv"),
+         [_var_row(v) for v in app_vars], var_fields)
+    wcsv(os.path.join(OUT, "application_week_target_candidates.csv"),
+         [r for v in app_vars if v.executable for r in _target_rows(v, "application")], TARGET_FIELDS)
 
-    match_rows = []
-    matched = []
-    for e in app_eps:
-        m = match_modes(e, playbook)
-        if m["EXACT"] or m["REDUCED_FAMILY"]:
-            matched.append((e, m))
-        match_rows.append({
-            "episode_id": e.episode_id, "lane": e.lane, "entry_seq": e.entry_seq,
-            "session": e.session, "exact_matches": "|".join(m["EXACT"]),
-            "reduced_family_matches": "|".join(m["REDUCED_FAMILY"]),
-            "similarity_nearest": (m["SIMILARITY_DIAGNOSTIC"] or {}).get("nearest_item_id"),
-            "similarity_l1": (m["SIMILARITY_DIAGNOSTIC"] or {}).get("l1_distance"),
-        })
-    wcsv(os.path.join(OUT, "application_week_matches_pre_outcome.csv"), match_rows,
-         list(match_rows[0].keys()) if match_rows else ["episode_id"])
+    # combined component lineage (both weeks)
+    lineage = ([r for e in obs_eps for r in _lineage_rows(e, obs_by_ep, "observation")]
+               + [r for e in app_eps for r in _lineage_rows(e, app_by_ep, "application")])
+    wcsv(os.path.join(OUT, "component_lineage.csv"), lineage, LINEAGE_FIELDS)
 
-    _write_app_cards(matched, playbook, app_bars)
+    # match every application variant; split actionable vs rejected.
+    # An actionable match requires an EXACT/REDUCED authorization AND executability
+    # (valid stop, causal opposing target, natural RR >= 0.5). A "pattern-near"
+    # match -- same setup identity but failing the target/RR gate -- is recorded
+    # in the rejected ledger, never described as authorized.
+    pattern_keys = {pb.pattern_k for pb in playbook}
+    actionable, rejected = [], []
+    for v in app_vars:
+        m = match_modes(v, playbook)
+        matched_ids = m["EXACT"] or m["REDUCED_FAMILY"]
+        prim = v.targets.get("NEAREST_OPPOSING_VALID_STRUCTURE")
+        base = {
+            "episode_id": v.episode_id, "variant_id": v.variant_id,
+            "entry_variant": v.entry_variant, "reaction_state": v.reaction_state,
+            "direction": v.direction, "lane": v.lane, "session": v.session,
+            "context_tf": v.context_tf, "trigger_tf": v.trigger_tf,
+            "is_multi_timeframe": v.is_multi_timeframe,
+            "entry_ts": v.entry_ts, "entry_price": v.entry_price, "stop_price": v.stop_price,
+            "target_surface": (prim.surface if prim else None),
+            "target_family": (prim.family if prim else None),
+            "target_tf": (prim.timeframe if prim else None),
+            "natural_rr": (prim.natural_rr if prim else None),
+        }
+        if matched_ids and v.executable:
+            rec = dict(base, match_mode=("EXACT" if m["EXACT"] else "REDUCED_FAMILY"),
+                       playbook_items="|".join(matched_ids))
+            actionable.append((v, m, rec))
+        elif pattern_key(v.fingerprint) in pattern_keys:
+            # authorized setup identity but not actionable this instance
+            if v.executable:
+                reason = "authorized_pattern_but_target_or_rr_family_mismatch"
+            else:
+                reason = v.rejection_reason or "authorized_pattern_but_not_executable"
+            rec = dict(base, match_mode="PATTERN_NEAR",
+                       playbook_items="|".join(matched_ids), rejection_reason=reason)
+            rejected.append(rec)
 
-    # ---- atomic diagnostic (renamed) ----
+    act_fields = ["episode_id", "variant_id", "entry_variant", "reaction_state", "match_mode",
+                  "playbook_items", "direction", "lane", "session", "context_tf", "trigger_tf",
+                  "is_multi_timeframe", "entry_ts", "entry_price", "stop_price",
+                  "target_surface", "target_family", "target_tf", "natural_rr"]
+    wcsv(os.path.join(OUT, "application_week_actionable_matches.csv"),
+         [rec for _, _, rec in actionable], act_fields)
+    wcsv(os.path.join(OUT, "application_week_rejected_matches.csv"), rejected,
+         act_fields + ["rejection_reason"])
+
+    _write_app_cards(actionable, playbook)
+
+    # ==== atomic diagnostic (renamed events; NOT setups) ====
     atomic_trigs, _ = atomic_replay(obs_bars)
     fam_rename = {"RB_TAP": "ATOMIC_RB_TAP_EVENT", "IFVG_ACTIVATION": "ATOMIC_IFVG_ACTIVATION_EVENT"}
     wcsv(os.path.join(OUT, "atomic_events_diagnostic.csv"),
@@ -219,40 +311,60 @@ def main():
          ["atomic_event_id", "atomic_event_type", "week", "entry_seq", "timeframe",
           "direction", "structure_id", "note"])
 
-    # ---- causal invariants + reproducibility ----
-    ci = {"observation": _causal_invariants(obs_eps, "observation"),
-          "application": _causal_invariants(app_eps, "application"),
+    # ==== causal invariants + reproducibility ====
+    ci = {"observation": _causal_invariants(obs_vars, "observation"),
+          "application": _causal_invariants(app_vars, "application"),
           "outcome_fields_in_fingerprints": False,
           "application_outcomes_computed": False}
     ci["total_violations"] = ci["observation"]["total_violations"] + ci["application"]["total_violations"]
     with open(os.path.join(OUT, "causal_invariants.json"), "w") as fh:
         json.dump(ci, fh, indent=2, default=str)
 
-    from collections import Counter
     repro = {
         "symbol": "NQU6", "observation_window": [str(OBS[0]), str(OBS[1])],
         "application_window": [str(APP[0]), str(APP[1])],
         "min_executable_rr": MIN_EXECUTABLE_RR,
-        "obs_episodes": len(obs_eps), "obs_by_lane": obs_diag["by_lane"],
-        "obs_executable": obs_diag["n_executable"],
+        "obs_physical_episodes": len(obs_eps), "obs_variants": len(obs_vars),
+        "obs_variants_by_rule": obs_diag["variants_by_rule"],
+        "obs_executable_by_rule": obs_diag["executable_by_rule"],
+        "obs_mtf_episodes": obs_diag["n_multi_timeframe_episodes"],
+        "obs_by_lane": obs_diag["by_lane"],
         "obs_outcomes_computed": len(obs_outcomes),
-        "obs_successful": sum(1 for o in obs_outcomes if o.success),
-        "n_unique_fingerprints": len({tuple(e.fingerprint.get(f) for f in EXACT_FIELDS) for e in obs_eps}),
+        "obs_successful_by_rule": dict(Counter(o.entry_variant for o in obs_outcomes if o.success)),
         "n_playbook_items": len(playbook),
-        "app_episodes": len(app_eps), "app_by_lane": app_diag["by_lane"],
-        "app_exact_matches": sum(1 for _, m in matched if m["EXACT"]),
-        "app_reduced_matches": sum(1 for _, m in matched if m["REDUCED_FAMILY"]),
-        "app_matched_episodes": len(matched),
+        "playbook_by_rule": dict(Counter(pb.entry_variant for pb in playbook)),
+        "app_physical_episodes": len(app_eps), "app_variants": len(app_vars),
+        "app_mtf_episodes": app_diag["n_multi_timeframe_episodes"],
+        "app_actionable": len(actionable), "app_rejected_matches": len(rejected),
+        "app_actionable_by_rule": dict(Counter(v.entry_variant for v, _, _ in actionable)),
+        "app_exact_actionable": sum(1 for _, m, _ in actionable if m["EXACT"]),
+        "app_reduced_actionable": sum(1 for _, m, _ in actionable if not m["EXACT"] and m["REDUCED_FAMILY"]),
     }
     with open(os.path.join(OUT, "reproducibility.json"), "w") as fh:
         json.dump(repro, fh, indent=2, default=str)
 
-    wcsv(os.path.join(OUT, "missed_setup_review.csv"), [],
-         ["dylan_timestamp_et", "expected_lane", "expected_direction", "expected_components",
-          "reason_not_emitted", "missing_stage", "classification", "notes"])
-
     print(json.dumps({"obs_diag": obs_diag, "app_diag": app_diag, "repro": repro,
                       "causal": ci}, indent=2, default=str))
+
+
+def _plain(ts):
+    return ts.strftime("%A, %B %-d, %Y, %-I:%M %p ET")
+
+
+def _rule_instruction(entry_variant, reaction_state):
+    m = {
+        "ENTRY_ON_TAP": "enter directly on the tap of the structure (no later confirmation required)",
+        "ENTRY_ON_FIRST_CLOSE_OUTSIDE": "wait for the FIRST completed candle that closes back outside the structure, then enter",
+        "ENTRY_ON_MINIMAL_WICK_REJECTION": "wait for a minimal wick rejection that closes back outside (small body is fine), then enter",
+        "ENTRY_ON_STRONG_REJECTION": "wait for a strong rejection/departure candle, then enter",
+        "ENTRY_ON_IMMEDIATE_DISPLACEMENT": "wait for immediate (next-candle) displacement, then enter",
+        "ENTRY_ON_DELAYED_DISPLACEMENT": "wait for delayed displacement (2-5 candles), then enter",
+        "ENTRY_ON_COMPRESSION_BREAK": "wait for compression then a directional break, then enter",
+        "ENTRY_ON_NEW_FVG": "wait for a new same-direction FVG to form, then enter",
+        "ENTRY_ON_NEW_IFVG": "wait for a new same-direction iFVG to form, then enter",
+        "ENTRY_ON_IFVG_RETEST": "enter on the retest of the inverted iFVG zone",
+    }
+    return m.get(entry_variant, entry_variant)
 
 
 def _write_playbook(playbook):
@@ -260,13 +372,15 @@ def _write_playbook(playbook):
     for pb in playbook:
         fp = pb.fingerprint
         rows.append({
-            "item_id": pb.item_id, "lane": fp["lane"], "direction": fp["direction"],
+            "item_id": pb.item_id, "lane": fp["lane"], "entry_variant": pb.entry_variant,
+            "reaction_state": pb.reaction_state, "direction": fp["direction"],
             "context_tf": fp["context_tf"], "trigger_tf": fp["trigger_tf"],
-            "session": fp["session"], "displacement_branch": pb.displacement_branch,
+            "is_multi_timeframe": fp["is_multi_timeframe"], "session": fp["session"],
             "rb_activation_requirement": pb.rb_activation_requirement,
-            "interaction_to_confirmation_limit": pb.interaction_to_confirmation_limit,
+            "interaction_to_trigger_delay_bin": fp["interaction_to_trigger_delay_bin"],
             "target_family": pb.target_family, "target_tf": pb.target_tf,
-            "confirm_reason": fp["confirm_reason"],
+            "natural_rr_bin": fp["natural_rr_bin"], "single_observation": pb.single_observation,
+            "source_variant_ids": "|".join(pb.source_variant_ids),
             "source_episode_ids": "|".join(pb.source_episode_ids),
             "source_outcomes": json.dumps(pb.source_outcomes, default=str),
             "validity_start_et": pb.validity_start_et, "validity_expiry_et": pb.validity_expiry_et,
@@ -275,118 +389,118 @@ def _write_playbook(playbook):
          list(rows[0].keys()) if rows else ["item_id"])
 
     lines = ["# Recent-validity playbook — from observation week (Jul 5–10 2026)\n",
-             "Authorized fingerprints = executable observation-week setups whose "
-             "outcome hit TARGET. Mechanism demonstration only (not statistical "
-             "proof). Each item is valid through the end of the application week.\n\n"]
+             "Authorized fingerprints = executable observation-week ENTRY VARIANTS whose "
+             "outcome hit TARGET. Reaction strength is learned, not assumed: a tap entry "
+             "and a strong-displacement entry are separate authorizations and never "
+             "substitute for one another. Mechanism demonstration only (not statistical "
+             "proof).\n\n"]
     if not playbook:
-        lines.append("_No observation-week setup hit its target under the frozen "
+        lines.append("_No observation-week variant hit its target under the frozen "
                      "execution policy, so the playbook is empty (disclosed)._\n")
     for pb in playbook:
         fp = pb.fingerprint
         d = "bullish" if fp["direction"] > 0 else "bearish"
-        rbreq = ({"ACTIVATED": "that was already activated", "NOT_ACTIVATED": "that was not yet activated",
-                  "EITHER": "(activated or not)"}.get(pb.rb_activation_requirement, ""))
-        lane_txt = {"A": f"a live {fp['context_tf']}m {d} rejection block",
-                    "B": f"a {fp['context_tf']}m {d} FVG",
-                    "C": f"a {fp['context_tf']}m {d} iFVG (direct)",
-                    "D": f"a {fp['context_tf']}m {d} iFVG on retest",
-                    "E": f"a {fp['context_tf']}m {d} rejection block departing into a new {d} FVG/iFVG"}.get(fp["lane"], fp["lane"])
-        lines.append(f"## {pb.item_id} — lane {fp['lane']} ({d})\n")
-        lines.append(f"During **{fp['session']}**, when price interacts with {lane_txt} "
-                     f"{rbreq if fp['lane'] in ('A','E') else ''}, wait up to "
-                     f"**{pb.interaction_to_confirmation_limit}** completed {fp['confirmation_tf']}m "
-                     f"candle(s) for **{pb.displacement_branch}** confirming via "
-                     f"**{fp['confirm_reason']}**; trigger on the frozen close, enter next 1m bar. "
-                     f"Stop at structure invalidation; target the nearest "
-                     f"**{pb.target_family} {pb.target_tf}m** structure. "
-                     f"Authorized by {len(pb.source_episode_ids)} observation episode(s) "
-                     f"({', '.join(pb.source_episode_ids)}) that hit target; valid through "
-                     f"{pb.validity_expiry_et}.\n\n")
+        rbreq = {"ACTIVATED": " that was already activated",
+                 "NOT_ACTIVATED": " that was not yet activated",
+                 "EITHER": ""}.get(pb.rb_activation_requirement, "")
+        ctx = {"rb": "rejection block", "fvg": "FVG", "ifvg": "iFVG"}.get(fp["context_family"], fp["context_family"])
+        mtf = (f"{fp['context_tf']}m context, {fp['trigger_tf']}m trigger"
+               if fp["is_multi_timeframe"] else f"{fp['context_tf']}m")
+        lines.append(f"## {pb.item_id} — {fp['entry_variant']} ({d}, {mtf})\n")
+        lines.append(f"During **{fp['session']}**, when price interacts with a {d} {ctx}"
+                     f"{rbreq} ({mtf}), **{_rule_instruction(pb.entry_variant, pb.reaction_state)}**. "
+                     f"Stop at structure invalidation; target the nearest opposing "
+                     f"**{pb.target_family} {pb.target_tf}m** structure (natural RR "
+                     f"{fp['natural_rr_bin']}). Reaction state: **{pb.reaction_state}**. "
+                     f"Authorized by {len(pb.source_variant_ids)} observation variant(s) "
+                     f"({', '.join(pb.source_variant_ids)}) that hit target"
+                     f"{' — SINGLE_OBSERVATION_PROVISIONAL' if pb.single_observation else ''}; "
+                     f"valid through {pb.validity_expiry_et}.\n\n")
     with open(os.path.join(OUT, "recent_playbook.md"), "w") as fh:
         fh.write("".join(lines))
 
 
-def _plain(ts):
-    return ts.strftime("%A, %B %-d, %Y, %-I:%M %p ET")
-
-
-def _write_app_cards(matched, playbook, bars):
-    # deterministic coverage caps; a card appears once
-    caps = {"exact": 2, "reduced": 4, "laneA": 2, "laneB": 2, "laneCDE": 2}
-    picked = []
-    seen = set()
-
-    def take(pred, cap, m_needed=None):
-        c = 0
-        for e, m in matched:
-            if e.episode_id in seen:
-                continue
-            if m_needed and not m[m_needed]:
-                continue
-            if not pred(e):
-                continue
-            picked.append((e, m)); seen.add(e.episode_id); c += 1
-            if c >= cap:
-                break
-
-    take(lambda e: True, caps["exact"], "EXACT")
-    take(lambda e: True, caps["reduced"], "REDUCED_FAMILY")
-    take(lambda e: e.lane == "A", caps["laneA"])
-    take(lambda e: e.lane == "B", caps["laneB"])
-    take(lambda e: e.lane in ("C", "D", "E"), caps["laneCDE"])
-    picked = picked[:12]
-    picked.sort(key=lambda em: em[0].entry_seq)
-
+def _write_app_cards(actionable, playbook):
+    """Up to 12 actionable variants. Priority: exact; then real MTF reduced;
+    then same-tf reduced. Diversify entry variant / session / lane. No outcomes."""
     pb_by_id = {pb.item_id: pb for pb in playbook}
-    lines = ["# Application-week setup cards — NQU6, Jul 12–17 2026 (pre-outcome)\n",
-             "Coherent setups from the application-week replay that match the "
-             "frozen observation-week playbook. **No outcomes** are computed or "
-             "revealed. Deterministic coverage: ≤2 exact, ≤4 reduced-family, "
-             "≤2 lane-A, ≤2 lane-B, ≤2 lane-C/D/E; each card once; chronological "
-             "within category.\n\n"]
+
+    def pool(pred):
+        return [(v, m, rec) for v, m, rec in actionable if pred(v, m)]
+
+    ordered = (pool(lambda v, m: bool(m["EXACT"]))
+               + pool(lambda v, m: not m["EXACT"] and m["REDUCED_FAMILY"] and v.is_multi_timeframe)
+               + pool(lambda v, m: not m["EXACT"] and m["REDUCED_FAMILY"] and not v.is_multi_timeframe))
+
+    picked, seen, seen_combo = [], set(), set()
+    for v, m, rec in ordered:
+        if v.variant_id in seen:
+            continue
+        combo = (v.entry_variant, v.session, v.lane)
+        if combo in seen_combo and len(picked) < 12:
+            # defer duplicates of an already-shown combo to a second pass
+            continue
+        picked.append((v, m)); seen.add(v.variant_id); seen_combo.add(combo)
+        if len(picked) >= 12:
+            break
+    if len(picked) < 12:
+        for v, m, rec in ordered:
+            if v.variant_id in seen:
+                continue
+            picked.append((v, m)); seen.add(v.variant_id)
+            if len(picked) >= 12:
+                break
+    picked.sort(key=lambda vm: vm[0].entry_seq)
+
+    lines = ["# Application-week actionable setup cards — NQU6, Jul 12–17 2026 (pre-outcome)\n",
+             "Only EXECUTABLE application-week entry variants AUTHORIZED by the frozen "
+             "observation-week playbook. Each card states the EXACT authorized entry rule. "
+             "**No outcomes** are computed or revealed. Non-executable / non-authorized "
+             "variants are in application_week_rejected_matches.csv, never here.\n\n"]
     if not picked:
-        lines.append("_No application-week coherent episode matched the frozen "
-                     "playbook under EXACT or REDUCED_FAMILY (disclosed). See "
-                     "application_week_matches_pre_outcome.csv for the similarity "
-                     "diagnostic._\n")
-    for e, m in picked:
-        prim = next((t for t in e.targets if t.policy == "NEAREST_VALID_STRUCTURE"), None)
-        d = "LONG" if e.direction > 0 else "SHORT"
+        lines.append("_No application-week variant was both executable and authorized by "
+                     "the frozen playbook under EXACT or REDUCED_FAMILY (disclosed). See "
+                     "application_week_rejected_matches.csv and the similarity diagnostic._\n")
+    for v, m in picked:
+        prim = v.targets.get("NEAREST_OPPOSING_VALID_STRUCTURE")
+        d = "LONG" if v.direction > 0 else "SHORT"
         mode = "EXACT" if m["EXACT"] else "REDUCED_FAMILY"
         auth_ids = m["EXACT"] or m["REDUCED_FAMILY"]
-        src = []
-        for aid in auth_ids:
-            pb = pb_by_id.get(aid)
-            if pb:
-                src.extend(pb.source_episode_ids)
-        lines.append(f"## {e.episode_id} — lane {e.lane} {d} ({e.context_tf}m context)\n")
-        lines.append(f"- **Look for:** {e.lane}-lane {('bullish' if e.direction>0 else 'bearish')} "
-                     f"setup on NQU6.\n")
-        lines.append(f"- **When (entry bar):** {_plain(bars[e.entry_seq].ts_et)} "
-                     f"[{e.session}]\n")
-        lines.append(f"- **Timeframes:** context {e.context_tf}m / interaction {e.interaction_tf}m "
-                     f"/ confirmation {e.confirmation_tf}m / trigger {e.trigger_tf}m\n")
-        lines.append(f"- **Causal sequence:** context {e.context_id} "
-                     f"[{e.context_zone[0]}, {e.context_zone[1]}] → interaction → "
-                     f"{e.displacement_branch} (confirm via {e.confirm_reason}, "
-                     f"{e.interaction_to_confirmation_delay} candle(s)) → trigger\n")
-        if e.rb_wick_body is not None:
-            lines.append(f"- **RB state:** activated_at_trigger={e.rb_activated_at_trigger} "
-                         f"(wick/body {e.rb_wick_body}, dominance {e.rb_dominant_ratio})\n")
-        lines.append(f"- **Displacement requirement:** {e.displacement_branch}; "
-                     f"allowed delay ≤{e.interaction_to_confirmation_delay} candles\n")
-        lines.append(f"- **Entry:** {e.entry_price} (next 1m bar open)\n")
-        lines.append(f"- **Stop:** {e.stop_price} — {e.stop_anchor_desc}\n")
+        src = sorted({sid for aid in auth_ids for sid in pb_by_id[aid].source_variant_ids if aid in pb_by_id})
+        provisional = any(pb_by_id[aid].single_observation for aid in auth_ids if aid in pb_by_id)
+        arch = (f"{v.context_tf}m context → {v.trigger_tf}m trigger (multi-timeframe)"
+                if v.is_multi_timeframe else f"{v.context_tf}m single-timeframe")
+        lines.append(f"## {v.variant_id} — {v.entry_variant} {d}\n")
+        lines.append(f"- **Physical episode:** {v.episode_id} | **entry variant:** {v.entry_variant}\n")
+        lines.append(f"- **When (entry bar):** {_plain(v.entry_ts)} [{v.session}]\n")
+        lines.append(f"- **Timeframe architecture:** {arch} "
+                     f"(context {v.context_tf}m / interaction {v.interaction_tf}m / "
+                     f"confirmation {v.confirmation_tf}m / trigger {v.trigger_tf}m)\n")
+        lines.append(f"- **Context structure:** {v.context_id} "
+                     f"[{v.context_zone[0]}, {v.context_zone[1]}] "
+                     f"(penetration {v.penetration_depth} pts)\n")
+        lines.append(f"- **Reaction state at trigger:** {v.reaction_state} "
+                     f"(interaction→trigger {v.interaction_to_trigger_delay} candle(s))\n")
+        if v.rb_wick_body is not None:
+            lines.append(f"- **RB state at trigger:** activated={v.rb_activated_at_trigger} "
+                         f"(wick/body {v.rb_wick_body})\n")
+        lines.append(f"- **Exact entry rule:** {_rule_instruction(v.entry_variant, v.reaction_state)}\n")
+        lines.append(f"- **Entry:** {v.entry_price} (next 1m bar open)\n")
+        lines.append(f"- **Stop:** {v.stop_price} — {v.stop_anchor_desc}\n")
         if prim:
-            lines.append(f"- **Target:** {prim.surface} ({prim.family} {prim.timeframe}m, "
-                         f"policy {prim.policy}) | **natural RR:** {prim.natural_rr}\n")
-        else:
-            lines.append("- **Target:** none causally available\n")
-        lines.append(f"- **Match mode:** {mode} | **authorized by playbook:** "
-                     f"{', '.join(auth_ids)} (obs episodes {', '.join(sorted(set(src)))})\n")
-        lines.append(f"- **Historical-evidence age:** observation week (immediately prior)\n")
-        lines.append(f"- **Why it matched:** frozen fingerprint fields match the "
-                     f"authorized item under {mode}.\n\n")
+            lines.append(f"- **Target:** {prim.surface} (opposing {prim.family} {prim.timeframe}m, "
+                         f"{prim.policy}) | **natural RR:** {prim.natural_rr}\n")
+        other = [f"{p}={tc.surface}" for p, tc in v.targets.items()
+                 if p != "NEAREST_OPPOSING_VALID_STRUCTURE" and p != "ANY_SURFACE_DIAGNOSTIC"]
+        if other:
+            lines.append(f"- **Other valid opposing targets:** {', '.join(other)}\n")
+        lines.append(f"- **Match mode:** {mode} | **authorized by:** {', '.join(auth_ids)} "
+                     f"(source obs variants {', '.join(src)})\n")
+        if provisional:
+            lines.append("- **SINGLE_OBSERVATION_PROVISIONAL** — authorized by a single "
+                         "observation-week success.\n")
+        lines.append(f"- **TradingView:** NQU6 1m, go to {_plain(v.entry_ts)}; mark context "
+                     f"{v.context_id} zone [{v.context_zone[0]}, {v.context_zone[1]}].\n\n")
     with open(os.path.join(OUT, "application_week_setup_cards.md"), "w") as fh:
         fh.write("".join(lines))
 

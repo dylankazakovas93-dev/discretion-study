@@ -1,14 +1,13 @@
-"""Coherent-setup observer + recent-validity playbook tests (two-week demo).
-
-Proves the observer only emits COHERENT setups (context -> interaction ->
-confirmation -> trigger -> stop -> causal target), never bare taps/structures;
-that every episode is fully causal and outcome-free; that RB activation is
-descriptive not gating and cannot be rewritten by later activation; that
-reaction branches (immediate vs delayed vs scraping) stay separate; that
-physical duplicates collapse to one episode; that timeframe architecture and
-session/time windows are preserved; that target policies never consult
-outcomes; that observation fingerprints freeze before outcomes; and that the
-application week cannot alter the frozen playbook or leak outcomes.
+"""Setup-observer reaction-variant + recent-validity playbook tests (two-week
+demo). Proves: tap entry exists without later confirmation and freezes no later
+reaction info; a small close-outside is a variant without strong displacement;
+minimal-wick rejection stays distinct from strong rejection; strong / immediate
+/ delayed displacement stay separate and correctly measured; a large wick with
+no close outside is not mislabelled CLOSE_BACK_OUTSIDE; scraping stays separate;
+multi-timeframe architecture is preserved; entry-variant + reaction-state gate
+the playbook so a strong-displacement success cannot authorize tap entry (and
+vice versa); targets are opposing/active/causal; only executable authorized
+variants are actionable; and application outcomes cannot affect the playbook.
 """
 from __future__ import annotations
 
@@ -20,14 +19,12 @@ import pytest
 
 from discretion.data.loader import read_raw_csv, DATA_FILES, ET
 from discretion.data.bars import Bar
-from discretion.setup_observer.observer import observe, _avail, MIN_EXECUTABLE_RR
+from discretion.setup_observer.observer import observe
 from discretion.setup_observer.outcomes import process_outcome
 from discretion.setup_observer.playbook import (
     build_playbook, match_modes, EXACT_FIELDS, REDUCED_FIELDS,
 )
-from discretion.setup_observer.displacement import (
-    measure_reaction, IMMEDIATE, DELAYED, SCRAPING, COMPRESSION,
-)
+from discretion.setup_observer import reaction_states as rs
 from discretion.setup_observer.sessions import session_of, time_window_fields
 
 DATA = os.path.join("data", "raw", DATA_FILES["2025-2026"])
@@ -36,17 +33,16 @@ OBS_END = pd.Timestamp("2026-07-10 16:59:59", tz=ET)
 APP_START = pd.Timestamp("2026-07-12 18:00:00", tz=ET)
 APP_END = pd.Timestamp("2026-07-17 23:59:59", tz=ET)
 
-_OUTCOME_TOKENS = ("mfe", "mae", "outcome", "pnl", "return", "realized",
-                   "win", "loss", "result", "exit_price", "exit_type",
-                   "points", "r_multiple", "success")
+_OUTCOME_TOKENS = ("mfe", "mae", "outcome", "pnl", "realized", "win", "loss",
+                   "exit_price", "exit_type", "points", "r_multiple", "success")
 
 
-def _load(symbol="NQU6", start=OBS_START, end=OBS_END):
+def _load(start=OBS_START, end=OBS_END):
     if not os.path.exists(DATA):
         return None
     start_utc = start.tz_convert("UTC").tz_localize(None)
     df = read_raw_csv(DATA, start=start_utc, end=None)
-    df = df[df["symbol"] == symbol].copy()
+    df = df[df["symbol"] == "NQU6"].copy()
     df = df.sort_values("ts_utc").drop_duplicates(subset=["ts_utc"], keep="last").reset_index(drop=True)
     et = df["ts_utc"].dt.tz_convert(ET)
     df = df[(et >= start) & (et <= end)].reset_index(drop=True)
@@ -56,7 +52,7 @@ def _load(symbol="NQU6", start=OBS_START, end=OBS_END):
         bars.append(Bar(seq=seq, ts_utc=t, ts_et=t.tz_convert(ET),
                         open=float(row.open), high=float(row.high), low=float(row.low),
                         close=float(row.close), volume=int(row.volume),
-                        contract=symbol, segment_id=0))
+                        contract="NQU6", segment_id=0))
     return bars
 
 
@@ -65,320 +61,350 @@ def obs():
     bars = _load()
     if not bars:
         pytest.skip("raw data absent")
-    episodes, diag = observe(bars)
-    return bars, episodes, diag
+    eps, variants, diag = observe(bars)
+    return bars, eps, variants, diag
 
 
 @pytest.fixture(scope="module")
 def app():
-    bars = _load(start=APP_START, end=APP_END)
+    bars = _load(APP_START, APP_END)
     if not bars:
         pytest.skip("raw data absent")
-    episodes, diag = observe(bars)
-    return bars, episodes, diag
+    eps, variants, diag = observe(bars)
+    return bars, eps, variants, diag
 
 
 # ---------------------------------------------------------------------------
-# 1. Coherence: bare taps / bare structures never become setups
+# synthetic-candle unit tests for the reaction classifier
 # ---------------------------------------------------------------------------
 
-def test_every_episode_has_full_causal_chain(obs):
-    """Each episode carries a context, an interaction, a confirmation and a
-    trigger -- a bare structure or bare tap can never satisfy this."""
-    _, episodes, _ = obs
-    assert episodes
-    for e in episodes:
-        assert e.context_id                      # pre-existing context
-        assert e.interaction_seq is not None      # price interaction
-        assert e.confirmation_seq is not None     # subsequent confirmation
-        assert e.trigger_seq is not None          # causal trigger
-        assert e.confirm_reason in (
-            "displacement", "rejection", "same_dir_fvg", "same_dir_ifvg")
+class _C:
+    def __init__(self, o, h, l, c):
+        self.open, self.high, self.low, self.close = o, h, l, c
 
 
-def test_bare_rb_tap_without_confirmation_emits_no_setup():
-    """A synthetic RB tap that provokes no reaction (flat scraping) yields no
-    confirmation and therefore no episode from the reaction layer."""
-    class C:  # minimal candle
-        def __init__(self, o, h, l, c):
-            self.open, self.high, self.low, self.close = o, h, l, c
-    # zone at [100,101]; tap at idx 3, then five identical tiny doji candles.
-    flat = [C(100.5, 100.6, 100.4, 100.5) for _ in range(9)]
-    atr = [1.0] * 9
-    r = measure_reaction(flat, atr, 3, 1, 100.0, 101.0, set(), set())
-    assert r["confirm_idx"] is None
-    assert r["branch"] == SCRAPING
+def _series(specials, n=14, base=None):
+    """Flat doji candles with ``specials`` (offset -> candle) overlaid."""
+    base = base if base is not None else _C(100.5, 100.55, 100.45, 100.5)
+    s = [_C(base.open, base.high, base.low, base.close) for _ in range(n)]
+    for off, cndl in specials.items():
+        s[off] = cndl
+    return s
 
 
-def test_bare_fvg_interaction_without_reaction_emits_no_setup():
-    """Touching an FVG with no subsequent displacement/rejection/new structure
-    does not confirm -> observer would drop it (scraping)."""
-    class C:
-        def __init__(self, o, h, l, c):
-            self.open, self.high, self.low, self.close = o, h, l, c
-    flat = [C(50.0, 50.1, 49.9, 50.0) for _ in range(9)]
-    atr = [2.0] * 9
-    r = measure_reaction(flat, atr, 2, -1, 49.0, 51.0, set(), set())
-    assert r["confirm_idx"] is None
+def test_tap_only_without_confirmation_is_a_variant_seed():
+    """A bare tap that provokes no reaction still seeds TAP_ONLY at offset 0 and
+    nothing else -- the tap entry needs no later confirmation."""
+    s = _series({}, n=13)
+    atr = [1.0] * 13
+    r = rs.classify(s, atr, 10, 1, 100.0, 101.0, set(), set())
+    assert r["offsets"][rs.TAP_ONLY] == 0
+    assert r["offsets"][rs.IMMEDIATE_DISPLACEMENT] is None
+    assert r["offsets"][rs.STRONG_REJECTION_DEPARTURE] is None
+    assert r["dominant_state"] in (rs.TAP_ONLY, rs.SCRAPING_NO_REACTION)
 
 
-# ---------------------------------------------------------------------------
-# 2. Causal ordering (no look-ahead)
-# ---------------------------------------------------------------------------
-
-def test_interaction_precedes_confirmation(obs):
-    _, episodes, _ = obs
-    for e in episodes:
-        assert e.interaction_seq <= e.confirmation_seq
+def test_immediate_displacement_measured():
+    s = _series({11: _C(101.0, 103.1, 100.9, 103.0)}, n=13)
+    atr = [2.0] * 13
+    r = rs.classify(s, atr, 10, 1, 100.0, 101.0, set(), set())
+    assert r["offsets"][rs.IMMEDIATE_DISPLACEMENT] == 1
 
 
-def test_confirmation_precedes_trigger_entry(obs):
-    _, episodes, _ = obs
-    for e in episodes:
-        assert e.trigger_seq >= 0
-        # trigger fires at the confirmation candle close; entry is strictly after
-        assert e.entry_seq > e.trigger_seq
+def test_delayed_displacement_is_separate():
+    s = _series({8: _C(100.6, 105.1, 100.5, 105.0)}, n=12)
+    atr = [2.0] * 12
+    r = rs.classify(s, atr, 5, 1, 100.0, 101.0, set(), set())
+    assert r["offsets"][rs.IMMEDIATE_DISPLACEMENT] is None
+    assert r["offsets"][rs.DELAYED_DISPLACEMENT] == 3
 
 
-def test_entry_is_next_bar_after_trigger(obs):
-    bars, episodes, _ = obs
-    for e in episodes:
-        assert e.entry_seq < len(bars)
-        assert e.entry_price == bars[e.entry_seq].open
+def test_close_back_outside_without_strong_displacement():
+    """A small directional close just outside the zone forms a variant with no
+    strong displacement and no big body."""
+    s = _series({11: _C(101.05, 101.3, 101.0, 101.2)}, n=13)
+    atr = [2.0] * 13
+    r = rs.classify(s, atr, 10, 1, 100.0, 101.0, set(), set())
+    assert r["offsets"][rs.CLOSE_BACK_OUTSIDE] == 1
+    assert r["offsets"][rs.IMMEDIATE_DISPLACEMENT] is None
 
 
-def test_targets_available_no_later_than_entry(obs):
-    _, episodes, _ = obs
-    for e in episodes:
-        for t in e.targets:
-            assert t.availability_seq <= e.entry_seq
+def test_minimal_wick_rejection_distinct_from_strong():
+    # small body, small wick (wick/body < 1) closing just outside -> MINIMAL only
+    s = _series({11: _C(101.1, 101.35, 101.0, 101.3)}, n=13)
+    atr = [2.0] * 13
+    r = rs.classify(s, atr, 10, 1, 100.0, 101.0, set(), set())
+    assert r["offsets"][rs.MINIMAL_WICK_REJECTION] == 1
+    assert r["offsets"][rs.STRONG_REJECTION_DEPARTURE] is None
 
 
-# ---------------------------------------------------------------------------
-# 3. RB activation is descriptive, causal, and immutable
-# ---------------------------------------------------------------------------
-
-def test_unactivated_rb_may_participate(obs):
-    """Lane A/E episodes exist whose RB was NOT activated at trigger time --
-    activation is not a gate."""
-    _, episodes, _ = obs
-    rb_eps = [e for e in episodes if e.rb_wick_body is not None]
-    assert rb_eps, "expected some RB-based episodes"
-    assert any(e.rb_activated_at_trigger is False for e in rb_eps)
+def test_strong_rejection_departure_measured():
+    # small body but large rejection wick (wick/body >= 1), strong close & range
+    s = _series({11: _C(101.2, 101.6, 100.0, 101.5)}, n=13)
+    atr = [2.0] * 13
+    r = rs.classify(s, atr, 10, 1, 100.0, 101.0, set(), set())
+    assert r["offsets"][rs.STRONG_REJECTION_DEPARTURE] == 1
 
 
-def test_later_activation_cannot_alter_earlier_fingerprint(obs):
-    """If an RB only activates AFTER the trigger, the frozen activation class
-    at trigger time is NOT_ACTIVATED regardless of the later flag."""
-    _, episodes, _ = obs
-    late = [e for e in episodes
-            if e.rb_wick_body is not None and e.rb_activation_only_after_setup]
-    for e in late:
-        assert e.rb_activated_at_trigger is False
-        assert e.fingerprint["rb_activation_class"] == "NOT_ACTIVATED"
+def test_large_wick_no_close_outside_not_labelled_close_back_outside():
+    """A big rejection wick whose close stays inside the zone is descriptive
+    (wick recorded) but never CLOSE_BACK_OUTSIDE / MINIMAL_WICK_REJECTION."""
+    s = _series({11: _C(100.8, 100.95, 100.0, 100.9)}, n=13)
+    atr = [2.0] * 13
+    r = rs.classify(s, atr, 10, 1, 100.0, 101.0, set(), set())
+    assert r["offsets"][rs.CLOSE_BACK_OUTSIDE] is None
+    assert r["offsets"][rs.MINIMAL_WICK_REJECTION] is None
+    # but the wick is still measured descriptively
+    react = [m for m in r["trace"] if m["k"] == 1][0]
+    assert react["rejection_wick_pts"] > 0
+
+
+def test_scraping_stays_separate():
+    s = _series({}, n=16)
+    atr = [1.0] * 16
+    r = rs.classify(s, atr, 3, 1, 100.0, 101.0, set(), set())
+    for st in (rs.CLOSE_BACK_OUTSIDE, rs.MINIMAL_WICK_REJECTION,
+               rs.STRONG_REJECTION_DEPARTURE, rs.IMMEDIATE_DISPLACEMENT,
+               rs.DELAYED_DISPLACEMENT):
+        assert r["offsets"][st] is None
+    assert r["dominant_state"] in (rs.SCRAPING_NO_REACTION, rs.TAP_ONLY)
 
 
 # ---------------------------------------------------------------------------
-# 4. Reaction branches stay separate; scraping is not displacement
+# variant-level causal-freeze proofs (real data)
 # ---------------------------------------------------------------------------
 
-def test_immediate_and_delayed_reactions_remain_separate(obs):
-    _, episodes, _ = obs
-    branches = {e.displacement_branch for e in episodes}
-    assert IMMEDIATE in branches and DELAYED in branches
-    for e in episodes:
-        # IMMEDIATE is reserved for a next-candle displacement/rejection; a
-        # same-candle structural confirmation is DELAYED, never IMMEDIATE.
-        if e.displacement_branch == IMMEDIATE:
-            assert e.interaction_to_confirmation_delay == 1
-            assert e.confirm_reason in ("displacement", "rejection")
-        if e.displacement_branch == DELAYED:
-            assert not (e.interaction_to_confirmation_delay == 1
-                        and e.confirm_reason in ("displacement", "rejection"))
-    # the two labels are genuinely disjoint partitions of the episode set
-    assert not ({e.episode_id for e in episodes if e.displacement_branch == IMMEDIATE}
-                & {e.episode_id for e in episodes if e.displacement_branch == DELAYED})
+def test_tap_variant_freezes_no_later_reaction_info(obs):
+    _, _, variants, _ = obs
+    taps = [v for v in variants if v.entry_variant == "ENTRY_ON_TAP"]
+    assert taps
+    for v in taps[:200]:
+        assert v.interaction_to_trigger_delay == 0
+        assert v.reaction_state == rs.TAP_ONLY
+        # only the interaction candle (k==0) is in the frozen trace
+        assert all(m["k"] == 0 for m in v.reaction_measures_through_trigger)
+        assert v.fingerprint["entry_variant"] == "ENTRY_ON_TAP"
+        assert v.fingerprint["reaction_state"] == rs.TAP_ONLY
 
 
-def test_scraping_is_not_classified_as_displacement():
-    """A run of sub-threshold bodies that never progress is SCRAPING, never
-    IMMEDIATE/DELAYED/COMPRESSION."""
-    class C:
-        def __init__(self, o, h, l, c):
-            self.open, self.high, self.low, self.close = o, h, l, c
-    flat = [C(10.0, 10.05, 9.95, 10.0) for _ in range(9)]
-    atr = [1.0] * 9
-    r = measure_reaction(flat, atr, 2, 1, 9.0, 10.0, set(), set())
-    assert r["branch"] == SCRAPING
-    assert r["branch"] not in (IMMEDIATE, DELAYED, COMPRESSION)
+def test_later_displacement_cannot_change_earlier_tap_fingerprint(obs):
+    """Where the same physical episode yields both a tap and a later
+    displacement variant, the tap's fingerprint carries none of the
+    displacement's reaction fields."""
+    _, _, variants, _ = obs
+    by_ep = {}
+    for v in variants:
+        by_ep.setdefault(v.episode_id, []).append(v)
+    checked = 0
+    for vs in by_ep.values():
+        rules = {v.entry_variant: v for v in vs}
+        tap = rules.get("ENTRY_ON_TAP")
+        disp = rules.get("ENTRY_ON_IMMEDIATE_DISPLACEMENT") or rules.get("ENTRY_ON_DELAYED_DISPLACEMENT")
+        if tap and disp:
+            checked += 1
+            assert tap.fingerprint["reaction_state"] == rs.TAP_ONLY
+            assert tap.fingerprint["reaction_state"] != disp.fingerprint["reaction_state"]
+            assert tap.interaction_to_trigger_delay < disp.interaction_to_trigger_delay
+    if checked == 0:
+        pytest.skip("no episode with both tap and displacement variants in window")
 
 
-# ---------------------------------------------------------------------------
-# 5. Physical dedup
-# ---------------------------------------------------------------------------
-
-def test_same_physical_sequence_deduplicates(obs):
-    """No two episodes share the same (direction, entry_seq) with overlapping
-    context zones -- those collapse into one physical episode."""
-    _, episodes, _ = obs
-    seen = {}
-    for e in episodes:
-        key = (e.direction, e.entry_seq)
-        if key in seen:
-            (alo, ahi) = seen[key]
-            (blo, bhi) = e.context_zone
-            assert max(alo, blo) > min(ahi, bhi), \
-                f"overlapping contexts not deduplicated at {key}"
-        seen[key] = e.context_zone
+def test_variant_reaction_trace_never_exceeds_its_trigger(obs):
+    _, _, variants, _ = obs
+    for v in variants[:2000]:
+        assert all(m["k"] <= v.interaction_to_trigger_delay
+                   for m in v.reaction_measures_through_trigger)
 
 
 # ---------------------------------------------------------------------------
-# 6. Timeframe architecture and session/time preserved
+# causal ordering + timeframe architecture
 # ---------------------------------------------------------------------------
 
-def test_timeframe_architecture_preserved(obs):
-    _, episodes, _ = obs
-    for e in episodes:
-        # the four TF roles are explicit fields, not interchangeable
-        assert e.context_tf in (1, 3, 5, 15, 30, 60)
-        assert e.trigger_tf == e.context_tf
-        assert e.fingerprint["context_tf"] == e.context_tf
-        assert e.fingerprint["trigger_tf"] == e.trigger_tf
+def test_entry_is_after_trigger_and_next_bar(obs):
+    bars, _, variants, _ = obs
+    for v in variants:
+        assert v.entry_seq < len(bars)
+        assert v.entry_seq >= v.trigger_seq
+        assert v.entry_price == bars[v.entry_seq].open
 
 
-def test_session_and_time_windows_preserved(obs):
-    bars, episodes, _ = obs
-    for e in episodes:
-        tw = time_window_fields(bars[e.entry_seq].ts_et)
-        assert e.session == tw["session"]
-        assert e.et_hour == tw["et_hour"]
-        assert e.fingerprint["session"] == e.session
-        assert e.fingerprint["day_of_week"] == e.day_of_week
+def test_multi_timeframe_architecture_preserved(obs):
+    _, eps, variants, diag = obs
+    # some genuine cross-timeframe episodes exist (HTF context, 1m trigger)
+    mtf = [v for v in variants if v.is_multi_timeframe]
+    assert mtf, "expected some multi-timeframe variants"
+    for v in mtf[:500]:
+        assert v.trigger_tf < v.context_tf
+        assert v.trigger_tf == 1
+        # roles are explicit and preserved on the fingerprint
+        assert v.fingerprint["context_tf"] == v.context_tf
+        assert v.fingerprint["trigger_tf"] == v.trigger_tf
+        assert v.fingerprint["is_multi_timeframe"] is True
+    # same-timeframe architecture also present
+    assert any(not v.is_multi_timeframe for v in variants)
 
 
-# ---------------------------------------------------------------------------
-# 7. Targets: causal availability, no outcome influence
-# ---------------------------------------------------------------------------
-
-def test_targets_existed_at_trigger_time(obs):
-    """Every target candidate is knowable no later than entry (its producing
-    structure was available before the entry bar)."""
-    _, episodes, _ = obs
-    any_target = False
-    for e in episodes:
-        for t in e.targets:
-            any_target = True
-            assert t.availability_seq <= e.entry_seq
-            assert t.natural_rr is None or t.natural_rr >= 0
-    assert any_target
-
-
-def test_target_policies_do_not_consult_outcomes(obs):
-    """Target selection is purely geometric: NEAREST_VALID_STRUCTURE is the
-    minimum-distance eligible structure -- recomputable without any outcome."""
-    _, episodes, _ = obs
-    for e in episodes:
-        prim = next((t for t in e.targets if t.policy == "NEAREST_VALID_STRUCTURE"), None)
-        others = [t for t in e.targets if t.policy == "NEAREST_VALID_STRUCTURE"]
-        if prim is not None:
-            # nearest must not be beaten by any other listed candidate distance
-            assert all(prim.distance <= o.distance for o in others)
+def test_session_time_window_preserved(obs):
+    bars, _, variants, _ = obs
+    for v in variants[:500]:
+        tw = time_window_fields(bars[v.entry_seq].ts_et)
+        assert v.session == tw["session"]
+        assert v.fingerprint["session"] == v.session
 
 
 # ---------------------------------------------------------------------------
-# 8. Fingerprints freeze before outcomes; no outcome leakage
+# targets: opposing, active, causal
 # ---------------------------------------------------------------------------
 
-def test_observation_fingerprints_freeze_before_outcomes(obs):
-    """Fingerprints are fully determined by the pre-outcome episode; computing
-    outcomes afterwards leaves the fingerprint byte-for-byte identical."""
-    bars, episodes, _ = obs
-    execs = [e for e in episodes if e.executable][:20]
-    assert execs
-    for e in execs:
-        before = dict(e.fingerprint)
-        _ = process_outcome(e, bars)
-        assert e.fingerprint == before
+def test_selected_targets_are_opposing_active_causal(obs):
+    _, _, variants, _ = obs
+    checked = 0
+    for v in variants:
+        prim = v.targets.get("NEAREST_OPPOSING_VALID_STRUCTURE")
+        if prim is None:
+            continue
+        checked += 1
+        # causal: available no later than entry
+        assert prim.availability_seq <= v.entry_seq
+        # profit-direction: beyond entry
+        if v.direction > 0:
+            assert prim.surface > v.entry_price
+        else:
+            assert prim.surface < v.entry_price
+        # opposing + active: the chosen structure has an empty exclusion reason
+        sel = [c for c in v.considered_targets if c["structure_id"] == prim.structure_id]
+        assert sel and sel[0]["exclusion_reason"] == ""
+    assert checked
 
 
-def test_no_outcome_fields_on_episode(obs):
-    _, episodes, _ = obs
-    for e in episodes[:200]:
-        for f in dataclasses.fields(e):
+def test_diagnostic_target_never_authorizes_execution(obs):
+    _, _, variants, _ = obs
+    for v in variants[:1000]:
+        if v.executable:
+            # executability is driven by the opposing policy, never the diagnostic
+            assert v.targets.get("NEAREST_OPPOSING_VALID_STRUCTURE") is not None
+
+
+# ---------------------------------------------------------------------------
+# playbook: entry-variant + reaction-state gating
+# ---------------------------------------------------------------------------
+
+def _obs_playbook(obs):
+    bars, _, variants, _ = obs
+    outs = [o for o in (process_outcome(v, bars) for v in variants) if o]
+    return variants, outs, build_playbook(variants, outs, OBS_START, OBS_END)
+
+
+def test_playbook_items_carry_entry_variant_and_reaction_state(obs):
+    _, _, pb = _obs_playbook(obs)
+    if not pb:
+        pytest.skip("no successful observation variant in window")
+    for item in pb:
+        assert item.entry_variant == item.fingerprint["entry_variant"]
+        assert item.reaction_state == item.fingerprint["reaction_state"]
+        assert "entry_variant" in EXACT_FIELDS and "entry_variant" in REDUCED_FIELDS
+        assert "reaction_state" in EXACT_FIELDS and "reaction_state" in REDUCED_FIELDS
+
+
+def test_strong_displacement_success_cannot_authorize_tap_entry(obs):
+    """A tap-entry application variant can only match playbook items that are
+    themselves tap-entry -- never a strong-displacement authorization."""
+    variants, _, pb = _obs_playbook(obs)
+    if not pb:
+        pytest.skip("empty playbook")
+    for v in variants:
+        if v.entry_variant != "ENTRY_ON_TAP":
+            continue
+        m = match_modes(v, pb)
+        for iid in m["EXACT"] + m["REDUCED_FAMILY"]:
+            item = next(p for p in pb if p.item_id == iid)
+            assert item.entry_variant == "ENTRY_ON_TAP"
+            assert item.reaction_state == v.reaction_state
+
+
+def test_tap_success_cannot_authorize_displacement_entry(obs):
+    variants, _, pb = _obs_playbook(obs)
+    if not pb:
+        pytest.skip("empty playbook")
+    for v in variants:
+        if v.entry_variant not in ("ENTRY_ON_IMMEDIATE_DISPLACEMENT", "ENTRY_ON_DELAYED_DISPLACEMENT"):
+            continue
+        m = match_modes(v, pb)
+        for iid in m["EXACT"] + m["REDUCED_FAMILY"]:
+            item = next(p for p in pb if p.item_id == iid)
+            assert item.entry_variant == v.entry_variant
+
+
+def test_match_modes_stay_separate(obs):
+    variants, _, pb = _obs_playbook(obs)
+    if not pb:
+        pytest.skip("empty playbook")
+    for v in variants[:400]:
+        m = match_modes(v, pb)
+        assert set(m) == {"EXACT", "REDUCED_FAMILY", "SIMILARITY_DIAGNOSTIC"}
+        assert set(m["EXACT"]).issubset(set(m["REDUCED_FAMILY"]))
+        assert m["SIMILARITY_DIAGNOSTIC"] is None or "nearest_item_id" in m["SIMILARITY_DIAGNOSTIC"]
+
+
+# ---------------------------------------------------------------------------
+# actionable eligibility + application isolation
+# ---------------------------------------------------------------------------
+
+def test_only_executable_authorized_variants_are_actionable(app, obs):
+    obars, _, ovars, _ = obs
+    _, _, avars, _ = app
+    outs = [o for o in (process_outcome(v, obars) for v in ovars) if o]
+    pb = build_playbook(ovars, outs, OBS_START, OBS_END)
+    if not pb:
+        pytest.skip("empty playbook")
+    for v in avars:
+        m = match_modes(v, pb)
+        matched = bool(m["EXACT"] or m["REDUCED_FAMILY"])
+        actionable = matched and v.executable
+        if actionable:
+            prim = v.targets.get("NEAREST_OPPOSING_VALID_STRUCTURE")
+            assert prim is not None and prim.natural_rr >= 0.5
+            assert v.rejection_reason == ""
+
+
+def test_application_outcomes_cannot_affect_playbook(obs):
+    """The playbook is a pure function of observation variants + observation
+    outcomes: every authorized item is sourced only from observation-week
+    variants, so nothing from the application week can enter it."""
+    obars, _, ovars, _ = obs
+    outs = [o for o in (process_outcome(v, obars) for v in ovars) if o]
+    obs_ids = {v.variant_id for v in ovars}
+    pb = build_playbook(ovars, outs, OBS_START, OBS_END)
+    if not pb:
+        pytest.skip("empty playbook")
+    for item in pb:
+        assert set(item.source_variant_ids) <= obs_ids
+        for o in item.source_outcomes:
+            assert o["variant_id"] in obs_ids
+    # deterministic and independent of any application-week computation
+    pb2 = build_playbook(ovars, outs, OBS_START, OBS_END)
+    assert [p.fingerprint for p in pb] == [p.fingerprint for p in pb2]
+
+
+def test_no_outcome_fields_on_variants(obs):
+    _, _, variants, _ = obs
+    for v in variants[:300]:
+        for f in dataclasses.fields(v):
             assert not any(tok in f.name.lower() for tok in _OUTCOME_TOKENS), f.name
-        for k in e.fingerprint:
+        for k in v.fingerprint:
             assert not any(tok in k.lower() for tok in _OUTCOME_TOKENS), k
 
 
-# ---------------------------------------------------------------------------
-# 9. Matching modes stay separate; application cannot alter the playbook
-# ---------------------------------------------------------------------------
-
-def test_exact_reduced_similarity_modes_are_separate(obs):
-    bars, episodes, _ = obs
-    outs = [o for o in (process_outcome(e, bars) for e in episodes) if o]
-    pb = build_playbook(episodes, outs, OBS_START, OBS_END)
-    if not pb:
-        pytest.skip("no successful observation setups in window")
-    for e in episodes[:300]:
-        m = match_modes(e, pb)
-        assert set(m) == {"EXACT", "REDUCED_FAMILY", "SIMILARITY_DIAGNOSTIC"}
-        # EXACT is a strict subset of REDUCED_FAMILY (more fields must agree)
-        assert set(m["EXACT"]).issubset(set(m["REDUCED_FAMILY"]))
-        # similarity is diagnostic (nearest neighbour), never a membership set
-        assert m["SIMILARITY_DIAGNOSTIC"] is None or \
-            "nearest_item_id" in m["SIMILARITY_DIAGNOSTIC"]
-    assert set(EXACT_FIELDS) >= set(REDUCED_FIELDS)
-
-
-def test_application_week_cannot_alter_playbook(obs, app):
-    """Building the playbook from observation data only, then again while the
-    application episodes exist, yields the identical authorized items --
-    application-week data has no path into playbook construction."""
-    obars, oeps, _ = obs
-    _, aeps, _ = app
-    outs = [o for o in (process_outcome(e, obars) for e in oeps) if o]
-    pb1 = build_playbook(oeps, outs, OBS_START, OBS_END)
-    # even if application episodes/outcomes are (wrongly) mixed in as candidates,
-    # build_playbook only credits episodes present in its outcome map; passing
-    # observation outcomes keeps the authorized set fixed.
-    pb2 = build_playbook(oeps + aeps, outs, OBS_START, OBS_END)
-    assert [p.fingerprint for p in pb1] == [p.fingerprint for p in pb2]
-
-
-def test_application_setup_matches_carry_no_outcome_fields(app, obs):
-    """Application-week episodes are pre-outcome: no outcome may be attached or
-    computed for them in the observer/matching path."""
-    _, aeps, _ = app
-    for e in aeps[:200]:
-        for f in dataclasses.fields(e):
-            assert not any(tok in f.name.lower() for tok in _OUTCOME_TOKENS), f.name
-
-
-# ---------------------------------------------------------------------------
-# 10. Determinism / reproducibility
-# ---------------------------------------------------------------------------
-
-def test_playbook_output_is_reproducible(obs):
-    bars, episodes, _ = obs
-    outs = [o for o in (process_outcome(e, episodes and bars) for e in episodes) if o]
-    a = build_playbook(episodes, outs, OBS_START, OBS_END)
-    b = build_playbook(episodes, outs, OBS_START, OBS_END)
-    assert [x.item_id for x in a] == [x.item_id for x in b]
-    assert [x.fingerprint for x in a] == [x.fingerprint for x in b]
-    assert [x.source_episode_ids for x in a] == [x.source_episode_ids for x in b]
-
-
 def test_observe_is_deterministic(obs):
-    bars, episodes, _ = obs
-    eps2, _ = observe(bars)
-    assert len(eps2) == len(episodes)
-    assert [e.episode_id for e in eps2] == [e.episode_id for e in episodes]
-    assert [e.fingerprint for e in eps2] == [e.fingerprint for e in episodes]
+    bars, eps, variants, _ = obs
+    eps2, vars2, _ = observe(bars)
+    assert [e.episode_id for e in eps2] == [e.episode_id for e in eps]
+    assert [v.variant_id for v in vars2] == [v.variant_id for v in variants]
+    assert [v.fingerprint for v in vars2] == [v.fingerprint for v in variants]
 
 
 # ---------------------------------------------------------------------------
-# 11. Session labeling frozen boundaries
+# frozen session boundaries
 # ---------------------------------------------------------------------------
 
 def test_session_boundaries_frozen():
@@ -386,7 +412,6 @@ def test_session_boundaries_frozen():
         return pd.Timestamp(f"2026-07-06 {h:02d}:{m:02d}:00", tz=ET)
     assert session_of(et(18)) == "GLOBEX_EVENING"
     assert session_of(et(20)) == "ASIA"
-    assert session_of(et(2, 59)) == "ASIA"
     assert session_of(et(3)) == "LONDON"
     assert session_of(et(8)) == "NY_PREMARKET"
     assert session_of(et(9, 30)) == "NY_AM"

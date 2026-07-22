@@ -1,20 +1,18 @@
-"""Coherent ICT setup observer over the FROZEN audited primitives.
+"""Coherent multi-timeframe ICT setup observer over the FROZEN audited
+primitives.
 
-A coherent setup episode requires (spec): PRE-EXISTING CONTEXT -> INTERACTION
--> SUBSEQUENT CONFIRMATION -> CAUSAL TRIGGER -> STRUCTURAL STOP -> causally
-available TARGET (or explicit no-target rejection). A bare structure or bare
-tap is never a setup -- those stay in the atomic diagnostic stream
-(ATOMIC_RB_TAP_EVENT / ATOMIC_IFVG_ACTIVATION_EVENT), produced by
-discretion.causal_replay, not here.
-
-Only discretion.primitive_reset structures are consumed (FVG2/IFVG2/RB2 ids).
-Everything is causal: interaction < confirmation < trigger; entry is the next
-1-minute bar; nothing with availability after the trigger is referenced. No
-outcome is computed here (outcomes live in outcomes.py, observation-week only).
+A physical episode = a context structure that price actually interacted with, at
+a specific time, on a specific trigger timeframe. Timeframe roles are preserved
+independently (a lower-timeframe trigger may reference a higher-timeframe context
+only when price causally reached that exact HTF zone and the LTF event happened
+after). Each physical episode spawns separate frozen entry variants (variants.py)
+-- reaction strength is descriptive, NOT a universal gate. No outcome is computed
+here (outcomes.py, observation week only).
 """
 
 from __future__ import annotations
 
+import bisect
 from dataclasses import dataclass, field
 
 from ..primitive_reset.timeframes import candle_series, atr_series, candle_ts_et, TIMEFRAMES
@@ -22,107 +20,30 @@ from ..primitive_reset.registry import ResetRegistry
 from ..primitive_reset.fvg import detect_fvgs
 from ..primitive_reset.ifvg import detect_ifvgs
 from ..primitive_reset.rejection_block import detect_rejection_blocks
-from ..data.cme_session import session_date
-from .sessions import time_window_fields
-from .displacement import measure_reaction, CONFIRM_WINDOW
-
-MIN_EXECUTABLE_RR = 0.5   # frozen execution floor (reused, unchanged)
-
-# frozen continuous-feature bins for EXACT matching
-WIDTH_ATR_BINS = ((0, 0.1), (0.1, 0.2), (0.2, 0.3), (0.3, 0.5), (0.5, 1e9))
-WICKBODY_BINS = ((0, 0.5), (0.5, 1.0), (1.0, 2.0), (2.0, 5.0), (5.0, 1e9))
-RR_BINS = ((0, 0.5), (0.5, 1.0), (1.0, 2.0), (2.0, 1e9))
-
-
-def _bin(x, bins):
-    if x is None:
-        return "na"
-    for lo, hi in bins:
-        if lo <= x < hi:
-            return f"{lo}-{hi}"
-    return f">{bins[-1][0]}"
-
-
-def _dir(word):
-    return 1 if word == "bullish" else -1
-
-
-def _avail(tf, series, candle_seq):
-    return candle_seq + 1 if tf == 1 else series[candle_seq].available_seq
+from .common import _dir, _avail, _tf_start_seq, MIN_EXECUTABLE_RR
+from .targets import resolve_targets, StructTable
+from .variants import build_variants
+from . import reaction_states as rs
 
 
 @dataclass
-class TargetCandidate:
-    policy: str
-    structure_id: str
-    family: str
-    timeframe: int
-    surface: float
-    distance: float
-    freshness_bars: int
-    availability_seq: int
-    natural_rr: object
-
-
-@dataclass
-class Episode:
+class PhysicalEpisode:
     episode_id: str
-    lane: str                      # A/B/C/D/E
     direction: int
-    # timeframe architecture
-    context_tf: int
-    interaction_tf: int
-    confirmation_tf: int
+    lane: str
     trigger_tf: int
-    # causal indices (global 1m)
+    context_tf: int
+    is_multi_timeframe: bool
+    context_family: str
+    context_id: str
+    component_ids: list
+    confluence: bool
     interaction_seq: int
-    confirmation_seq: int
-    trigger_seq: int               # confirmation candle (trigger fires at its close)
-    entry_seq: int
-    # session/time
-    session: str = ""
-    et_hour: int = 0
-    minutes_from_0930: int = 0
-    minutes_from_1000: int = 0
-    day_of_week: str = ""
-    session_date_et: object = None
-    # components / lineage
-    context_id: str = ""
-    context_family: str = ""
-    component_ids: list = field(default_factory=list)
-    atomic_event_ids: list = field(default_factory=list)
-    confluence: bool = False
-    confluence_ids: list = field(default_factory=list)
-    # context descriptive
-    context_zone: tuple = (0.0, 0.0)
-    context_formation_ts: object = None
-    context_age_bars_at_interaction: int = 0
-    fvg_width_atr: object = None
-    ifvg_inversion_speed: object = None
-    rb_wick_body: object = None
-    rb_dominant_ratio: object = None
-    rb_activated_at_interaction: object = None
-    rb_activated_at_confirmation: object = None
-    rb_activated_at_trigger: object = None
-    rb_activation_age: object = None
-    rb_activation_only_after_setup: object = None
-    prior_tap_count: int = 0
-    # reaction
-    displacement_branch: str = ""
-    confirm_reason: str = ""
-    interaction_to_confirmation_delay: int = 0
-    reaction_measures: list = field(default_factory=list)
-    new_fvg_after_interaction: bool = False
-    new_ifvg_after_interaction: bool = False
-    # setup
-    entry_price: float = 0.0
-    stop_price: float = 0.0
-    stop_anchor_desc: str = ""
-    targets: list = field(default_factory=list)     # TargetCandidate per policy
-    executable: bool = False
-    rejection_reason: str = ""
-    # frozen fingerprint (categorical + binned)
-    fingerprint: dict = field(default_factory=dict)
+    context_zone: tuple
+    dominant_state: str
+    variant_ids: list = field(default_factory=list)
+    n_variants: int = 0
+    n_executable: int = 0
 
 
 def _detect(bars):
@@ -139,59 +60,78 @@ def _detect(bars):
     return series, atr, fvgs, ifvgs, rbs, ts_index
 
 
-def _all_structures(fvgs, ifvgs, rbs, series, ts_index):
-    """Uniform (id, family, tf, direction, lo, hi, avail_seq) for targeting."""
+def _ts_resolver(bars):
+    ts_list = [b.ts_et for b in bars]
+
+    def resolve(ts):
+        if ts is None:
+            return None
+        i = bisect.bisect_left(ts_list, ts)
+        return i if i < len(ts_list) else None
+    return resolve
+
+
+def _all_structures_ext(fvgs, ifvgs, rbs, series, ts_index, ts_to_seq):
+    """Uniform target-eligible structures with a global ``invalid_from`` seq
+    (earliest 1m seq at which the structure stopped being a valid opposing
+    target: inverted / filled / expired / deactivated)."""
     out = []
     for tf in TIMEFRAMES:
         s = series[tf]
         for f in fvgs[tf]:
-            out.append((f.id, "fvg", tf, _dir(f.direction), f.lo, f.hi, _avail(tf, s, f.c_seq)))
+            cand = []
+            if f.inversion_seq is not None:
+                cand.append(_avail(tf, s, f.inversion_seq))
+            for t in (f.full_fill_ts, f.expiry_ts):
+                r = ts_to_seq(t)
+                if r is not None:
+                    cand.append(r)
+            out.append({"id": f.id, "family": "fvg", "tf": tf, "sdir": _dir(f.direction),
+                        "lo": f.lo, "hi": f.hi, "avail": _avail(tf, s, f.c_seq),
+                        "invalid_from": (min(cand) if cand else None)})
         for iv in ifvgs[tf]:
             idx = ts_index[tf].get(iv.activation_ts)
             if idx is None:
                 continue
-            out.append((iv.id, "ifvg", tf, _dir(iv.child_direction), iv.lo, iv.hi, _avail(tf, s, idx)))
+            r = ts_to_seq(iv.expiry_ts)
+            out.append({"id": iv.id, "family": "ifvg", "tf": tf, "sdir": _dir(iv.child_direction),
+                        "lo": iv.lo, "hi": iv.hi, "avail": _avail(tf, s, idx),
+                        "invalid_from": r})
         for rb in rbs[tf]:
-            out.append((rb.id, "rb", tf, _dir(rb.direction), rb.zone_lo, rb.zone_hi,
-                        _avail(tf, s, rb.source_seq)))
+            r = ts_to_seq(rb.deactivation_ts)
+            out.append({"id": rb.id, "family": "rb", "tf": tf, "sdir": _dir(rb.direction),
+                        "lo": rb.zone_lo, "hi": rb.zone_hi, "avail": _avail(tf, s, rb.source_seq),
+                        "invalid_from": r})
     return out
 
 
-def _targets(all_structs, entry_seq, direction, entry_price, stop_price, context_tf, exclude_ids):
-    risk = abs(entry_price - stop_price)
-    elig = []
-    for sid, fam, tf, sdir, lo, hi, avail in all_structs:
-        if sid in exclude_ids or avail > entry_seq:
-            continue
-        surface = lo if direction > 0 else hi
-        if (direction > 0 and surface <= entry_price) or (direction < 0 and surface >= entry_price):
-            continue
-        dist = abs(surface - entry_price)
-        rr = (dist / risk) if risk > 0 else None
-        elig.append({"sid": sid, "fam": fam, "tf": tf, "sdir": sdir, "surface": surface,
-                     "dist": dist, "avail": avail, "rr": rr})
-    if not elig:
-        return []
-    def mk(policy, e):
-        return TargetCandidate(policy=policy, structure_id=e["sid"], family=e["fam"],
-                               timeframe=e["tf"], surface=e["surface"], distance=e["dist"],
-                               freshness_bars=entry_seq - e["avail"], availability_seq=e["avail"],
-                               natural_rr=(round(e["rr"], 4) if e["rr"] is not None else None))
-    out = []
-    nearest = min(elig, key=lambda e: e["dist"])
-    out.append(mk("NEAREST_VALID_STRUCTURE", nearest))
-    opposing = [e for e in elig if e["sdir"] == -direction]
-    if opposing:
-        out.append(mk("BRANCH_SEMANTIC_TARGET", min(opposing, key=lambda e: e["dist"])))
-    htf_opp = [e for e in elig if e["sdir"] == -direction and e["tf"] >= context_tf]
-    if htf_opp:
-        out.append(mk("NEAREST_OPPOSING_HIGHER_TF_STRUCTURE", min(htf_opp, key=lambda e: e["dist"])))
-    return out
+def _contexts(fvgs, ifvgs, rbs, series, ts_index):
+    """Setup context structures (RB / FVG / iFVG) with causal availability."""
+    ctxs = []
+    for tf in TIMEFRAMES:
+        s = series[tf]
+        for rb in rbs[tf]:
+            ctxs.append({"context_id": rb.id, "context_family": "rb", "context_tf": tf,
+                         "direction": _dir(rb.direction), "context_zone": (rb.zone_lo, rb.zone_hi),
+                         "avail_ctx": _avail(tf, s, rb.source_seq), "context_formation_ts": rb.source_ts,
+                         "rb": rb, "is_ifvg": False, "lane": "A"})
+        for f in fvgs[tf]:
+            ctxs.append({"context_id": f.id, "context_family": "fvg", "context_tf": tf,
+                         "direction": _dir(f.direction), "context_zone": (f.lo, f.hi),
+                         "avail_ctx": _avail(tf, s, f.c_seq), "context_formation_ts": f.formation_ts,
+                         "rb": None, "is_ifvg": False, "lane": "B"})
+        for iv in ifvgs[tf]:
+            idx = ts_index[tf].get(iv.activation_ts)
+            if idx is None:
+                continue
+            ctxs.append({"context_id": iv.id, "context_family": "ifvg", "context_tf": tf,
+                         "direction": _dir(iv.child_direction), "context_zone": (iv.lo, iv.hi),
+                         "avail_ctx": _avail(tf, s, idx), "context_formation_ts": iv.activation_ts,
+                         "rb": None, "is_ifvg": True, "lane": "C"})
+    return ctxs
 
 
-def _form_idx_by_dir(fvgs, ifvgs, ts_index, tf, series):
-    """Sets of same-tf candle indices where an FVG formed / iFVG activated,
-    keyed by direction (+1/-1)."""
+def _form_by_dir(fvgs, ifvgs, ts_index, tf):
     fv = {1: set(), -1: set()}
     ifv = {1: set(), -1: set()}
     for f in fvgs[tf]:
@@ -203,248 +143,138 @@ def _form_idx_by_dir(fvgs, ifvgs, ts_index, tf, series):
     return fv, ifv
 
 
+def _mtf_interaction(s, tf, avail_ctx, zone, start_arr):
+    """First ``tf`` candle whose bar-time is at/after the context became known
+    and whose range enters the zone. ``start_arr`` is the tf's per-candle global
+    start-seq array (ascending), used to skip straight to the first eligible
+    candle."""
+    lo, hi = zone
+    i0 = bisect.bisect_left(start_arr, avail_ctx)
+    for i in range(i0, len(s)):
+        c = s[i]
+        if c.low <= hi and c.high >= lo:
+            return i
+    return None
+
+
+def _trigger_tf_invalidation(s, tf, i_idx, direction, zone):
+    """First trigger-tf candle after interaction that closes through the zone on
+    the invalidating side (support broken down / resistance broken up)."""
+    lo, hi = zone
+    for j in range(i_idx + 1, min(len(s), i_idx + rs.REACTION_WINDOW + 1)):
+        c = s[j]
+        if direction > 0 and c.close < lo:
+            return j
+        if direction < 0 and c.close > hi:
+            return j
+    return None
+
+
 def observe(bars):
-    """Return (episodes, diagnostics). Episodes are coherent, deduplicated,
-    fully causal, pre-outcome."""
+    """Return (physical_episodes, variants, diagnostics)."""
     series, atr, fvgs, ifvgs, rbs, ts_index = _detect(bars)
-    all_structs = _all_structures(fvgs, ifvgs, rbs, series, ts_index)
-    form_by_tf = {tf: _form_idx_by_dir(fvgs, ifvgs, ts_index, tf, series[tf]) for tf in TIMEFRAMES}
-    n = len(bars)
+    ts_to_seq = _ts_resolver(bars)
+    structs_ext = _all_structures_ext(fvgs, ifvgs, rbs, series, ts_index, ts_to_seq)
+    table = StructTable(structs_ext)
+    form_by_tf = {tf: _form_by_dir(fvgs, ifvgs, ts_index, tf) for tf in TIMEFRAMES}
+    start_by_tf = {tf: [_tf_start_seq(tf, series[tf], i) for i in range(len(series[tf]))]
+                   for tf in TIMEFRAMES}
+    contexts = _contexts(fvgs, ifvgs, rbs, series, ts_index)
 
-    raw = []   # candidate episodes before dedup
+    def resolve(entry_seq, direction, entry_price, stop_price, ctf, cfam, excl):
+        return resolve_targets(table, entry_seq, direction, entry_price,
+                               stop_price, ctf, cfam, excl)
 
-    def add_candidate(lane, tf, direction, i_idx, context_id, context_family,
-                      context_zone, context_form_ts, context_form_seq, extra):
-        s = series[tf]
-        if i_idx is None or i_idx + 1 >= len(s):
-            return
-        fv, ifv = form_by_tf[tf]
-        fvg_form = {j for j in fv[direction] if j > i_idx}
-        ifvg_form = {j for j in ifv[direction] if j > i_idx}
-        inval = extra.get("invalidation_idx")
-        r = measure_reaction(s, atr[tf], i_idx, direction, context_zone[0], context_zone[1],
-                             fvg_form, ifvg_form, invalidation_idx=inval)
-        if r["confirm_idx"] is None:
-            return   # not a coherent setup (scraping / failed) -> diagnostic only
-        c_idx = r["confirm_idx"]
-        entry_seq = _avail(tf, s, c_idx)
-        if entry_seq >= n:
-            return
-        raw.append({
-            "lane": lane, "tf": tf, "direction": direction, "i_idx": i_idx,
-            "confirm_idx": c_idx, "entry_seq": entry_seq, "context_id": context_id,
-            "context_family": context_family, "context_zone": context_zone,
-            "context_form_ts": context_form_ts,
-            "context_age": i_idx - context_form_seq if context_form_seq is not None else 0,
-            "reaction": r, "extra": extra,
-            "interaction_seq_global": _avail(tf, s, i_idx),
-            "trigger_seq_global": _avail(tf, s, c_idx),
-        })
-
-    # ---- Lane A: RB rejection (context RB, interaction = first tap) ----
-    for tf in TIMEFRAMES:
-        s = series[tf]
-        for rb in rbs[tf]:
-            if not rb.tap_events:
+    # ---- raw physical-episode candidates across trigger timeframes ----
+    # Trigger timeframes per context: same-timeframe plus a 1m refinement -- the
+    # two architectures that matter most (same-tf, and HTF-context -> 1m-trigger).
+    # This is the frozen, bounded MTF set for the two-week demonstration.
+    raw = []
+    for ctx in contexts:
+        ctf = ctx["context_tf"]
+        lo, hi = ctx["context_zone"]
+        direction = ctx["direction"]
+        for ttf in sorted({ctf, 1}):
+            s = series[ttf]
+            i_idx = _mtf_interaction(s, ttf, ctx["avail_ctx"], ctx["context_zone"], start_by_tf[ttf])
+            if i_idx is None or i_idx + 1 >= len(s):
                 continue
-            i_idx = rb.tap_events[0]["seq"]
-            direction = _dir(rb.direction)
-            inval = None
-            if rb.deactivation_reason in ("DEACTIVATED_CLOSE_THROUGH", "DEACTIVATED_OVERSHOOT_LIMIT") \
-               and rb.deactivation_ts is not None:
-                inval = ts_index[tf].get(rb.deactivation_ts)
-            add_candidate("A", tf, direction, i_idx, rb.id, "rb",
-                          (rb.zone_lo, rb.zone_hi), rb.source_ts, rb.source_seq,
-                          {"rb": rb, "invalidation_idx": inval})
+            fv, ifv = form_by_tf[ttf]
+            fvg_form = {j for j in fv[direction] if j > i_idx}
+            ifvg_form = {j for j in ifv[direction] if j > i_idx}
+            inval = _trigger_tf_invalidation(s, ttf, i_idx, direction, ctx["context_zone"])
+            cls = rs.classify(s, atr[ttf], i_idx, direction, lo, hi, fvg_form, ifvg_form, inval)
+            raw.append({"ctx": ctx, "ttf": ttf, "i_idx": i_idx, "cls": cls,
+                        "interaction_global": _tf_start_seq(ttf, s, i_idx)})
 
-    # ---- Lane B: FVG reaction (context FVG, interaction = first touch) ----
-    for tf in TIMEFRAMES:
-        s = series[tf]
-        for f in fvgs[tf]:
-            if f.first_touch_seq is None:
-                continue
-            direction = _dir(f.direction)
-            inval = f.inversion_seq
-            add_candidate("B", tf, direction, f.first_touch_seq, f.id, "fvg",
-                          (f.lo, f.hi), f.formation_ts, f.c_seq,
-                          {"fvg": f, "invalidation_idx": inval})
+    # ---- physical dedup: bucket by (interaction_global, trigger_tf, direction),
+    #      then merge overlapping context zones within each small bucket ----
+    from collections import defaultdict
+    buckets = defaultdict(list)
+    for r in raw:
+        buckets[(r["interaction_global"], r["ttf"], r["ctx"]["direction"])].append(r)
 
-    # ---- Lane C: iFVG direct (interaction = activation/inversion) ----
-    for tf in TIMEFRAMES:
-        s = series[tf]
-        for iv in ifvgs[tf]:
-            idx = ts_index[tf].get(iv.activation_ts)
-            if idx is None:
-                continue
-            direction = _dir(iv.child_direction)
-            add_candidate("C", tf, direction, idx, iv.id, "ifvg",
-                          (iv.lo, iv.hi), iv.activation_ts, idx,
-                          {"ifvg": iv, "invalidation_idx": None})
-
-    # ---- Lane D: iFVG retest (interaction = first_touch after activation) ----
-    for tf in TIMEFRAMES:
-        for iv in ifvgs[tf]:
-            if iv.first_touch_ts is None:
-                continue
-            idx = ts_index[tf].get(iv.first_touch_ts)
-            act_idx = ts_index[tf].get(iv.activation_ts)
-            if idx is None or act_idx is None or idx <= act_idx:
-                continue
-            direction = _dir(iv.child_direction)
-            add_candidate("D", tf, direction, idx, iv.id, "ifvg",
-                          (iv.lo, iv.hi), iv.activation_ts, act_idx,
-                          {"ifvg": iv, "invalidation_idx": None})
-
-    # ---- physical dedup: group by (direction, entry_seq); merge overlapping contexts ----
-    raw.sort(key=lambda r: (r["entry_seq"], -r["tf"], r["context_id"]))
-    episodes = []
-    used = [False] * len(raw)
+    episodes, variants = [], []
     eid = 0
-    for a_i in range(len(raw)):
-        if used[a_i]:
-            continue
-        a = raw[a_i]
-        group = [a]
-        used[a_i] = True
-        for b_i in range(a_i + 1, len(raw)):
-            if used[b_i]:
+    for key in sorted(buckets):
+        items = sorted(buckets[key], key=lambda r: (-r["ctx"]["context_tf"], r["i_idx"],
+                                                    r["ctx"]["context_id"]))
+        used = [False] * len(items)
+        for i in range(len(items)):
+            if used[i]:
                 continue
-            b = raw[b_i]
-            if b["entry_seq"] != a["entry_seq"] or b["direction"] != a["direction"]:
+            group = [items[i]]
+            used[i] = True
+            alo, ahi = items[i]["ctx"]["context_zone"]
+            for j in range(i + 1, len(items)):
+                if used[j]:
+                    continue
+                blo, bhi = items[j]["ctx"]["context_zone"]
+                if max(alo, blo) <= min(ahi, bhi):
+                    group.append(items[j])
+                    used[j] = True
+                    alo, ahi = min(alo, blo), max(ahi, bhi)   # expand merged zone
+            # primary context: highest context tf then earliest interaction candle
+            primary = sorted(group, key=lambda r: (-r["ctx"]["context_tf"], r["i_idx"]))[0]
+            confluence_ids = sorted({g["ctx"]["context_id"] for g in group})
+            eid += 1
+            episode_id = f"EP-{eid:05d}"
+            vs = build_variants(episode_id, primary["ctx"], primary["ttf"], series, atr,
+                                bars, primary["i_idx"], primary["cls"], resolve, confluence_ids)
+            if not vs:
+                eid -= 1
                 continue
-            # materially overlapping context zones -> same physical setup
-            alo, ahi = a["context_zone"]; blo, bhi = b["context_zone"]
-            if max(alo, blo) <= min(ahi, bhi):
-                group.append(b)
-                used[b_i] = True
-        eid += 1
-        episodes.append(_finalize(f"EP-{eid:05d}", group, bars, all_structs, series))
+            lane = "F" if len(confluence_ids) > 1 else primary["ctx"]["lane"]
+            for v in vs:
+                v.lane = lane
+                v.fingerprint["lane"] = lane
+            variants.extend(vs)
+            episodes.append(PhysicalEpisode(
+                episode_id=episode_id, direction=primary["ctx"]["direction"], lane=lane,
+                trigger_tf=primary["ttf"], context_tf=primary["ctx"]["context_tf"],
+                is_multi_timeframe=primary["ttf"] != primary["ctx"]["context_tf"],
+                context_family=primary["ctx"]["context_family"],
+                context_id=primary["ctx"]["context_id"], component_ids=confluence_ids,
+                confluence=len(confluence_ids) > 1,
+                interaction_seq=primary["interaction_global"],
+                context_zone=primary["ctx"]["context_zone"],
+                dominant_state=primary["cls"]["dominant_state"],
+                variant_ids=[v.variant_id for v in vs], n_variants=len(vs),
+                n_executable=sum(1 for v in vs if v.executable)))
 
     diagnostics = {
-        "n_episodes": len(episodes),
-        "by_lane": {ln: sum(1 for e in episodes if e.lane == ln) for ln in ("A", "B", "C", "D", "E")},
-        "n_executable": sum(1 for e in episodes if e.executable),
+        "n_physical_episodes": len(episodes),
+        "n_variants": len(variants),
+        "n_multi_timeframe_episodes": sum(1 for e in episodes if e.is_multi_timeframe),
+        "variants_by_rule": _count(variants, lambda v: v.entry_variant),
+        "executable_by_rule": _count([v for v in variants if v.executable], lambda v: v.entry_variant),
+        "by_lane": _count(episodes, lambda e: e.lane),
     }
-    return episodes, diagnostics
+    return episodes, variants, diagnostics
 
 
-def _finalize(eid, group, bars, all_structs, series):
-    # primary = highest timeframe then earliest interaction
-    primary = sorted(group, key=lambda r: (-r["tf"], r["i_idx"]))[0]
-    tf = primary["tf"]
-    direction = primary["direction"]
-    entry_seq = primary["entry_seq"]
-    entry_bar = bars[entry_seq]
-    entry_price = entry_bar.open
-    r = primary["reaction"]
-    extra = primary["extra"]
-    confluence_ids = sorted({g["context_id"] for g in group})
-    confluence = len(confluence_ids) > 1
-
-    # lane E refinement: RB context confirmed by a NEW same-dir FVG/iFVG
-    lane = primary["lane"]
-    if lane == "A" and r["confirm_reason"] in ("same_dir_fvg", "same_dir_ifvg"):
-        lane = "E"
-
-    # ---- structural stop ----
-    if extra.get("rb") is not None:
-        rb = extra["rb"]
-        so, sh, sl, sc = rb.source_ohlc
-        stop_price = sl if direction > 0 else sh
-        stop_desc = "beyond the RB source-candle wick extreme (block invalidation)"
-    else:
-        lo, hi = primary["context_zone"]
-        stop_price = lo if direction > 0 else hi
-        stop_desc = "beyond the structure's distal boundary (structure invalidation)"
-    valid_stop = (stop_price < entry_price) if direction > 0 else (stop_price > entry_price)
-
-    exclude = set(confluence_ids)
-    targets = _targets(all_structs, entry_seq, direction, entry_price, stop_price, tf, exclude) \
-        if valid_stop else []
-
-    # executable per NEAREST_VALID_STRUCTURE policy (primary)
-    executable = False
-    reason = ""
-    primary_target = next((t for t in targets if t.policy == "NEAREST_VALID_STRUCTURE"), None)
-    if not valid_stop:
-        reason = "NO_STRUCTURAL_STOP"
-    elif primary_target is None:
-        reason = "NO_CAUSAL_TARGET"
-    elif primary_target.natural_rr is None or primary_target.natural_rr < MIN_EXECUTABLE_RR:
-        reason = "INSUFFICIENT_NATURAL_RR"
-    else:
-        executable = True
-
-    # ---- RB activation states (causal) ----
-    rb = extra.get("rb")
-    rb_wb = rb_dom = rb_act_inter = rb_act_conf = rb_act_trig = rb_act_age = rb_act_after = None
-    prior_taps = 0
-    if rb is not None:
-        rb_wb = round(rb.wick_body_ratio, 4)
-        rb_dom = round(rb.dominant_wick_ratio, 4)
-        i_idx = primary["i_idx"]; c_idx = primary["confirm_idx"]
-        rb_act_inter = rb.was_activated_at(i_idx)
-        rb_act_conf = rb.was_activated_at(c_idx)
-        rb_act_trig = rb.was_activated_at(c_idx)   # trigger fires at confirmation close
-        rb_act_age = (c_idx - rb.activation_seq) if rb.activation_seq is not None else None
-        rb_act_after = bool(rb.activated and rb.activation_seq is not None and rb.activation_seq > c_idx)
-        prior_taps = sum(1 for tp in rb.tap_events if tp["seq"] <= c_idx)
-
-    fvg = extra.get("fvg"); ifvg = extra.get("ifvg")
-    tw = time_window_fields(entry_bar.ts_et)
-
-    ep = Episode(
-        episode_id=eid, lane=lane, direction=direction,
-        context_tf=tf, interaction_tf=tf, confirmation_tf=tf, trigger_tf=tf,
-        interaction_seq=primary["interaction_seq_global"],
-        confirmation_seq=primary["trigger_seq_global"],
-        trigger_seq=primary["confirm_idx"], entry_seq=entry_seq,
-        session=tw["session"], et_hour=tw["et_hour"],
-        minutes_from_0930=tw["minutes_from_0930"], minutes_from_1000=tw["minutes_from_1000"],
-        day_of_week=tw["day_of_week"], session_date_et=session_date(entry_bar.ts_et),
-        context_id=primary["context_id"], context_family=primary["context_family"],
-        component_ids=confluence_ids, atomic_event_ids=confluence_ids,
-        confluence=confluence, confluence_ids=confluence_ids,
-        context_zone=primary["context_zone"], context_formation_ts=primary["context_form_ts"],
-        context_age_bars_at_interaction=primary["context_age"],
-        fvg_width_atr=(round(fvg.width_atr, 4) if fvg is not None and fvg.width_atr else None),
-        ifvg_inversion_speed=(ifvg.inversion_speed_bucket if ifvg is not None else None),
-        rb_wick_body=rb_wb, rb_dominant_ratio=rb_dom,
-        rb_activated_at_interaction=rb_act_inter, rb_activated_at_confirmation=rb_act_conf,
-        rb_activated_at_trigger=rb_act_trig, rb_activation_age=rb_act_age,
-        rb_activation_only_after_setup=rb_act_after, prior_tap_count=prior_taps,
-        displacement_branch=r["branch"], confirm_reason=r["confirm_reason"],
-        interaction_to_confirmation_delay=r["confirm_offset"],
-        reaction_measures=r["per_candle"],
-        new_fvg_after_interaction=(r["confirm_reason"] == "same_dir_fvg"),
-        new_ifvg_after_interaction=(r["confirm_reason"] == "same_dir_ifvg"),
-        entry_price=entry_price, stop_price=stop_price, stop_anchor_desc=stop_desc,
-        targets=targets, executable=executable, rejection_reason=reason,
-    )
-    ep.fingerprint = _fingerprint(ep)
-    return ep
-
-
-def _fingerprint(ep: Episode) -> dict:
-    prim = next((t for t in ep.targets if t.policy == "NEAREST_VALID_STRUCTURE"), None)
-    rb_act_class = ("ACTIVATED" if ep.rb_activated_at_trigger else "NOT_ACTIVATED") \
-        if ep.rb_wick_body is not None else "NA"
-    return {
-        "lane": ep.lane, "direction": ep.direction,
-        "context_tf": ep.context_tf, "trigger_tf": ep.trigger_tf,
-        "confirmation_tf": ep.confirmation_tf, "interaction_tf": ep.interaction_tf,
-        "session": ep.session, "day_of_week": ep.day_of_week,
-        "context_family": ep.context_family,
-        "displacement_branch": ep.displacement_branch,
-        "confirm_reason": ep.confirm_reason,
-        "rb_activation_class": rb_act_class,
-        "interaction_to_confirmation_delay": ep.interaction_to_confirmation_delay,
-        "confluence": ep.confluence,
-        "target_family": (prim.family if prim else "none"),
-        "target_tf": (prim.timeframe if prim else "none"),
-        # binned continuous
-        "fvg_width_atr_bin": _bin(ep.fvg_width_atr, WIDTH_ATR_BINS),
-        "rb_wick_body_bin": _bin(ep.rb_wick_body, WICKBODY_BINS),
-        "natural_rr_bin": _bin(prim.natural_rr if prim else None, RR_BINS),
-        "ifvg_inversion_speed": ep.ifvg_inversion_speed or "na",
-    }
+def _count(items, key):
+    out = {}
+    for it in items:
+        out[key(it)] = out.get(key(it), 0) + 1
+    return out
