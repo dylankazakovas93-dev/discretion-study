@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import bisect
 from dataclasses import dataclass
+from itertools import chain as _chain
 
 POLICIES = ("NEAREST_OPPOSING_VALID_STRUCTURE", "BRANCH_SEMANTIC_TARGET",
             "NEAREST_OPPOSING_HIGHER_TF_STRUCTURE")
@@ -45,7 +46,10 @@ class TargetCandidate:
 
 class StructTable:
     """Target-eligible structures as parallel arrays sorted by availability, so
-    resolution touches only structures already knowable at the entry bar."""
+    resolution touches only structures already knowable at the entry bar. The
+    indices of no-expiry 60m structures are tracked separately so a bounded
+    recency window can be applied to the (8h-lifetime) intraday structures
+    losslessly while still checking every long-lived 60m structure."""
 
     def __init__(self, structs):
         s = sorted(structs, key=lambda x: x["avail"])
@@ -57,12 +61,25 @@ class StructTable:
         self.lo = [x["lo"] for x in s]
         self.hi = [x["hi"] for x in s]
         self.invalid_from = [x["invalid_from"] for x in s]
+        # Long-lived structures are always checked regardless of age: those that
+        # never expire (invalid_from is None) and every 60m structure (which can
+        # stay active well past the intraday 8h lifetime). Everything else is a
+        # <=8h-lifetime intraday structure that can be safely windowed.
+        self.always_idx = [i for i in range(len(self.avail))
+                           if self.invalid_from[i] is None or self.tf[i] >= 60]
+        self.always_avail = [self.avail[i] for i in self.always_idx]
 
 
 def resolve_targets(table, entry_seq, direction, entry_price, stop_price,
-                    context_tf, context_family, exclude_ids):
+                    context_tf, context_family, exclude_ids, window=None):
     """Returns (selected_by_policy, considered_ledger, exclusion_counts). Only
-    structures with ``avail <= entry_seq`` are considered (causal)."""
+    structures with ``avail <= entry_seq`` are considered (causal).
+
+    ``window``: if set, short-lived intraday structures (finite invalid_from,
+    tf<60, <=8h = 480-bar lifetime) older than ``entry_seq - window`` bars are
+    skipped -- past their lifetime, they are excluded anyway, so with ``window``
+    comfortably above 480 this is lossless. Never-expiring structures and all
+    60m structures are always checked regardless of age."""
     risk = abs(entry_price - stop_price)
     count = bisect.bisect_right(table.avail, entry_seq)
     eligible = []                 # (dist, i) for opposing, active, ahead, non-component
@@ -74,8 +91,17 @@ def resolve_targets(table, entry_seq, direction, entry_price, stop_price,
         table.ids, table.sdir, table.lo, table.hi, table.tf, table.fam,
         table.avail, table.invalid_from)
 
+    if window is None:
+        idxs = range(count)
+    else:
+        cutoff = entry_seq - window
+        lo = bisect.bisect_left(table.avail, cutoff)
+        # everything in the window, plus any always-check structure older than it
+        older_always = table.always_idx[:bisect.bisect_left(table.always_avail, cutoff)]
+        idxs = _chain(range(lo, count), older_always)
+
     opp = -direction
-    for i in range(count):
+    for i in idxs:
         lo_i, hi_i = los[i], his[i]
         if direction > 0:
             surface = lo_i
@@ -104,7 +130,7 @@ def resolve_targets(table, entry_seq, direction, entry_price, stop_price,
             reason = "behind_entry"
         dist = abs(surface - entry_price)
         if reason is None:
-            eligible.append((dist, i))
+            eligible.append((dist, ids[i], i))     # id tiebreak -> order-independent
         else:
             excl_counts[reason] = excl_counts.get(reason, 0) + 1
             prev = excl_example.get(reason)
@@ -129,13 +155,13 @@ def resolve_targets(table, entry_seq, direction, entry_price, stop_price,
 
     selected = {}
     if eligible:
-        eligible.sort(key=lambda t: t[0])
-        d0, i0 = eligible[0]
+        eligible.sort(key=lambda t: (t[0], t[1]))   # (distance, structure_id)
+        d0, _, i0 = eligible[0]
         selected["NEAREST_OPPOSING_VALID_STRUCTURE"] = mk("NEAREST_OPPOSING_VALID_STRUCTURE", d0, i0)
-        fam = next(((d, i) for d, i in eligible if fams[i] == context_family), None)
+        fam = next(((d, i) for d, _sid, i in eligible if fams[i] == context_family), None)
         if fam:
             selected["BRANCH_SEMANTIC_TARGET"] = mk("BRANCH_SEMANTIC_TARGET", fam[0], fam[1])
-        htf = next(((d, i) for d, i in eligible if tfs[i] >= context_tf), None)
+        htf = next(((d, i) for d, _sid, i in eligible if tfs[i] >= context_tf), None)
         if htf:
             selected["NEAREST_OPPOSING_HIGHER_TF_STRUCTURE"] = mk(
                 "NEAREST_OPPOSING_HIGHER_TF_STRUCTURE", htf[0], htf[1])
@@ -144,7 +170,7 @@ def resolve_targets(table, entry_seq, direction, entry_price, stop_price,
 
     # considered ledger: nearest eligible + one nearest example per exclusion reason
     considered = []
-    for d, i in eligible[:NEAREST_ELIGIBLE_KEPT]:
+    for d, _sid, i in eligible[:NEAREST_ELIGIBLE_KEPT]:
         surface = los[i] if direction > 0 else his[i]
         considered.append(rec(i, surface, d, ""))
     for reason, (d, i) in excl_example.items():

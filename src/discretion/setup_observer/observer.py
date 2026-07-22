@@ -171,8 +171,13 @@ def _trigger_tf_invalidation(s, tf, i_idx, direction, zone):
     return None
 
 
-def observe(bars):
-    """Return (physical_episodes, variants, diagnostics)."""
+def observe(bars, target_window=None):
+    """Return (physical_episodes, variants, diagnostics).
+
+    ``target_window``: optional recency bound (in 1m bars) for the intraday
+    target search -- lossless above 480 (the 8h intraday structure lifetime),
+    used to keep resolution linear over long histories. 60m targets are always
+    checked. ``None`` keeps the unbounded default."""
     series, atr, fvgs, ifvgs, rbs, ts_index = _detect(bars)
     ts_to_seq = _ts_resolver(bars)
     structs_ext = _all_structures_ext(fvgs, ifvgs, rbs, series, ts_index, ts_to_seq)
@@ -189,7 +194,7 @@ def observe(bars):
 
     def resolve(entry_seq, direction, entry_price, stop_price, ctf, cfam, excl):
         return resolve_targets(table, entry_seq, direction, entry_price,
-                               stop_price, ctf, cfam, excl)
+                               stop_price, ctf, cfam, excl, window=target_window)
 
     # ---- raw physical-episode candidates across trigger timeframes ----
     # Trigger timeframes per context: same-timeframe plus a 1m refinement -- the
