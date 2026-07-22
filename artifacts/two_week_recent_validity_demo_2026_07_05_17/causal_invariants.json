@@ -1,0 +1,27 @@
+{
+  "observation": {
+    "label": "observation",
+    "n_episodes": 2376,
+    "violations": {
+      "interaction_after_confirmation": 0,
+      "confirmation_after_trigger_entry": 0,
+      "entry_not_after_trigger": 0,
+      "target_after_entry": 0
+    },
+    "total_violations": 0
+  },
+  "application": {
+    "label": "application",
+    "n_episodes": 2401,
+    "violations": {
+      "interaction_after_confirmation": 0,
+      "confirmation_after_trigger_entry": 0,
+      "entry_not_after_trigger": 0,
+      "target_after_entry": 0
+    },
+    "total_violations": 0
+  },
+  "outcome_fields_in_fingerprints": false,
+  "application_outcomes_computed": false,
+  "total_violations": 0
+}

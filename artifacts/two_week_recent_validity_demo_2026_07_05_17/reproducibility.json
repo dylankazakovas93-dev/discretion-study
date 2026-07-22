@@ -1,0 +1,36 @@
+{
+  "symbol": "NQU6",
+  "observation_window": [
+    "2026-07-05 18:00:00-04:00",
+    "2026-07-10 16:59:59-04:00"
+  ],
+  "application_window": [
+    "2026-07-12 18:00:00-04:00",
+    "2026-07-17 23:59:59-04:00"
+  ],
+  "min_executable_rr": 0.5,
+  "obs_episodes": 2376,
+  "obs_by_lane": {
+    "A": 1209,
+    "B": 292,
+    "C": 553,
+    "D": 277,
+    "E": 45
+  },
+  "obs_executable": 26,
+  "obs_outcomes_computed": 26,
+  "obs_successful": 5,
+  "n_unique_fingerprints": 2257,
+  "n_playbook_items": 5,
+  "app_episodes": 2401,
+  "app_by_lane": {
+    "A": 1226,
+    "B": 306,
+    "C": 543,
+    "D": 272,
+    "E": 54
+  },
+  "app_exact_matches": 0,
+  "app_reduced_matches": 48,
+  "app_matched_episodes": 48
+}
