@@ -24,15 +24,13 @@
     "ENTRY_ON_NEW_IFVG": 829
   },
   "obs_executable_by_rule": {
-    "ENTRY_ON_MINIMAL_WICK_REJECTION": 515,
-    "ENTRY_ON_TAP": 1940,
-    "ENTRY_ON_NEW_FVG": 74,
-    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 608,
-    "ENTRY_ON_DELAYED_DISPLACEMENT": 132,
-    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 122,
-    "ENTRY_ON_STRONG_REJECTION": 64,
-    "ENTRY_ON_IFVG_RETEST": 187,
-    "ENTRY_ON_NEW_IFVG": 14
+    "ENTRY_ON_TAP": 17,
+    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 25,
+    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 10,
+    "ENTRY_ON_MINIMAL_WICK_REJECTION": 13,
+    "ENTRY_ON_DELAYED_DISPLACEMENT": 24,
+    "ENTRY_ON_NEW_FVG": 20,
+    "ENTRY_ON_NEW_IFVG": 5
   },
   "obs_mtf_episodes": 2275,
   "obs_by_lane": {
@@ -41,44 +39,32 @@
     "F": 1101,
     "C": 586
   },
-  "obs_outcomes_computed": 3656,
+  "obs_outcomes_computed": 114,
   "obs_successful_by_rule": {
-    "ENTRY_ON_TAP": 704,
-    "ENTRY_ON_NEW_FVG": 40,
-    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 309,
-    "ENTRY_ON_DELAYED_DISPLACEMENT": 77,
-    "ENTRY_ON_MINIMAL_WICK_REJECTION": 258,
-    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 68,
-    "ENTRY_ON_STRONG_REJECTION": 36,
-    "ENTRY_ON_IFVG_RETEST": 70,
-    "ENTRY_ON_NEW_IFVG": 9
+    "ENTRY_ON_TAP": 6,
+    "ENTRY_ON_DELAYED_DISPLACEMENT": 5,
+    "ENTRY_ON_NEW_FVG": 5,
+    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 4,
+    "ENTRY_ON_MINIMAL_WICK_REJECTION": 2,
+    "ENTRY_ON_NEW_IFVG": 2,
+    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 1
   },
-  "n_playbook_items": 1508,
+  "n_playbook_items": 24,
   "playbook_by_rule": {
-    "ENTRY_ON_DELAYED_DISPLACEMENT": 74,
-    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 302,
-    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 68,
-    "ENTRY_ON_MINIMAL_WICK_REJECTION": 255,
-    "ENTRY_ON_NEW_FVG": 40,
-    "ENTRY_ON_NEW_IFVG": 9,
-    "ENTRY_ON_STRONG_REJECTION": 35,
-    "ENTRY_ON_TAP": 659,
-    "ENTRY_ON_IFVG_RETEST": 66
+    "ENTRY_ON_DELAYED_DISPLACEMENT": 5,
+    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 4,
+    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 1,
+    "ENTRY_ON_MINIMAL_WICK_REJECTION": 2,
+    "ENTRY_ON_NEW_FVG": 5,
+    "ENTRY_ON_TAP": 5,
+    "ENTRY_ON_NEW_IFVG": 2
   },
   "app_physical_episodes": 8331,
   "app_variants": 23154,
   "app_mtf_episodes": 2290,
-  "app_actionable": 821,
-  "app_rejected_matches": 10346,
-  "app_actionable_by_rule": {
-    "ENTRY_ON_TAP": 635,
-    "ENTRY_ON_IFVG_RETEST": 18,
-    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 101,
-    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 13,
-    "ENTRY_ON_DELAYED_DISPLACEMENT": 5,
-    "ENTRY_ON_MINIMAL_WICK_REJECTION": 47,
-    "ENTRY_ON_STRONG_REJECTION": 2
-  },
-  "app_exact_actionable": 266,
-  "app_reduced_actionable": 555
+  "app_actionable": 0,
+  "app_rejected_matches": 487,
+  "app_actionable_by_rule": {},
+  "app_exact_actionable": 0,
+  "app_reduced_actionable": 0
 }
