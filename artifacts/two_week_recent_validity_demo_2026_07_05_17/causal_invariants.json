@@ -1,23 +1,23 @@
 {
   "observation": {
     "label": "observation",
-    "n_episodes": 2376,
+    "n_variants": 22913,
     "violations": {
-      "interaction_after_confirmation": 0,
-      "confirmation_after_trigger_entry": 0,
-      "entry_not_after_trigger": 0,
-      "target_after_entry": 0
+      "interaction_after_trigger": 0,
+      "entry_before_trigger": 0,
+      "target_after_entry": 0,
+      "delay_uses_future": 0
     },
     "total_violations": 0
   },
   "application": {
     "label": "application",
-    "n_episodes": 2401,
+    "n_variants": 23154,
     "violations": {
-      "interaction_after_confirmation": 0,
-      "confirmation_after_trigger_entry": 0,
-      "entry_not_after_trigger": 0,
-      "target_after_entry": 0
+      "interaction_after_trigger": 0,
+      "entry_before_trigger": 0,
+      "target_after_entry": 0,
+      "delay_uses_future": 0
     },
     "total_violations": 0
   },

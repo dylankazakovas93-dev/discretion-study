@@ -9,28 +9,76 @@
     "2026-07-17 23:59:59-04:00"
   ],
   "min_executable_rr": 0.5,
-  "obs_episodes": 2376,
+  "obs_physical_episodes": 8234,
+  "obs_variants": 22913,
+  "obs_variants_by_rule": {
+    "ENTRY_ON_TAP": 7524,
+    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 4722,
+    "ENTRY_ON_MINIMAL_WICK_REJECTION": 3185,
+    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 1366,
+    "ENTRY_ON_DELAYED_DISPLACEMENT": 2455,
+    "ENTRY_ON_COMPRESSION_BREAK": 18,
+    "ENTRY_ON_NEW_FVG": 1505,
+    "ENTRY_ON_STRONG_REJECTION": 599,
+    "ENTRY_ON_IFVG_RETEST": 710,
+    "ENTRY_ON_NEW_IFVG": 829
+  },
+  "obs_executable_by_rule": {
+    "ENTRY_ON_MINIMAL_WICK_REJECTION": 515,
+    "ENTRY_ON_TAP": 1940,
+    "ENTRY_ON_NEW_FVG": 74,
+    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 608,
+    "ENTRY_ON_DELAYED_DISPLACEMENT": 132,
+    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 122,
+    "ENTRY_ON_STRONG_REJECTION": 64,
+    "ENTRY_ON_IFVG_RETEST": 187,
+    "ENTRY_ON_NEW_IFVG": 14
+  },
+  "obs_mtf_episodes": 2275,
   "obs_by_lane": {
-    "A": 1209,
-    "B": 292,
-    "C": 553,
-    "D": 277,
-    "E": 45
+    "A": 5521,
+    "B": 1026,
+    "F": 1101,
+    "C": 586
   },
-  "obs_executable": 26,
-  "obs_outcomes_computed": 26,
-  "obs_successful": 5,
-  "n_unique_fingerprints": 2257,
-  "n_playbook_items": 5,
-  "app_episodes": 2401,
-  "app_by_lane": {
-    "A": 1226,
-    "B": 306,
-    "C": 543,
-    "D": 272,
-    "E": 54
+  "obs_outcomes_computed": 3656,
+  "obs_successful_by_rule": {
+    "ENTRY_ON_TAP": 704,
+    "ENTRY_ON_NEW_FVG": 40,
+    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 309,
+    "ENTRY_ON_DELAYED_DISPLACEMENT": 77,
+    "ENTRY_ON_MINIMAL_WICK_REJECTION": 258,
+    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 68,
+    "ENTRY_ON_STRONG_REJECTION": 36,
+    "ENTRY_ON_IFVG_RETEST": 70,
+    "ENTRY_ON_NEW_IFVG": 9
   },
-  "app_exact_matches": 0,
-  "app_reduced_matches": 48,
-  "app_matched_episodes": 48
+  "n_playbook_items": 1508,
+  "playbook_by_rule": {
+    "ENTRY_ON_DELAYED_DISPLACEMENT": 74,
+    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 302,
+    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 68,
+    "ENTRY_ON_MINIMAL_WICK_REJECTION": 255,
+    "ENTRY_ON_NEW_FVG": 40,
+    "ENTRY_ON_NEW_IFVG": 9,
+    "ENTRY_ON_STRONG_REJECTION": 35,
+    "ENTRY_ON_TAP": 659,
+    "ENTRY_ON_IFVG_RETEST": 66
+  },
+  "app_physical_episodes": 8331,
+  "app_variants": 23154,
+  "app_mtf_episodes": 2290,
+  "app_actionable": 821,
+  "app_rejected_matches": 10346,
+  "app_actionable_by_rule": {
+    "ENTRY_ON_TAP": 635,
+    "ENTRY_ON_IFVG_RETEST": 18,
+    "ENTRY_ON_FIRST_CLOSE_OUTSIDE": 101,
+    "ENTRY_ON_IMMEDIATE_DISPLACEMENT": 13,
+    "ENTRY_ON_DELAYED_DISPLACEMENT": 5,
+    "ENTRY_ON_MINIMAL_WICK_REJECTION": 47,
+    "ENTRY_ON_STRONG_REJECTION": 2
+  },
+  "app_exact_actionable": 266,
+  "app_reduced_actionable": 555
 }
