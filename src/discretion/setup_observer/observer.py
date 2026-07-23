@@ -94,10 +94,12 @@ def _all_structures_ext(fvgs, ifvgs, rbs, series, ts_index, ts_to_seq):
             idx = ts_index[tf].get(iv.activation_ts)
             if idx is None:
                 continue
-            r = ts_to_seq(iv.expiry_ts)
+            # causal lifecycle field set at the exact deactivating candle
+            # (close-through / traversal / expiry / data-end) -- covers every
+            # deactivation path, not just lifetime expiry.
             out.append({"id": iv.id, "family": "ifvg", "tf": tf, "sdir": _dir(iv.child_direction),
                         "lo": iv.lo, "hi": iv.hi, "avail": _avail(tf, s, idx),
-                        "invalid_from": r})
+                        "invalid_from": iv.deactivation_available_seq})
         for rb in rbs[tf]:
             r = ts_to_seq(rb.deactivation_ts)
             out.append({"id": rb.id, "family": "rb", "tf": tf, "sdir": _dir(rb.direction),

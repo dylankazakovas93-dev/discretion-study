@@ -65,9 +65,37 @@ class IFVGRecord:
     touched: bool = False
     first_touch_ts: object = None
 
+    # Lifecycle timing (additive; persisted at the exact completed candle that
+    # causes the state transition during the existing causal traversal below --
+    # never reconstructed after the fact). ``deactivation_seq``/``_ts`` are the
+    # same-timeframe index/timestamp of that candle; ``deactivation_available_seq``
+    # is the global 1m seq at which the deactivation becomes causally knowable
+    # (mirrors the existing avail_seq convention used elsewhere); ``active_until_seq``
+    # is an alias of ``deactivation_seq`` for readability at call sites. All remain
+    # None while the record is still active (matches ``active=True``).
+    deactivation_seq: int | None = None
+    deactivation_ts: object = None
+    deactivation_available_seq: int | None = None
+    active_until_seq: int | None = None
+
 
 def _speed_bucket(n: int) -> str:
     return f"{n}_candles" if n <= 4 else "5plus_candles"
+
+
+def _avail_seq(tf: int, series, seq: int) -> int:
+    """Global 1m seq at which same-timeframe candle ``seq`` is causally
+    knowable (mirrors the convention used throughout the setup-observer layer)."""
+    return seq + 1 if tf == 1 else series[seq].available_seq
+
+
+def _mark_deactivated(iv, tf, series, seq, ts):
+    """Persist lifecycle timing at the exact completed candle that causes the
+    transition. Called once per record, at the moment ``active`` becomes False."""
+    iv.deactivation_seq = seq
+    iv.deactivation_ts = ts
+    iv.deactivation_available_seq = _avail_seq(tf, series, seq)
+    iv.active_until_seq = seq
 
 
 def _lifetime_check(tf: int, activation_ts, now_ts, touched: bool) -> str | None:
@@ -128,6 +156,8 @@ def detect_ifvgs(bars, tf: int, fvgs, atr, series, registry) -> list[IFVGRecord]
                 iv.expiry_ts = candle_ts_et(series[i - 1]) if i > 0 else iv.activation_ts
                 iv.deactivation_reason = "DATA_END_ACTIVE"
                 iv.active = False
+                last_seq = i - 1 if i > 0 else i
+                _mark_deactivated(iv, tf, series, last_seq, iv.expiry_ts)
                 continue
             lo, hi = iv.lo, iv.hi
             ts = candle_ts_et(c)
@@ -144,12 +174,14 @@ def detect_ifvgs(bars, tf: int, fvgs, atr, series, registry) -> list[IFVGRecord]
             if step.deactivated:
                 iv.deactivation_reason = step.reason
                 iv.active = False
+                _mark_deactivated(iv, tf, series, i, ts)
                 continue
             expiry = _lifetime_check(tf, iv.activation_ts, ts, iv.touched)
             if expiry is not None:
                 iv.expiry_ts = ts
                 iv.deactivation_reason = expiry
                 iv.active = False
+                _mark_deactivated(iv, tf, series, i, ts)
                 continue
             still.append(iv)
         active = still
@@ -198,8 +230,10 @@ def detect_ifvgs(bars, tf: int, fvgs, atr, series, registry) -> list[IFVGRecord]
 
     if series:
         last_ts = candle_ts_et(series[-1])
+        last_seq = len(series) - 1
         for iv in active:
             iv.expiry_ts = last_ts
             iv.deactivation_reason = "DATA_END_ACTIVE"
             iv.active = False
+            _mark_deactivated(iv, tf, series, last_seq, last_ts)
     return out
