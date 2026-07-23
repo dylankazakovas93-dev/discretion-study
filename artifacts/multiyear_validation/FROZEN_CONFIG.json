@@ -1,0 +1,103 @@
+{
+  "protocol_version": "1.0.0",
+  "frozen_at_git_head": "16957e0233cf9056127a051706fdd8bf9cb1091e",
+  "engine_file_hashes": {
+    "src/discretion/data/aggregation.py": "79f0f6bebe7a62fe8b1c62e90086ffcd9f23087d97e5d5d994406a22bbdb8e73",
+    "src/discretion/data/atr.py": "fcca2259961241ea85aaa413878bec6ff9488fd1039438b97700c5f00e4656be",
+    "src/discretion/data/bars.py": "99f92abd7781d74744395070e5a9d752f81f627ba02f7466e95b4727e95fc737",
+    "src/discretion/data/cme_session.py": "76c0fd920d6edf7bb50b1e153f4f6370787bbe218a2899f37adc2b2bc0676142",
+    "src/discretion/data/loader.py": "725e39f560f7b034dfd14c3a7cfd02e9c47cf1a13fb9fd2ef64ab33134242c1e",
+    "src/discretion/primitive_reset/colour.py": "89f63cbd1d2c5605ffdaba04a91f6c2491cc6e834f8ec8ac649a5a6ce929ae57",
+    "src/discretion/primitive_reset/fvg.py": "878e72a80cf176b594615aa41b39ec11396e7ded59ba2d1a3066ca8c03f6e825",
+    "src/discretion/primitive_reset/ifvg.py": "685e26dd55cc56a4414e49cd776cf6ecbb38f96a34a1520e71b82c1df38fd27a",
+    "src/discretion/primitive_reset/registry.py": "685589f7e2c6735966f419f9df4d74740777508f1758e165f3556500585dfc21",
+    "src/discretion/primitive_reset/rejection_block.py": "1c6c31f08df4f8611f54b86f8b51ec3817e5de47b090c8f1eed18ea3e6690434",
+    "src/discretion/primitive_reset/timeframes.py": "e26cdce2abdb039363cd14f510941f3bba7b6cccbecfc5b8c9ac3e596a1c0ca5",
+    "src/discretion/primitive_reset/traversal.py": "17bf0a6f05573a6ca84e88311c6ae7fdcb570ad74e71eeca1f8cbc2a53a2f08c",
+    "src/discretion/setup_observer/atr_floors.py": "7392b8bc921fa21d089edc3aeebc90c6f32318630da3ddb62250eba7d435b7be",
+    "src/discretion/setup_observer/common.py": "f217093419b789ca64f684194dddbd3635aab666a6870ed550006339549d4374",
+    "src/discretion/setup_observer/displacement.py": "3a2d76335a894de8ab9732122c857fbbc6a3c5ac21b3779c563c65c6ca657f5d",
+    "src/discretion/setup_observer/observer.py": "aade2a7fabf5f07ef9b312a7449a3012382b784b6edea461582d44762df02392",
+    "src/discretion/setup_observer/outcomes.py": "a0067bc9e8490a7caf0ea5cf81569207cf671f3f6b22cd34688eee8df527e89c",
+    "src/discretion/setup_observer/playbook.py": "6855dbd497e9d0b1044bbc6a886908b53c4760502d8989f57dbfd87b59cca65b",
+    "src/discretion/setup_observer/reaction_states.py": "62121e1dd649286cde941c6569feb318b94cc16cd7dd73db44c7fe1e8d54510c",
+    "src/discretion/setup_observer/sessions.py": "11d558df1a4184d24fcd7d4db9c7e82fd29f8fde8e9b57ae154c7f14dc5c500e",
+    "src/discretion/setup_observer/targets.py": "c7d1feb3007476e674cef32c6247f2fb9966abc0ff283695346009ec42c0a84e",
+    "src/discretion/setup_observer/variants.py": "9340a9b6a8bcacec9d2549c86a436a971fb23828d4a6da62ea5e6e40b3d22009"
+  },
+  "engine_combined_hash": "17f0b518a2ece9de38cded2644e74dada06100c00270c26ac922f28abe5b1528",
+  "frozen_definitions": {
+    "primitives": "FVGRecord/IFVGRecord/RBCandidateRecord as defined in primitive_reset/*.py -- unchanged since the primitive-reset freeze; iFVG lifecycle timing (deactivation_seq/ts/available_seq/active_until_seq) additive-only, populated at the exact completed candle causing every existing deactivation path (segment change, close-through/traversal, lifetime expiry, data-end)",
+    "setup_lanes": [
+      "A (RB)",
+      "B (FVG)",
+      "C (iFVG direct)",
+      "D (iFVG retest)",
+      "E (RB->new FVG/iFVG)",
+      "F (multi-structure confluence)"
+    ],
+    "entry_variants": [
+      "ENTRY_ON_TAP",
+      "ENTRY_ON_FIRST_CLOSE_OUTSIDE",
+      "ENTRY_ON_MINIMAL_WICK_REJECTION",
+      "ENTRY_ON_STRONG_REJECTION",
+      "ENTRY_ON_IMMEDIATE_DISPLACEMENT",
+      "ENTRY_ON_DELAYED_DISPLACEMENT",
+      "ENTRY_ON_COMPRESSION_BREAK",
+      "ENTRY_ON_NEW_FVG",
+      "ENTRY_ON_NEW_IFVG",
+      "ENTRY_ON_IFVG_RETEST"
+    ],
+    "reaction_states": [
+      "TAP_ONLY",
+      "CLOSE_BACK_OUTSIDE",
+      "MINIMAL_WICK_REJECTION",
+      "STRONG_REJECTION_DEPARTURE",
+      "IMMEDIATE_DISPLACEMENT",
+      "DELAYED_DISPLACEMENT",
+      "COMPRESSION_THEN_BREAK",
+      "SCRAPING_NO_REACTION",
+      "FAILED_REACTION"
+    ],
+    "session_boundaries_et": "GLOBEX_EVENING 18:00-19:59, ASIA 20:00-02:59, LONDON 03:00-07:59, NY_PREMARKET 08:00-09:29, NY_AM 09:30-11:59, NY_LUNCH 12:00-12:59, NY_PM 13:00-16:59 (sessions.py SESSION_BOUNDS)",
+    "session_identity": "CME true-session: 18:00:00 ET open through 17:59:59 ET next day (data/cme_session.py session_date)",
+    "timeframe_architecture": "TIMEFRAMES=(1,3,5,15,30,60); trigger tf in {context_tf, 1} bounded set per observer.py",
+    "lookbacks_sessions": [
+      1,
+      3,
+      10,
+      20
+    ],
+    "fingerprint_exact_fields": "playbook.EXACT_FIELDS (lane, entry_variant, reaction_state, direction, context_tf, interaction_tf, reaction_tf, confirmation_tf, trigger_tf, is_multi_timeframe, session, day_of_week, context_family, confluence, rb_activation_class, interaction_to_trigger_delay_bin, target_family, target_tf, natural_rr_bin)",
+    "fingerprint_reduced_fields": "playbook.REDUCED_FIELDS (lane, entry_variant, direction, context_family, context_tf, trigger_tf, session, reaction_state, interaction_to_trigger_delay_bin, rb_activation_class, target_family, target_tf, natural_rr_bin)",
+    "stop_rule": "raw structural stop = RB source-wick extreme or FVG/iFVG distal boundary; effective_stop_distance = max(raw_stop_distance, atr_1m_24); widened never tightened (atr_floors.stop_floor)",
+    "target_rule": "NEAREST_OPPOSING_VALID_STRUCTURE: nearest genuinely opposing, active, causal, non-component structure; target_distance >= atr_5m_24 required; no synthetic ATR target; nearer valid opposing blocker never bypassed (targets.py resolve_targets)",
+    "atr_calculation": "Wilder ATR(24) on completed candles only; atr_1m_24 = ATR(24) of most recently completed 1m candle at trigger; atr_5m_24 = ATR(24) of most recently completed 5m candle with available_seq<=trigger, never the unfinished current 5m candle (atr_floors.py)",
+    "min_target_distance": "atr_5m_24 (completed)",
+    "min_stop_distance": "atr_1m_24 (completed)",
+    "rr_floor": "effective natural RR >= 0.5 (common.MIN_EXECUTABLE_RR)",
+    "outcome_resolution": "next-bar entry; stop-first same-bar ambiguity; MAX_HOLD_BARS=480 time exit; outcomes.py process_outcome, unmodified",
+    "execution_policy_note": "one position at a time enforced only at the PORTFOLIO layer (Part G policies); hypothesis-level branch results remain overlapping by design",
+    "cost_assumptions": "gross (0 pt), 0.50 pt round-trip, 1.00 pt round-trip, applied uniformly per trade, never altering signal/sizing",
+    "validation_gates": {
+      "pf_2_benchmark": "aspirational only, not a selection target",
+      "min_robust_edge_gate": [
+        "positive net R after 0.50pt cost",
+        "PF after 0.50pt cost >= 1.20",
+        "positive in >=75% of fully covered validation years",
+        ">=200 occupancy-controlled trades overall",
+        "no single year >40% of total positive R",
+        "removing best 20 trades leaves positive net R",
+        "finite, fully reported max drawdown",
+        "0 causal-invariant violations",
+        "0 stale/deactivated target use",
+        "no rule added after inspecting outcomes"
+      ]
+    }
+  },
+  "data_scope": {
+    "development_audit_data": "2026 (Apr 19 - Jul 17), used for mechanical audit and Dylan's visual review only -- excluded from the primary multi-year edge claim",
+    "locked_validation_target": "2018-2025",
+    "locked_validation_actual": "2018-2019 only -- 2020, 2021-2022, 2023-2024 data files are absent from this environment (not fabricated, not substituted)"
+  }
+}
