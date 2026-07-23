@@ -40,6 +40,10 @@ artifacts/review_week_atlas_2025_07_14_18/_checkpoint_branch_result.pkl
 artifacts/review_week_atlas_2025_07_14_18/_checkpoint_materialize_progress.pkl
 artifacts/review_week_atlas_2025_07_14_18/_checkpoint_materialize_progress.pkl.tmp
 artifacts/review_week_atlas_2025_07_14_18/_checkpoint_branch_result.pkl.tmp
+
+# Multi-year validation: per-segment working checkpoints (not a deliverable;
+# regenerable from raw data via scripts/multiyear_validation.py)
+artifacts/multiyear_validation/checkpoints/
 artifacts/review_week_atlas_2025_07_14_18_repaired/_build.log
 artifacts/review_week_atlas_2025_07_14_18_repaired/candidate_ledger.csv.gz
 artifacts/review_week_atlas_2025_07_14_18/_build.log
