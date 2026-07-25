@@ -139,14 +139,45 @@ def build_lookback_playbook(lookback_name, lookback_dates, cur_date, vars_by_ses
     return items
 
 
-def match_variant(v, playbook):
+def match_variant_reference(v, playbook):
+    """REFERENCE implementation: delegates to the frozen playbook.match_modes
+    linear scan. Kept verbatim for the byte-equivalence proof; too slow for the
+    full multi-year run (O(items x 19 fields) per variant per lookback)."""
     class _Pb:
         def __init__(self, d):
             self.item_id = d["item_id"]; self.fingerprint = d["fingerprint"]
             self.reduced_key = d["reduced_key"]
     pbs = [_Pb(d) for d in playbook]
-    m = match_modes(v, pbs)
-    return m
+    return match_modes(v, pbs)
+
+
+def build_match_index(playbook):
+    """Exact hash index over the same keys match_modes compares field-by-field.
+
+    Items are created one-per-unique-EXACT-key by build_lookback_playbook, so
+    the EXACT index maps each key to exactly one item_id; the REDUCED index
+    maps a reduced key to every item sharing it, in playbook order (identical
+    ordering to the reference scan)."""
+    exact_idx, reduced_idx = {}, defaultdict(list)
+    for d in playbook:
+        fp = d["fingerprint"]
+        exact_idx.setdefault(tuple(fp.get(f) for f in EXACT_FIELDS), []).append(d["item_id"])
+        reduced_idx[d["reduced_key"]].append(d["item_id"])
+    return exact_idx, reduced_idx
+
+
+def match_variant_indexed(v, index):
+    """OPTIMIZED implementation -- O(1) hash lookups, results identical to
+    match_variant_reference for EXACT / REDUCED_FAMILY.
+
+    SIMILARITY_DIAGNOSTIC is not computed: it is non-executable by the frozen
+    protocol and is referenced by no arm, policy, or output field, so omitting
+    it cannot change any result."""
+    exact_idx, reduced_idx = index
+    fp = v.fingerprint
+    exact = exact_idx.get(tuple(fp.get(f) for f in EXACT_FIELDS), [])
+    reduced = reduced_idx.get(tuple(fp.get(k) for k in REDUCED_FIELDS), [])
+    return {"EXACT": exact, "REDUCED_FAMILY": reduced, "SIMILARITY_DIAGNOSTIC": None}
 
 
 def classify_arms(per_lookback):
@@ -306,14 +337,22 @@ def main():
 
     playbook_item_counts = defaultdict(dict)  # session -> lookback -> n_items
 
+    equiv_checked = 0
+    equiv_mismatches = 0
+    EQUIV_PROOF_SESSIONS = 25   # bounded byte-equivalence benchmark (reference vs indexed)
+
     for si, d in enumerate(session_dates):
+        if si % 50 == 0:
+            print(f"  walk-forward session {si}/{len(session_dates)} ({d})", flush=True)
         before = session_dates[:si]
         playbooks = {}
+        indices = {}
         for lname, L in LOOKBACKS:
             lastL = before[-L:] if before else []
             enough = len(before) >= L
             items = build_lookback_playbook(lname, lastL, d, vars_by_session, all_outcomes) if enough else []
             playbooks[lname] = items
+            indices[lname] = build_match_index(items)
             playbook_item_counts[str(d)][lname] = len(items)
             # causal check: no item's sources include a variant from session d or later
             for it in items:
@@ -325,7 +364,13 @@ def main():
         for v in vars_by_session[d]:
             per = {}
             for lname, _L in LOOKBACKS:
-                m = match_variant(v, playbooks[lname])
+                m = match_variant_indexed(v, indices[lname])
+                if si < EQUIV_PROOF_SESSIONS:
+                    ref = match_variant_reference(v, playbooks[lname])
+                    equiv_checked += 1
+                    if (ref["EXACT"] != m["EXACT"]
+                            or ref["REDUCED_FAMILY"] != m["REDUCED_FAMILY"]):
+                        equiv_mismatches += 1
                 per[lname] = m
             arms = classify_arms(per)
             o = all_outcomes.get(v.gvid)
@@ -361,6 +406,16 @@ def main():
         "note": "each session's own variants are excluded from its own lookback pool by "
                 "construction (before = session_dates[:si]); this counter independently "
                 "re-verifies every playbook item's source sessions are strictly earlier.",
+        "optimized_vs_reference_matcher": {
+            "proof_sessions": EQUIV_PROOF_SESSIONS,
+            "comparisons_checked": equiv_checked,
+            "mismatches": equiv_mismatches,
+            "byte_equivalent": equiv_mismatches == 0,
+            "detail": "indexed hash matcher vs the frozen playbook.match_modes linear scan, "
+                      "compared on EXACT and REDUCED_FAMILY (the only fields any arm, policy "
+                      "or output consumes; SIMILARITY_DIAGNOSTIC is non-executable by protocol "
+                      "and is not computed by the optimized path).",
+        },
     }
     with open(os.path.join(OUT, "causal_invariants.json"), "w") as fh:
         json.dump(ci, fh, indent=2, default=str)
