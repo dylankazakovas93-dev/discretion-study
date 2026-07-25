@@ -354,11 +354,28 @@ def main():
              ["key", "n", "target_hits", "stop_hits", "time_exits", "win_rate", "avg_winner_r",
               "avg_loser_r", "expectancy_r", "gross_net_r", "pf"])
 
-    matched_rows = [r for r in rows if r["arms"]]
+    def _support_class(r):
+        n = sum(1 for ln in ("match_prev_1", "match_prev_3", "match_prev_10", "match_prev_20")
+               if r.get(ln) in ("EXACT", "REDUCED_FAMILY"))
+        return {0: "unmatched", 1: "one_lookback", 2: "two_lookbacks",
+                3: "three_lookbacks", 4: "all_four_lookbacks"}[n]
+
+    def _lookback_age(r):
+        """Shallowest lookback that authorized this variant -- a proxy for how
+        recent the authorizing evidence was."""
+        for ln, label in (("match_prev_1", "PREV_1"), ("match_prev_3", "PREV_3"),
+                          ("match_prev_10", "PREV_10"), ("match_prev_20", "PREV_20")):
+            if r.get(ln) in ("EXACT", "REDUCED_FAMILY"):
+                return label
+        return "unmatched"
+
     breakdown_csv("results_by_session.csv", lambda r: r["session"])
     breakdown_csv("results_by_entry_variant.csv", lambda r: r["entry_variant"])
     breakdown_csv("results_by_timeframe.csv", lambda r: (r["context_tf"], r["trigger_tf"]))
     breakdown_csv("results_by_target_family.csv", lambda r: r["target_family"] or "none")
+    breakdown_csv("results_by_direction.csv", lambda r: "LONG" if str(r["direction"]) == "1" else "SHORT")
+    breakdown_csv("results_by_support_class.csv", _support_class)
+    breakdown_csv("results_by_lookback_age.csv", _lookback_age)
 
     # ---- Part J: acceptance gates ----
     gate_results = {}

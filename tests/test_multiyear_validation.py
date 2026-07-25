@@ -15,6 +15,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import pickle
 import sys
 
 import pandas as pd
@@ -251,15 +252,28 @@ def test_max_drawdown_and_streak():
 CKPT_DIR = os.path.join("artifacts", "multiyear_validation", "checkpoints")
 
 
+class _CkptUnpickler(pickle.Unpickler):
+    """Checkpoints are written by the engine running as __main__, so VRec/ORec
+    are recorded under that module path. Redirect them to the imported module."""
+
+    def find_class(self, module, name):
+        if module == "__main__" and hasattr(myv, name):
+            return getattr(myv, name)
+        return super().find_class(module, name)
+
+
+def _load_ckpt(path):
+    with open(path, "rb") as fh:
+        return _CkptUnpickler(fh).load()
+
+
 def test_checkpoints_present_and_loadable():
     if not os.path.isdir(CKPT_DIR):
         pytest.skip("multi-year engine has not run in this environment")
-    import pickle
     files = sorted(f for f in os.listdir(CKPT_DIR) if f.endswith(".pkl"))
     assert files
     for f in files[:2]:
-        with open(os.path.join(CKPT_DIR, f), "rb") as fh:
-            ck = pickle.load(fh)
+        ck = _load_ckpt(os.path.join(CKPT_DIR, f))
         assert "vrecs" in ck and "orecs" in ck
 
 
@@ -268,15 +282,12 @@ def test_rerun_from_checkpoint_reproduces_variant_counts():
     counts (determinism of the persisted, not re-simulated, state)."""
     if not os.path.isdir(CKPT_DIR):
         pytest.skip("multi-year engine has not run in this environment")
-    import pickle
     files = sorted(f for f in os.listdir(CKPT_DIR) if f.endswith(".pkl"))
     if not files:
         pytest.skip("no checkpoints found")
     p = os.path.join(CKPT_DIR, files[0])
-    with open(p, "rb") as fh:
-        a = pickle.load(fh)
-    with open(p, "rb") as fh:
-        b = pickle.load(fh)
+    a = _load_ckpt(p)
+    b = _load_ckpt(p)
     assert a["n_variants"] == b["n_variants"]
     assert [v.gvid for v in a["vrecs"]] == [v.gvid for v in b["vrecs"]]
 

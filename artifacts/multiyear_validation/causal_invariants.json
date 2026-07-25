@@ -1,0 +1,14 @@
+{
+  "n_sessions": 515,
+  "n_executable_variants": 95704,
+  "n_hypothesis_rows": 95704,
+  "causal_violation_self_or_future_playbook_source": 0,
+  "note": "each session's own variants are excluded from its own lookback pool by construction (before = session_dates[:si]); this counter independently re-verifies every playbook item's source sessions are strictly earlier.",
+  "optimized_vs_reference_matcher": {
+    "proof_sessions": 25,
+    "comparisons_checked": 16048,
+    "mismatches": 0,
+    "byte_equivalent": true,
+    "detail": "indexed hash matcher vs the frozen playbook.match_modes linear scan, compared on EXACT and REDUCED_FAMILY (the only fields any arm, policy or output consumes; SIMILARITY_DIAGNOSTIC is non-executable by protocol and is not computed by the optimized path)."
+  }
+}

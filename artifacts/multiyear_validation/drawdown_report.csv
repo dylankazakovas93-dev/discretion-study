@@ -1,0 +1,4 @@
+policy,max_drawdown_r,longest_losing_streak,positive_years,negative_years,pct_profit_best_year,pct_profit_best_20_trades,net_r_excluding_best_20
+POLICY_EARLIEST_ACTIONABLE,-71.6301,20,2,0,56.26,19.19,-141.0971
+POLICY_EXACT_FIRST,-62.5221,20,2,0,56.39,19.18,-127.3693
+POLICY_MULTI_LOOKBACK_SUPPORT,-99.1599,19,1,1,58.86,22.7,-240.5451

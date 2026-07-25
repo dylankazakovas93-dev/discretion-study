@@ -1,0 +1,4 @@
+policy,n_resamples,n_week_blocks,mean_r_per_trade_ci_low,mean_r_per_trade_ci_high,mean_r_per_trade_median,total_r_ci_low,total_r_ci_high,total_r_median,ci_crosses_zero
+POLICY_EARLIEST_ACTIONABLE,2000,103,0.0091,0.1962,0.097,22.5672,484.3464,239.6021,False
+POLICY_EXACT_FIRST,2000,103,0.0161,0.1989,0.1029,39.5442,488.8015,252.7047,False
+POLICY_MULTI_LOOKBACK_SUPPORT,2000,103,-0.0927,0.1035,0.0087,-141.5921,158.0796,13.2841,True
