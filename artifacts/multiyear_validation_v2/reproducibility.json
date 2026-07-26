@@ -1,0 +1,16 @@
+{
+  "validation_years": [
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "n_rows": 370005,
+  "n_configs": 18,
+  "best_config": "FAMILY|ANY_WIN|POLICY_EARLIEST_ACTIONABLE",
+  "overall_verdict": "MULTIYEAR_WEAK_EDGE_INCONCLUSIVE"
+}

@@ -1,0 +1,3 @@
+key,n,target_hits,stop_hits,time_exits,win_rate,avg_winner_r,avg_loser_r,expectancy_r,net_r,pf
+LONG,203203,57982,138868,6353,0.3112,2.5286,-0.9947,0.1017,20669.0984,1.1485
+SHORT,166802,53209,109623,3970,0.3362,2.2288,-0.994,0.0895,14923.618,1.1356
