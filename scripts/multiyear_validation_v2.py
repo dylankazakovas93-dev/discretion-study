@@ -181,22 +181,51 @@ def main():
     os.makedirs(CKPT_DIR, exist_ok=True)
     t_start = time.time()
 
-    print("Loading all front-month data...", flush=True)
-    all_bars, segments = load_all_bars()
-    print(f"TOTAL {len(all_bars):,} bars, {len(segments)} contract segments", flush=True)
+    # Parsed-bar cache: re-parsing 2.96M bars from the .zst CSVs costs minutes on
+    # every relaunch, which under frequent container restarts starved the engine
+    # of time to finish a segment. Cache each segment's bars once; later launches
+    # load only the one segment they need. Manifest is written last so a partial
+    # cache is never treated as complete.
+    SEGCACHE = os.path.join(OUT, "segcache")
+    manifest_path = os.path.join(SEGCACHE, "manifest.json")
+    if os.path.exists(manifest_path):
+        manifest = json.load(open(manifest_path))
+        n_segments = manifest["n_segments"]
+        seg_contracts = manifest["contracts"]
+        print(f"segment cache HIT: {n_segments} segments, skipping CSV parse", flush=True)
+
+        def get_seg(i):
+            return pickle.load(open(os.path.join(SEGCACHE, f"seg{i:03d}.pkl"), "rb"))
+    else:
+        print("Loading all front-month data (first run; will cache)...", flush=True)
+        all_bars, segments = load_all_bars()
+        print(f"TOTAL {len(all_bars):,} bars, {len(segments)} contract segments", flush=True)
+        os.makedirs(SEGCACHE, exist_ok=True)
+        for i, s in enumerate(segments):
+            pickle.dump(s, open(os.path.join(SEGCACHE, f"seg{i:03d}.pkl"), "wb"))
+        n_segments = len(segments)
+        seg_contracts = [s[0].contract for s in segments]
+        json.dump({"n_segments": n_segments, "contracts": seg_contracts},
+                  open(manifest_path, "w"))
+        del all_bars, segments
+        print(f"segment cache WRITTEN ({n_segments} segments)", flush=True)
+
+        def get_seg(i):
+            return pickle.load(open(os.path.join(SEGCACHE, f"seg{i:03d}.pkl"), "rb"))
 
     vars_by_session = defaultdict(list)
     outcome_by_gvid = {}
     seg_meta = []
 
-    for si, seg_bars in enumerate(segments):
-        contract = seg_bars[0].contract
+    for si in range(n_segments):
+        contract = seg_contracts[si]
         tag = f"seg{si:03d}_{contract}"
         ck_path = os.path.join(CKPT_DIR, f"{tag}.pkl")
         if os.path.exists(ck_path):
             ck = pickle.load(open(ck_path, "rb"))
-            print(f"[{si+1}/{len(segments)}] {tag}: checkpoint, {ck['n']} executable", flush=True)
+            print(f"[{si+1}/{n_segments}] {tag}: checkpoint, {ck['n']} executable", flush=True)
         else:
+            seg_bars = get_seg(si)
             local = [dataclasses.replace(b, seq=i, segment_id=0) for i, b in enumerate(seg_bars)]
             t0 = time.time()
             _eps, variants, _diag = observe(local, target_window=TARGET_WINDOW)
@@ -228,7 +257,7 @@ def main():
                   "first_ts": str(seg_bars[0].ts_et), "last_ts": str(seg_bars[-1].ts_et),
                   "dt": time.time() - t0}
             pickle.dump(ck, open(ck_path, "wb"))
-            print(f"[{si+1}/{len(segments)}] {tag}: {len(local):,} bars, "
+            print(f"[{si+1}/{n_segments}] {tag}: {len(local):,} bars, "
                   f"{len(variants):,} variants, {len(vrecs)} executable, {ck['dt']:.0f}s "
                   f"| elapsed {(time.time()-t_start)/60:.0f}m", flush=True)
 
