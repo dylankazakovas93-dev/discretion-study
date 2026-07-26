@@ -1,0 +1,777 @@
+{
+  "primitive_examples": {
+    "rejection_blocks": [
+      {
+        "object_id": "RB-000204",
+        "family": "rejection_block",
+        "created_seq": 1625
+      },
+      {
+        "object_id": "RB-000206",
+        "family": "rejection_block",
+        "created_seq": 1636
+      },
+      {
+        "object_id": "RB-000205",
+        "family": "rejection_block",
+        "created_seq": 1632
+      }
+    ],
+    "fvgs_distinct_lifecycle": [
+      {
+        "object_id": "FVG-000354",
+        "family": "fvg",
+        "created_seq": 1621
+      },
+      {
+        "object_id": "FVG-000355",
+        "family": "fvg",
+        "created_seq": 1622
+      },
+      {
+        "object_id": "FVG-000357",
+        "family": "fvg",
+        "created_seq": 1627
+      }
+    ],
+    "fvg_continuation_no_fill": [
+      {
+        "object_id": "FVG-000405",
+        "family": "fvg",
+        "created_seq": 1831
+      },
+      {
+        "object_id": "FVG-000406",
+        "family": "fvg",
+        "created_seq": 1833
+      }
+    ],
+    "fvg_failure_to_ifvg": [
+      {
+        "object_id": "FVG-000354",
+        "family": "fvg",
+        "created_seq": 1621
+      },
+      {
+        "object_id": "FVG-000355",
+        "family": "fvg",
+        "created_seq": 1622
+      }
+    ],
+    "ifvg_retest": [
+      {
+        "object_id": "IFVG-000326",
+        "family": "ifvg",
+        "created_seq": 1621
+      },
+      {
+        "object_id": "IFVG-000329",
+        "family": "ifvg",
+        "created_seq": 1626
+      }
+    ],
+    "prominent_upper_wick": [
+      {
+        "object_id": "WICK5-000581",
+        "family": "wick_liquidity",
+        "created_seq": 1620
+      },
+      {
+        "object_id": "WICK15-000187",
+        "family": "wick_liquidity",
+        "created_seq": 1650
+      }
+    ],
+    "prominent_lower_wick": [
+      {
+        "object_id": "WICK5-000606",
+        "family": "wick_liquidity",
+        "created_seq": 1685
+      },
+      {
+        "object_id": "WICK5-000612",
+        "family": "wick_liquidity",
+        "created_seq": 1700
+      }
+    ],
+    "equal_level_or_liquidity": [
+      {
+        "object_id": "LVL-003285",
+        "family": "liquidity",
+        "created_seq": 1624
+      },
+      {
+        "object_id": "LVL-003273",
+        "family": "liquidity",
+        "created_seq": 1627
+      }
+    ],
+    "good_displacement": [
+      {
+        "object_id": "DISP-000601",
+        "family": "displacement",
+        "created_seq": 1622
+      },
+      {
+        "object_id": "DISP-000607",
+        "family": "displacement",
+        "created_seq": 1639
+      }
+    ],
+    "mixed_displacement": [
+      {
+        "object_id": "DISP-000600",
+        "family": "displacement",
+        "created_seq": 1620
+      },
+      {
+        "object_id": "DISP-000602",
+        "family": "displacement",
+        "created_seq": 1623
+      }
+    ],
+    "bad_displacement": [
+      {
+        "object_id": "DISP-000609",
+        "family": "displacement",
+        "created_seq": 1641
+      },
+      {
+        "object_id": "DISP-000650",
+        "family": "displacement",
+        "created_seq": 1726
+      }
+    ],
+    "compression": [
+      {
+        "object_id": "STRUCT-000014",
+        "family": "structure",
+        "created_seq": 2588
+      },
+      {
+        "object_id": "STRUCT-000015",
+        "family": "structure",
+        "created_seq": 2604
+      }
+    ],
+    "expansion": [
+      {
+        "object_id": "STRUCT-000164",
+        "family": "structure",
+        "created_seq": 1622
+      },
+      {
+        "object_id": "STRUCT-000165",
+        "family": "structure",
+        "created_seq": 1639
+      }
+    ],
+    "time_anchor_interaction": [
+      {
+        "object_id": "LVL-000015",
+        "family": "time_anchor",
+        "created_seq": 1620
+      },
+      {
+        "object_id": "LVL-000016",
+        "family": "time_anchor",
+        "created_seq": 1800
+      }
+    ],
+    "vwap_interaction": [
+      {
+        "object_id": "VWAP-000004",
+        "seq": 1620,
+        "note": "vwap_bounce_down"
+      },
+      {
+        "object_id": "VWAP-000004",
+        "seq": 1620,
+        "note": "band_reject_+1.618"
+      }
+    ]
+  },
+  "branch_path_examples": {
+    "vwap_continuation": {
+      "candidate_id": "GNC-019320",
+      "branch_id": "GBR-006727",
+      "episode_id": "GEP-001525",
+      "trigger_event_id": "EVT-0079652",
+      "entry_seq": 1620,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "vwap_bounce",
+      "eligible": true,
+      "rejection_reason": ""
+    },
+    "vwap_fade": {
+      "candidate_id": "GNC-019324",
+      "branch_id": "GBR-006728",
+      "episode_id": "GEP-001525",
+      "trigger_event_id": "EVT-0079653",
+      "entry_seq": 1620,
+      "target_policy_id": "NEAREST_VALID_STRUCTURE",
+      "path_family": "vwap_band_fade",
+      "eligible": true,
+      "rejection_reason": ""
+    },
+    "accepted_break": {
+      "candidate_id": "GNC-019327",
+      "branch_id": "GBR-006725",
+      "episode_id": "GEP-001524",
+      "trigger_event_id": "EVT-0079684",
+      "entry_seq": 1621,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "break_accept_cont",
+      "eligible": false,
+      "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+    },
+    "fvg_failure_immediate_ifvg": {
+      "candidate_id": "GNC-019331",
+      "branch_id": "GBR-006736",
+      "episode_id": "GEP-001528",
+      "trigger_event_id": "EVT-0079695",
+      "entry_seq": 1621,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "ifvg_activation",
+      "eligible": false,
+      "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+    },
+    "contextual_fvg_immediate_entry": {
+      "candidate_id": "GNC-019338",
+      "branch_id": "GBR-006739",
+      "episode_id": "GEP-001529",
+      "trigger_event_id": "EVT-0079704",
+      "entry_seq": 1622,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "fvg_formation",
+      "eligible": false,
+      "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+    },
+    "fvg_failure_later_ifvg_retest": {
+      "candidate_id": "GNC-019359",
+      "branch_id": "GBR-006748",
+      "episode_id": "GEP-001530",
+      "trigger_event_id": "EVT-0079790",
+      "entry_seq": 1623,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "ifvg_retest",
+      "eligible": true,
+      "rejection_reason": ""
+    },
+    "genuine_fvg_no_fill_continuation": {
+      "candidate_id": "GNC-019362",
+      "branch_id": "GBR-006729",
+      "episode_id": "GEP-001526",
+      "trigger_event_id": "EVT-0079796",
+      "entry_seq": 1624,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "fvg_no_fill",
+      "eligible": false,
+      "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+    },
+    "sweep_reclaim_fade": {
+      "candidate_id": "GNC-019365",
+      "branch_id": "GBR-006757",
+      "episode_id": "GEP-001508",
+      "trigger_event_id": "EVT-0079866",
+      "entry_seq": 1625,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "sweep_fade",
+      "eligible": false,
+      "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+    },
+    "fvg_first_touch_response": {
+      "candidate_id": "GNC-019373",
+      "branch_id": "GBR-006753",
+      "episode_id": "GEP-001532",
+      "trigger_event_id": "EVT-0079895",
+      "entry_seq": 1626,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "fvg_fill",
+      "eligible": false,
+      "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+    },
+    "failed_break": {
+      "candidate_id": "GNC-019385",
+      "branch_id": "GBR-006761",
+      "episode_id": "GEP-001533",
+      "trigger_event_id": "EVT-0079928",
+      "entry_seq": 1626,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "break_failed_fade",
+      "eligible": true,
+      "rejection_reason": ""
+    },
+    "time_anchor_setup_without_fvg": {
+      "candidate_id": "GNC-019456",
+      "branch_id": "GBR-006797",
+      "episode_id": "GEP-001527",
+      "trigger_event_id": "EVT-0080055",
+      "entry_seq": 1630,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "anchor_reclaim",
+      "eligible": false,
+      "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+    },
+    "sweep_acceptance_continuation": {
+      "candidate_id": "GNC-019480",
+      "branch_id": "GBR-006811",
+      "episode_id": "GEP-001527",
+      "trigger_event_id": "EVT-0080105",
+      "entry_seq": 1631,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "sweep_accept_cont",
+      "eligible": false,
+      "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+    },
+    "rb_tap_good_displacement_continuation": {
+      "candidate_id": "GNC-023369",
+      "branch_id": "GBR-008112",
+      "episode_id": "GEP-001819",
+      "trigger_event_id": "EVT-0096498",
+      "entry_seq": 1917,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "rb_reaction",
+      "eligible": false,
+      "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+    },
+    "compression_expansion": {
+      "candidate_id": "GNC-032261",
+      "branch_id": "GBR-010825",
+      "episode_id": "GEP-002413",
+      "trigger_event_id": "EVT-0136743",
+      "entry_seq": 2601,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "compression_expansion",
+      "eligible": false,
+      "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+    },
+    "false_expansion_fade": {
+      "candidate_id": "GNC-032280",
+      "branch_id": "GBR-010826",
+      "episode_id": "GEP-002413",
+      "trigger_event_id": "EVT-0136758",
+      "entry_seq": 2601,
+      "target_policy_id": "BRANCH_SEMANTIC",
+      "path_family": "compression_false_expansion",
+      "eligible": true,
+      "rejection_reason": ""
+    },
+    "rb_tap_bad_displacement_unresolved": {
+      "branch_id": "GBR-007982",
+      "episode_id": "GEP-001790",
+      "hypothesis_id": "H_rb_unresolved_fade",
+      "terminal_status": "UNRESOLVED",
+      "terminal_reason": "inactive"
+    }
+  },
+  "quality_tier": {
+    "strongest_5": [
+      {
+        "candidate_id": "GNC-063305",
+        "branch_id": "GBR-020697",
+        "episode_id": "GEP-004584",
+        "trigger_event_id": "EVT-0278750",
+        "entry_seq": 4880,
+        "target_policy_id": "NEAREST_PROMINENT_WICK",
+        "path_family": "rb_fvg_fill",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-077973",
+        "branch_id": "GBR-025430",
+        "episode_id": "GEP-005657",
+        "trigger_event_id": "EVT-0381019",
+        "entry_seq": 6006,
+        "target_policy_id": "NEAREST_PROMINENT_WICK",
+        "path_family": "rb_fvg_fill",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-081037",
+        "branch_id": "GBR-026340",
+        "episode_id": "GEP-005862",
+        "trigger_event_id": "EVT-0387762",
+        "entry_seq": 6198,
+        "target_policy_id": "NEAREST_PROMINENT_WICK",
+        "path_family": "rb_fvg_fill",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-051926",
+        "branch_id": "GBR-017365",
+        "episode_id": "GEP-003861",
+        "trigger_event_id": "EVT-0229942",
+        "entry_seq": 4141,
+        "target_policy_id": "NEAREST_PROMINENT_WICK",
+        "path_family": "rb_fvg_fill",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-099058",
+        "branch_id": "GBR-032331",
+        "episode_id": "GEP-007185",
+        "trigger_event_id": "EVT-0466002",
+        "entry_seq": 7559,
+        "target_policy_id": "NEAREST_PROMINENT_WICK",
+        "path_family": "rb_fvg_fill",
+        "eligible": true,
+        "rejection_reason": ""
+      }
+    ],
+    "middle_5": [
+      {
+        "candidate_id": "GNC-067814",
+        "branch_id": "GBR-022075",
+        "episode_id": "GEP-004889",
+        "trigger_event_id": "EVT-0336503",
+        "entry_seq": 5203,
+        "target_policy_id": "NEAREST_PROMINENT_WICK",
+        "path_family": "sweep_accept_cont",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-067824",
+        "branch_id": "GBR-022078",
+        "episode_id": "GEP-004891",
+        "trigger_event_id": "EVT-0336533",
+        "entry_seq": 5203,
+        "target_policy_id": "NEAREST_PROMINENT_WICK",
+        "path_family": "sweep_accept_cont",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-070169",
+        "branch_id": "GBR-022824",
+        "episode_id": "GEP-005067",
+        "trigger_event_id": "EVT-0349068",
+        "entry_seq": 5395,
+        "target_policy_id": "NEAREST_PROMINENT_WICK",
+        "path_family": "break_accept_cont",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-074066",
+        "branch_id": "GBR-024145",
+        "episode_id": "GEP-005362",
+        "trigger_event_id": "EVT-0367675",
+        "entry_seq": 5702,
+        "target_policy_id": "NEAREST_OPPOSING_HTF_FVG",
+        "path_family": "break_failed_fade",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-088554",
+        "branch_id": "GBR-028741",
+        "episode_id": "GEP-006382",
+        "trigger_event_id": "EVT-0413149",
+        "entry_seq": 6725,
+        "target_policy_id": "NEAREST_OPPOSING_HTF_FVG",
+        "path_family": "break_accept_cont",
+        "eligible": true,
+        "rejection_reason": ""
+      }
+    ],
+    "weakest_5": [
+      {
+        "candidate_id": "GNC-107091",
+        "branch_id": "GBR-034780",
+        "episode_id": "GEP-007717",
+        "trigger_event_id": "EVT-0531103",
+        "entry_seq": 8153,
+        "target_policy_id": "NEAREST_VALID_STRUCTURE",
+        "path_family": "fvg_formation",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-105201",
+        "branch_id": "GBR-034186",
+        "episode_id": "GEP-007577",
+        "trigger_event_id": "EVT-0524502",
+        "entry_seq": 7999,
+        "target_policy_id": "BRANCH_SEMANTIC",
+        "path_family": "sweep_fade",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-105090",
+        "branch_id": "GBR-034150",
+        "episode_id": "GEP-007569",
+        "trigger_event_id": "EVT-0524118",
+        "entry_seq": 7988,
+        "target_policy_id": "NEAREST_VALID_STRUCTURE",
+        "path_family": "fvg_formation",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-104334",
+        "branch_id": "GBR-033941",
+        "episode_id": "GEP-007516",
+        "trigger_event_id": "EVT-0522125",
+        "entry_seq": 7926,
+        "target_policy_id": "NEAREST_VALID_STRUCTURE",
+        "path_family": "sweep_fade",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-102636",
+        "branch_id": "GBR-033440",
+        "episode_id": "GEP-007403",
+        "trigger_event_id": "EVT-0517432",
+        "entry_seq": 7782,
+        "target_policy_id": "BRANCH_SEMANTIC",
+        "path_family": "sweep_fade",
+        "eligible": true,
+        "rejection_reason": ""
+      }
+    ],
+    "rejected_5": [
+      {
+        "candidate_id": "GNC-019327",
+        "branch_id": "GBR-006725",
+        "episode_id": "GEP-001524",
+        "trigger_event_id": "EVT-0079684",
+        "entry_seq": 1621,
+        "target_policy_id": "BRANCH_SEMANTIC",
+        "path_family": "break_accept_cont",
+        "eligible": false,
+        "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+      },
+      {
+        "candidate_id": "GNC-019328",
+        "branch_id": "GBR-006725",
+        "episode_id": "GEP-001524",
+        "trigger_event_id": "EVT-0079684",
+        "entry_seq": 1621,
+        "target_policy_id": "NEAREST_VALID_STRUCTURE",
+        "path_family": "break_accept_cont",
+        "eligible": false,
+        "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+      },
+      {
+        "candidate_id": "GNC-019330",
+        "branch_id": "GBR-006725",
+        "episode_id": "GEP-001524",
+        "trigger_event_id": "EVT-0079684",
+        "entry_seq": 1621,
+        "target_policy_id": "NEAREST_OPPOSING_HTF_FVG",
+        "path_family": "break_accept_cont",
+        "eligible": false,
+        "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+      },
+      {
+        "candidate_id": "GNC-019331",
+        "branch_id": "GBR-006736",
+        "episode_id": "GEP-001528",
+        "trigger_event_id": "EVT-0079695",
+        "entry_seq": 1621,
+        "target_policy_id": "BRANCH_SEMANTIC",
+        "path_family": "ifvg_activation",
+        "eligible": false,
+        "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+      },
+      {
+        "candidate_id": "GNC-019332",
+        "branch_id": "GBR-006736",
+        "episode_id": "GEP-001528",
+        "trigger_event_id": "EVT-0079695",
+        "entry_seq": 1621,
+        "target_policy_id": "NEAREST_VALID_STRUCTURE",
+        "path_family": "ifvg_activation",
+        "eligible": false,
+        "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+      }
+    ],
+    "unresolved_3": [
+      {
+        "branch_id": "GBR-007982",
+        "hypothesis_id": "H_rb_unresolved_fade",
+        "terminal_status": "UNRESOLVED"
+      },
+      {
+        "branch_id": "GBR-008308",
+        "hypothesis_id": "H_rb_unresolved_fade",
+        "terminal_status": "UNRESOLVED"
+      },
+      {
+        "branch_id": "GBR-009763",
+        "hypothesis_id": "H_rb_unresolved_fade",
+        "terminal_status": "UNRESOLVED"
+      }
+    ],
+    "insufficient_rr_3": [
+      {
+        "candidate_id": "GNC-019327",
+        "branch_id": "GBR-006725",
+        "episode_id": "GEP-001524",
+        "trigger_event_id": "EVT-0079684",
+        "entry_seq": 1621,
+        "target_policy_id": "BRANCH_SEMANTIC",
+        "path_family": "break_accept_cont",
+        "eligible": false,
+        "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+      },
+      {
+        "candidate_id": "GNC-019328",
+        "branch_id": "GBR-006725",
+        "episode_id": "GEP-001524",
+        "trigger_event_id": "EVT-0079684",
+        "entry_seq": 1621,
+        "target_policy_id": "NEAREST_VALID_STRUCTURE",
+        "path_family": "break_accept_cont",
+        "eligible": false,
+        "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+      },
+      {
+        "candidate_id": "GNC-019330",
+        "branch_id": "GBR-006725",
+        "episode_id": "GEP-001524",
+        "trigger_event_id": "EVT-0079684",
+        "entry_seq": 1621,
+        "target_policy_id": "NEAREST_OPPOSING_HTF_FVG",
+        "path_family": "break_accept_cont",
+        "eligible": false,
+        "rejection_reason": "INSUFFICIENT_NATURAL_RR"
+      }
+    ],
+    "natural_rr_ge1_capped_2": [
+      {
+        "candidate_id": "GNC-019320",
+        "branch_id": "GBR-006727",
+        "episode_id": "GEP-001525",
+        "trigger_event_id": "EVT-0079652",
+        "entry_seq": 1620,
+        "target_policy_id": "BRANCH_SEMANTIC",
+        "path_family": "vwap_bounce",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-019321",
+        "branch_id": "GBR-006727",
+        "episode_id": "GEP-001525",
+        "trigger_event_id": "EVT-0079652",
+        "entry_seq": 1620,
+        "target_policy_id": "NEAREST_VALID_STRUCTURE",
+        "path_family": "vwap_bounce",
+        "eligible": true,
+        "rejection_reason": ""
+      }
+    ],
+    "natural_rr_half_to_1_2": [
+      {
+        "candidate_id": "GNC-019329",
+        "branch_id": "GBR-006725",
+        "episode_id": "GEP-001524",
+        "trigger_event_id": "EVT-0079684",
+        "entry_seq": 1621,
+        "target_policy_id": "NEAREST_PROMINENT_WICK",
+        "path_family": "break_accept_cont",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-019340",
+        "branch_id": "GBR-006739",
+        "episode_id": "GEP-001529",
+        "trigger_event_id": "EVT-0079704",
+        "entry_seq": 1622,
+        "target_policy_id": "NEAREST_PROMINENT_WICK",
+        "path_family": "fvg_formation",
+        "eligible": true,
+        "rejection_reason": ""
+      }
+    ],
+    "policy_variant_pair_2": [
+      {
+        "candidate_id": "GNC-019320",
+        "branch_id": "GBR-006727",
+        "episode_id": "GEP-001525",
+        "trigger_event_id": "EVT-0079652",
+        "entry_seq": 1620,
+        "target_policy_id": "BRANCH_SEMANTIC",
+        "path_family": "vwap_bounce",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-019321",
+        "branch_id": "GBR-006727",
+        "episode_id": "GEP-001525",
+        "trigger_event_id": "EVT-0079652",
+        "entry_seq": 1620,
+        "target_policy_id": "NEAREST_VALID_STRUCTURE",
+        "path_family": "vwap_bounce",
+        "eligible": true,
+        "rejection_reason": ""
+      }
+    ],
+    "dedup_examples_2": [
+      {
+        "candidate_id": "GNC-019320",
+        "branch_id": "GBR-006727",
+        "episode_id": "GEP-001525",
+        "trigger_event_id": "EVT-0079652",
+        "entry_seq": 1620,
+        "target_policy_id": "BRANCH_SEMANTIC",
+        "path_family": "vwap_bounce",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-019324",
+        "branch_id": "GBR-006728",
+        "episode_id": "GEP-001525",
+        "trigger_event_id": "EVT-0079653",
+        "entry_seq": 1620,
+        "target_policy_id": "NEAREST_VALID_STRUCTURE",
+        "path_family": "vwap_band_fade",
+        "eligible": true,
+        "rejection_reason": ""
+      }
+    ]
+  },
+  "qualification_examples": {
+    "qualified_2": [],
+    "not_activated_similar_graph_2": [
+      {
+        "candidate_id": "GNC-019320",
+        "branch_id": "GBR-006727",
+        "episode_id": "GEP-001525",
+        "trigger_event_id": "EVT-0079652",
+        "entry_seq": 1620,
+        "target_policy_id": "BRANCH_SEMANTIC",
+        "path_family": "vwap_bounce",
+        "eligible": true,
+        "rejection_reason": ""
+      },
+      {
+        "candidate_id": "GNC-019321",
+        "branch_id": "GBR-006727",
+        "episode_id": "GEP-001525",
+        "trigger_event_id": "EVT-0079652",
+        "entry_seq": 1620,
+        "target_policy_id": "NEAREST_VALID_STRUCTURE",
+        "path_family": "vwap_bounce",
+        "eligible": true,
+        "rejection_reason": ""
+      }
+    ]
+  },
+  "window": {
+    "start_et": "2025-07-14 00:00:00-04:00",
+    "end_et": "2025-07-18 23:59:59-04:00"
+  }
+}

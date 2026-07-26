@@ -1,0 +1,14 @@
+{
+  "n_triggers": 5671,
+  "n_executable": 284,
+  "n_rejected": 5387,
+  "violations": {
+    "component_availability_after_trigger": 0,
+    "target_availability_after_trigger": 0,
+    "entry_not_next_bar": 0,
+    "non_chronological": 0
+  },
+  "total_violations": 0,
+  "outcome_fields_present": false,
+  "min_executable_rr": 0.5
+}

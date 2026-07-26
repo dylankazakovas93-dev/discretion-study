@@ -81,7 +81,21 @@ def detect_swings(bars: list[Bar], reg: IdRegistry, k: int = SWING_K) -> list[Le
 
 
 def detect_equal_levels(swings: list[Level], reg: IdRegistry) -> list[Level]:
-    """Frozen equal-high / equal-low clusters from confirmed swings."""
+    """Frozen equal-high / equal-low clusters from confirmed swings.
+
+    A cluster closes (freezes) at its first confirming pair: the earliest two
+    matching swings within tolerance. It is NOT kept open to keep absorbing
+    arbitrarily later matching swings -- doing so would make the cluster's
+    created_seq (and hence its causal availability) depend on how much MORE
+    data happens to be loaded after it, which is a future-information leak
+    (found by test_similarity_audit.py::
+    test_features_unchanged_by_bars_added_after_trigger: the same early pair
+    of swing lows formed a cluster confirmed at seq 14 in a short window, but
+    the identical pair formed no cluster at all until seq 194 in a longer
+    window, because a later third swing got absorbed first). Capping at the
+    first pair matches the existing swing/wick/FVG pattern of confirm-once,
+    never-retroactively-grown primitives.
+    """
     tol = EQUAL_TOL_TICKS * NQ_TICK
     out: list[Level] = []
     for sub, fam in (("swing_high", "equal_highs"), ("swing_low", "equal_lows")):
@@ -99,6 +113,7 @@ def detect_equal_levels(swings: list[Level], reg: IdRegistry) -> list[Level]:
                         abs(pts[b].price_ref - pts[a].price_ref) <= tol:
                     cluster.append(pts[b])
                     used[b] = True
+                    break   # freeze at the first confirming pair (see docstring)
             if len(cluster) >= 2:
                 used[a] = True
                 price = sum(c.price_ref for c in cluster) / len(cluster)

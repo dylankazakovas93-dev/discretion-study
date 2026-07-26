@@ -1,0 +1,95 @@
+{
+  "segments": [
+    {
+      "segment_id": 0,
+      "contract": "NQH8",
+      "first_ts": "2018-01-01 18:00:00-05:00",
+      "last_ts": "2018-03-08 23:59:00-05:00",
+      "n_bars": 65257,
+      "n_total_variants": 188128,
+      "n_executable": 9355,
+      "n_episodes": 67981
+    },
+    {
+      "segment_id": 1,
+      "contract": "NQM8",
+      "first_ts": "2018-03-09 00:00:00-05:00",
+      "last_ts": "2018-06-07 23:59:00-04:00",
+      "n_bars": 86892,
+      "n_total_variants": 252909,
+      "n_executable": 13070,
+      "n_episodes": 91341
+    },
+    {
+      "segment_id": 2,
+      "contract": "NQU8",
+      "first_ts": "2018-06-08 00:00:00-04:00",
+      "last_ts": "2018-09-13 23:59:00-04:00",
+      "n_bars": 94772,
+      "n_total_variants": 267932,
+      "n_executable": 13300,
+      "n_episodes": 96660
+    },
+    {
+      "segment_id": 3,
+      "contract": "NQZ8",
+      "first_ts": "2018-09-14 00:01:00-04:00",
+      "last_ts": "2018-12-13 23:59:00-05:00",
+      "n_bars": 87809,
+      "n_total_variants": 268224,
+      "n_executable": 11833,
+      "n_episodes": 96312
+    },
+    {
+      "segment_id": 4,
+      "contract": "NQH9",
+      "first_ts": "2018-12-14 00:00:00-05:00",
+      "last_ts": "2019-03-07 23:59:00-05:00",
+      "n_bars": 78318,
+      "n_total_variants": 231794,
+      "n_executable": 10622,
+      "n_episodes": 82985
+    },
+    {
+      "segment_id": 5,
+      "contract": "NQM9",
+      "first_ts": "2019-03-08 00:00:00-05:00",
+      "last_ts": "2019-06-13 23:59:00-04:00",
+      "n_bars": 93923,
+      "n_total_variants": 271158,
+      "n_executable": 13139,
+      "n_episodes": 97310
+    },
+    {
+      "segment_id": 6,
+      "contract": "NQU9",
+      "first_ts": "2019-06-14 00:00:00-04:00",
+      "last_ts": "2019-09-12 23:59:00-04:00",
+      "n_bars": 88025,
+      "n_total_variants": 256517,
+      "n_executable": 11803,
+      "n_episodes": 92272
+    },
+    {
+      "segment_id": 7,
+      "contract": "NQZ9",
+      "first_ts": "2019-09-13 00:00:00-04:00",
+      "last_ts": "2019-12-12 23:59:00-05:00",
+      "n_bars": 88267,
+      "n_total_variants": 243414,
+      "n_executable": 11012,
+      "n_episodes": 88073
+    },
+    {
+      "segment_id": 8,
+      "contract": "NQH0",
+      "first_ts": "2019-12-13 00:00:00-05:00",
+      "last_ts": "2019-12-30 18:59:00-05:00",
+      "n_bars": 14481,
+      "n_total_variants": 35438,
+      "n_executable": 1570,
+      "n_episodes": 12837
+    }
+  ],
+  "elapsed_sec": 12.704847812652588
+}

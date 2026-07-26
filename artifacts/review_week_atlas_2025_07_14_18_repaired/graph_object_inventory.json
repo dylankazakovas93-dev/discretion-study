@@ -1,0 +1,17 @@
+{
+  "primitive_events": 204522,
+  "active_episodes": 4013,
+  "branches_created": 17966,
+  "branches_forked": 14848,
+  "unresolved_branches": 54,
+  "invalidated_branches": 1664,
+  "triggered_graph_native_candidates": 15173,
+  "structurally_valid_candidates": 36136,
+  "sub_0p5R_rejected_candidates": 24396,
+  "qualified_candidates_scored_subset": 10166,
+  "recorded_not_activated_candidates_scored_subset": 20876,
+  "qualification_n_scored": 31042,
+  "qualification_n_total_in_week": 36136,
+  "deduplicated_trigger_groups": 12792,
+  "target_policy_variants": 60552
+}

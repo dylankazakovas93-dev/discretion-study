@@ -1,0 +1,14 @@
+{
+  "recorded_utc": "2026-07-20T14:35:00Z",
+  "checkpoints": {
+    "_checkpoint_branch_result.pkl": {
+      "bytes": 2435310657,
+      "sha256": "6082373934b8fbebc7c92923d6e07c97e03e137c64b4da3323b1cfe45c647612"
+    },
+    "_checkpoint_materialize_progress.pkl": {
+      "bytes": 1027574163,
+      "sha256": "2e05193a4ab4ac6a4f53fcec247296f4ff3d701a6c7716a76e7aacafa8fd2ae4"
+    }
+  },
+  "note": "Recorded before staged finalization (Stage A/B split) so the surviving OOM-era checkpoints are provably unmodified inputs to the compact ledger."
+}

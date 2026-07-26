@@ -19,3 +19,42 @@ venv/
 
 # OS
 .DS_Store
+
+# Large generated graph-native ledgers (hashes + row counts in reproducibility.json)
+artifacts/graph_native/events.jsonl.gz
+artifacts/graph_native/branches.csv.gz
+artifacts/graph_native/rejected_graph.csv.gz
+# Large generated MTF considered-target ledger (hash + row count in reproducibility.json)
+artifacts/mtf_targets/considered_targets.csv.gz
+artifacts/mtf_targets/candidates_mtf.csv.gz
+
+# Review-week atlas: working checkpoint/log (not a deliverable) and the large
+# gitignored candidate ledger (hash + row count in reproducibility.json)
+artifacts/review_week_atlas_2025_07_14_18/_checkpoint_result.pkl
+artifacts/review_week_atlas_2025_07_14_18/_run.log
+artifacts/review_week_atlas_2025_07_14_18/_run_repaired.log
+artifacts/review_week_atlas_2025_07_14_18/_run_repaired_resume*.log
+artifacts/review_week_atlas_2025_07_14_18/_checkpoint_result_repaired.pkl
+artifacts/review_week_atlas_2025_07_14_18/_checkpoint_result_repaired.pkl.tmp
+artifacts/review_week_atlas_2025_07_14_18/_checkpoint_branch_result.pkl
+artifacts/review_week_atlas_2025_07_14_18/_checkpoint_materialize_progress.pkl
+artifacts/review_week_atlas_2025_07_14_18/_checkpoint_materialize_progress.pkl.tmp
+artifacts/review_week_atlas_2025_07_14_18/_checkpoint_branch_result.pkl.tmp
+
+# Multi-year validation: per-segment working checkpoints (not a deliverable;
+# regenerable from raw data via scripts/multiyear_validation.py)
+artifacts/multiyear_validation/checkpoints/
+artifacts/review_week_atlas_2025_07_14_18_repaired/_build.log
+artifacts/review_week_atlas_2025_07_14_18_repaired/candidate_ledger.csv.gz
+artifacts/review_week_atlas_2025_07_14_18/_build.log
+artifacts/review_week_atlas_2025_07_14_18/candidate_ledger.csv.gz
+artifacts/review_week_atlas_2025_07_14_18/considered_targets_repaired.jsonl.gz
+artifacts/review_week_atlas_2025_07_14_18/_branch_light.pkl
+artifacts/review_week_atlas_2025_07_14_18/_branch_light.pkl.tmp
+artifacts/review_week_atlas_2025_07_14_18_repaired/_stage_a_handoff.pkl
+artifacts/review_week_atlas_2025_07_14_18_repaired/_stage_a_handoff.pkl.tmp
+artifacts/review_week_atlas_2025_07_14_18_repaired/_stage_a.log
+artifacts/review_week_atlas_2025_07_14_18_repaired/_stage_b.log
+artifacts/multiyear_validation_v2/checkpoints/
+artifacts/multiyear_validation_v2/run_logs/
+artifacts/multiyear_validation_v2/segcache/

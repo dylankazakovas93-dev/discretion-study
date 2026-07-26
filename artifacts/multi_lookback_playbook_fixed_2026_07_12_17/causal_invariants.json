@@ -1,0 +1,13 @@
+{
+  "n_variants": 138662,
+  "violations": {
+    "interaction_after_trigger": 0,
+    "entry_before_trigger": 0,
+    "target_after_entry": 0,
+    "no_self_session_authorization_violations": 0
+  },
+  "total_violations": 0,
+  "application_week_outcomes_shown_to_dylan": false,
+  "outcome_fields_in_fingerprints": false,
+  "note": "application-session outcomes ARE computed privately and MAY feed forward into later application sessions' playbooks (walk-forward, per spec); they are never shown for a card's own session and never used before that session's own freeze."
+}

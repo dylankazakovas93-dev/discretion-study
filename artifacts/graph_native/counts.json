@@ -1,0 +1,57 @@
+{
+  "primitive_events": 317066,
+  "episodes": 5018,
+  "branches_created": 22352,
+  "branches_forked": 18531,
+  "branches_merged": 0,
+  "branches_unresolved": 61,
+  "branches_expired": 1522,
+  "branches_invalidated": 2192,
+  "branches_emitted": 18577,
+  "branches_by_cont_fade": {
+    "continuation": 12416,
+    "fade": 9936
+  },
+  "graph_native_raw_trigger_states": 18577,
+  "graph_native_candidates": 6107,
+  "graph_native_rejected_below_0p5R": 12392,
+  "graph_native_unformed": {
+    "NO_STRUCTURAL_TARGET": 78
+  },
+  "graph_candidates_by_trigger_mode": {
+    "first_touch": 466,
+    "first_fill": 609,
+    "midpoint": 592,
+    "full_fill": 1138,
+    "formation_close": 2608,
+    "next_bar": 232,
+    "retest": 456,
+    "no_fill_continuation": 6
+  },
+  "graph_candidates_by_cont_fade": {
+    "continuation": 3558,
+    "fade": 2549
+  },
+  "qualified_graph_native": 770,
+  "not_activated_graph_native": 5337,
+  "stop_anchor_families": {
+    "fvg_boundary": 2897,
+    "ifvg_invalidation_boundary": 786,
+    "compression_region": 9,
+    "accepted_boundary": 210,
+    "swept_extreme": 1013,
+    "failed_break_boundary": 743,
+    "structural_extreme_fallback": 434,
+    "vwap": 7,
+    "anchor_boundary": 8
+  },
+  "target_anchor_families": {
+    "opposing_liquidity": 5856,
+    "opposing_time_anchor": 123,
+    "opposing_hist_level": 128
+  },
+  "parent_linked_ifvg_candidates": 786,
+  "no_fill_fvg_candidates": 6,
+  "static_baseline_candidates": 4302,
+  "static_baseline_rejected": 71125
+}

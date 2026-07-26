@@ -1,0 +1,54 @@
+{
+  "5": {
+    "completed_candles": 828,
+    "wick_objects_by_grade": {
+      "HIGH": 54,
+      "MEDIUM": 120,
+      "LOW": 1409
+    },
+    "fresh_htf_fvgs": 18,
+    "htf_fvg_failures": 167,
+    "htf_ifvgs": 182,
+    "objects_occluded_in_considered_ledger": 5076612,
+    "objects_selected_as_target": 17369
+  },
+  "15": {
+    "completed_candles": 276,
+    "wick_objects_by_grade": {
+      "HIGH": 18,
+      "MEDIUM": 42,
+      "LOW": 477
+    },
+    "fresh_htf_fvgs": 7,
+    "htf_fvg_failures": 44,
+    "htf_ifvgs": 54,
+    "objects_occluded_in_considered_ledger": 2469658,
+    "objects_selected_as_target": 4338
+  },
+  "30": {
+    "completed_candles": 138,
+    "wick_objects_by_grade": {
+      "HIGH": 9,
+      "MEDIUM": 24,
+      "LOW": 239
+    },
+    "fresh_htf_fvgs": 5,
+    "htf_fvg_failures": 23,
+    "htf_ifvgs": 30,
+    "objects_occluded_in_considered_ledger": 1637210,
+    "objects_selected_as_target": 2951
+  },
+  "60": {
+    "completed_candles": 69,
+    "wick_objects_by_grade": {
+      "HIGH": 6,
+      "MEDIUM": 14,
+      "LOW": 118
+    },
+    "fresh_htf_fvgs": 2,
+    "htf_fvg_failures": 11,
+    "htf_ifvgs": 15,
+    "objects_occluded_in_considered_ledger": 1225730,
+    "objects_selected_as_target": 4795
+  }
+}

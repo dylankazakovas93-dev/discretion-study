@@ -1,0 +1,77 @@
+{
+  "POLICY_EARLIEST_ACTIONABLE": {
+    "checks": {
+      "positive_net_r_after_050": false,
+      "pf_after_050_gte_1_20": false,
+      "positive_in_75pct_years": true,
+      "at_least_200_trades": true,
+      "no_year_over_40pct_positive_r": false,
+      "positive_ex_best_20": false,
+      "finite_reported_mdd": true,
+      "causal_invariants_clean": true,
+      "no_stale_target_use": true,
+      "no_post_hoc_rule_change": true
+    },
+    "n_checks_passed": 6,
+    "n_checks_total": 10,
+    "passes_minimum_robust_edge_gate": false,
+    "pf_2_0_gross": false,
+    "pf_2_0_after_050": false,
+    "pf_2_0_after_100": false,
+    "n_trades": 2457,
+    "n_years": 2,
+    "pct_positive_years": 1.0,
+    "pct_best_year_of_positive_r": 0.5626,
+    "verdict": "NO_EDGE"
+  },
+  "POLICY_EXACT_FIRST": {
+    "checks": {
+      "positive_net_r_after_050": false,
+      "pf_after_050_gte_1_20": false,
+      "positive_in_75pct_years": true,
+      "at_least_200_trades": true,
+      "no_year_over_40pct_positive_r": false,
+      "positive_ex_best_20": false,
+      "finite_reported_mdd": true,
+      "causal_invariants_clean": true,
+      "no_stale_target_use": true,
+      "no_post_hoc_rule_change": true
+    },
+    "n_checks_passed": 6,
+    "n_checks_total": 10,
+    "passes_minimum_robust_edge_gate": false,
+    "pf_2_0_gross": false,
+    "pf_2_0_after_050": false,
+    "pf_2_0_after_100": false,
+    "n_trades": 2438,
+    "n_years": 2,
+    "pct_positive_years": 1.0,
+    "pct_best_year_of_positive_r": 0.5639,
+    "verdict": "NO_EDGE"
+  },
+  "POLICY_MULTI_LOOKBACK_SUPPORT": {
+    "checks": {
+      "positive_net_r_after_050": false,
+      "pf_after_050_gte_1_20": false,
+      "positive_in_75pct_years": false,
+      "at_least_200_trades": true,
+      "no_year_over_40pct_positive_r": false,
+      "positive_ex_best_20": false,
+      "finite_reported_mdd": true,
+      "causal_invariants_clean": true,
+      "no_stale_target_use": true,
+      "no_post_hoc_rule_change": true
+    },
+    "n_checks_passed": 5,
+    "n_checks_total": 10,
+    "passes_minimum_robust_edge_gate": false,
+    "pf_2_0_gross": false,
+    "pf_2_0_after_050": false,
+    "pf_2_0_after_100": false,
+    "n_trades": 1519,
+    "n_years": 2,
+    "pct_positive_years": 0.5,
+    "pct_best_year_of_positive_r": 0.5886,
+    "verdict": "NO_EDGE"
+  }
+}

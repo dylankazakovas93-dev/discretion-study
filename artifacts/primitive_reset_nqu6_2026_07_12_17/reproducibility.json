@@ -1,0 +1,104 @@
+{
+  "data_file": "data/raw/glbx-mdp3-20250101-20260607.ohlcv-1m.csv.zst",
+  "symbol": "NQU6",
+  "requested_window_et": [
+    "2026-07-12 18:00:00-04:00",
+    "2026-07-17 17:59:59-04:00"
+  ],
+  "governing_timeframes": [
+    1,
+    3,
+    5,
+    15,
+    30,
+    60
+  ],
+  "per_timeframe_counts": {
+    "1": {
+      "n_completed_candles": 6900,
+      "n_fvgs": 799,
+      "n_ifvgs": 416,
+      "n_rb_live": 3108,
+      "n_rb_activated": 697,
+      "n_rb_not_activated": 2411,
+      "n_fvg_doji_blocked": 54,
+      "n_rb_equal_wick_ambiguous": 119,
+      "n_rb_precedence_suppressed": 2779
+    },
+    "3": {
+      "n_completed_candles": 2300,
+      "n_fvgs": 263,
+      "n_ifvgs": 131,
+      "n_rb_live": 1059,
+      "n_rb_activated": 228,
+      "n_rb_not_activated": 831,
+      "n_fvg_doji_blocked": 3,
+      "n_rb_equal_wick_ambiguous": 21,
+      "n_rb_precedence_suppressed": 932
+    },
+    "5": {
+      "n_completed_candles": 1380,
+      "n_fvgs": 154,
+      "n_ifvgs": 62,
+      "n_rb_live": 642,
+      "n_rb_activated": 137,
+      "n_rb_not_activated": 505,
+      "n_fvg_doji_blocked": 3,
+      "n_rb_equal_wick_ambiguous": 13,
+      "n_rb_precedence_suppressed": 553
+    },
+    "15": {
+      "n_completed_candles": 460,
+      "n_fvgs": 40,
+      "n_ifvgs": 20,
+      "n_rb_live": 198,
+      "n_rb_activated": 32,
+      "n_rb_not_activated": 166,
+      "n_fvg_doji_blocked": 1,
+      "n_rb_equal_wick_ambiguous": 1,
+      "n_rb_precedence_suppressed": 182
+    },
+    "30": {
+      "n_completed_candles": 230,
+      "n_fvgs": 22,
+      "n_ifvgs": 7,
+      "n_rb_live": 106,
+      "n_rb_activated": 24,
+      "n_rb_not_activated": 82,
+      "n_fvg_doji_blocked": 0,
+      "n_rb_equal_wick_ambiguous": 0,
+      "n_rb_precedence_suppressed": 88
+    },
+    "60": {
+      "n_completed_candles": 115,
+      "n_fvgs": 13,
+      "n_ifvgs": 3,
+      "n_rb_live": 52,
+      "n_rb_activated": 14,
+      "n_rb_not_activated": 38,
+      "n_fvg_doji_blocked": 0,
+      "n_rb_equal_wick_ambiguous": 0,
+      "n_rb_precedence_suppressed": 45
+    }
+  },
+  "n_fvg_total": 1291,
+  "n_ifvg_total": 639,
+  "n_rb_live_total": 5165,
+  "n_rb_activated_total": 1132,
+  "n_rb_not_activated_total": 4033,
+  "n_fvg_doji_blocked_total": 61,
+  "n_rb_equal_wick_ambiguous_total": 154,
+  "n_rb_precedence_suppressed_total": 4579,
+  "n_fvg_examples_provided": 5,
+  "n_ifvg_examples_provided": 5,
+  "n_rb_activated_examples_provided": 3,
+  "n_rb_not_activated_examples_provided": 5,
+  "validation": {
+    "n_rb_live": 5165,
+    "n_rb_activated": 1132,
+    "n_rb_tapped": 5059,
+    "n_rb_deactivated": 5165,
+    "n_rb_first_tap_before_activation": 4384,
+    "causal_invariant_violations": 0
+  }
+}

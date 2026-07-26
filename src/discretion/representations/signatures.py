@@ -177,7 +177,13 @@ def build_features(candidate, ctx: FeatureContext) -> dict:
             f["favorable_close"] = round(fe.get("favorable_close", 0), 4)
         if fam in ("hist_level", "liquidity", "time_anchor"):
             f["level_family"] = origin.subtype
-            f["sweep_state"] = origin.has_event("SWEEP")
+            # causal cutoff: Primitive.has_event() checks the object's whole
+            # lifetime, which can include a SWEEP recorded after this candidate's
+            # own trigger (found by test_similarity_audit.py::
+            # test_features_unchanged_by_bars_added_after_trigger). Match the
+            # seq<=entry_seq pattern already used for revisit_number above.
+            f["sweep_state"] = any(e.kind == "SWEEP" and e.seq <= s.entry_seq
+                                   for e in origin.events)
 
     vs = ctx.vwap_by_seq.get(s.entry_seq)
     if vs is not None:

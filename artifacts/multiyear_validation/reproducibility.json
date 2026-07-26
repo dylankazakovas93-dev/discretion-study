@@ -1,0 +1,14 @@
+{
+  "n_hypothesis_rows": 95704,
+  "n_actionable_candidates": 7403,
+  "policy_trade_counts": {
+    "POLICY_EARLIEST_ACTIONABLE": 2457,
+    "POLICY_EXACT_FIRST": 2438,
+    "POLICY_MULTI_LOOKBACK_SUPPORT": 1519
+  },
+  "years": [
+    2018,
+    2019
+  ],
+  "overall_verdict": "MULTIYEAR_NO_EDGE"
+}

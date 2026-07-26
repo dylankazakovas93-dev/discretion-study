@@ -1,0 +1,27 @@
+{
+  "observation": {
+    "label": "observation",
+    "n_variants": 22913,
+    "violations": {
+      "interaction_after_trigger": 0,
+      "entry_before_trigger": 0,
+      "target_after_entry": 0,
+      "delay_uses_future": 0
+    },
+    "total_violations": 0
+  },
+  "application": {
+    "label": "application",
+    "n_variants": 23154,
+    "violations": {
+      "interaction_after_trigger": 0,
+      "entry_before_trigger": 0,
+      "target_after_entry": 0,
+      "delay_uses_future": 0
+    },
+    "total_violations": 0
+  },
+  "outcome_fields_in_fingerprints": false,
+  "application_outcomes_computed": false,
+  "total_violations": 0
+}

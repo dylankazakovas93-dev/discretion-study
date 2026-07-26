@@ -1,0 +1,12 @@
+{
+  "pre_outcome_manifest_hash": "1e6adc2df8126c96909df870039b6628e144c1cca6253a57b6bcdab2a720452e",
+  "n_charts": 84,
+  "n_candidates_in_week": 60265,
+  "n_rejected_in_week": 27595,
+  "n_dedup_triggers_in_week": 19985,
+  "true_prior_sessions_before_review_week": 1,
+  "window": {
+    "start": "2025-07-14 00:00:00-04:00",
+    "end": "2025-07-18 23:59:59-04:00"
+  }
+}

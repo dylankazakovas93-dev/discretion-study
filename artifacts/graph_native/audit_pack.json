@@ -1,0 +1,1447 @@
+[
+  {
+    "category": "01_rb_good_disp_continuation",
+    "chart": "charts/01_rb_good_disp_continuation.png",
+    "example": {
+      "candidate_id": "GNC-000920",
+      "branch_id": "GBR-001126",
+      "episode_id": "GEP-000269",
+      "trigger_event_id": "EVT-0005294",
+      "branch_lineage_parents": [],
+      "exact_graph": "BEARISH_RB_CONFIRMED -> BEARISH_RB_TAP -> GOOD_BEARISH_DISPLACEMENT -> FORMATION_CLOSE_SHORT_TRIGGER",
+      "reduced_graph": "STRUCTURAL_ZONE_INTERACTION -> STRONG_DISPLACEMENT -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0005033",
+        "EVT-0005183",
+        "EVT-0005294"
+      ],
+      "ordered_transition_ids": [
+        "H_rb_reaction_continuation:S0",
+        "H_rb_reaction_continuation:S1"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "DISPLACEMENT_ORIGINATES_AT_OBJECT",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 23:30:00-04:00",
+      "direction": "short",
+      "entry_mode": "formation_close",
+      "trigger_family": "rb_reaction",
+      "continuation_or_fade": "continuation",
+      "entry": 22951.5,
+      "stop": 22955.75,
+      "natural_target": 22950.0,
+      "natural_rr": 0.3529,
+      "executed_target": 22950.0,
+      "executed_rr": 0.0,
+      "stop_anchor": {
+        "type": "rb_invalidation_boundary",
+        "object": "RB-000041",
+        "price": 22955.75
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000137",
+        "price": 22950.0
+      },
+      "anchor_rule": "rb_reaction|stop=rb_invalidation_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": null,
+      "qualification": "UNSCORED",
+      "outcome_shown_separately": "UNEVALUATED"
+    }
+  },
+  {
+    "category": "02_rb_bad_disp_unresolved",
+    "chart": "charts/02_rb_bad_disp_unresolved.png",
+    "example": {
+      "branch_id": "GBR-004307",
+      "episode_id": "GEP-000968",
+      "hypothesis_id": "H_rb_unresolved_fade",
+      "terminal_status": "UNRESOLVED",
+      "terminal_reason": "inactive",
+      "ordered_event_ids": [
+        "EVT-0048871",
+        "EVT-0048904",
+        "EVT-0050452"
+      ],
+      "exact_graph_so_far": [
+        "BEARISH_RB_CONFIRMED",
+        "BEARISH_RB_TAP",
+        "BAD_BULLISH_DISPLACEMENT"
+      ],
+      "note": "recorded UNRESOLVED branch: bad displacement then compression, no failure event -> not a setup"
+    }
+  },
+  {
+    "category": "03_rb_bad_disp_failure_fade",
+    "chart": "charts/03_rb_bad_disp_failure_fade.png",
+    "example": {
+      "candidate_id": "GNC-004068",
+      "branch_id": "GBR-004746",
+      "episode_id": "GEP-001068",
+      "trigger_event_id": "EVT-0054295",
+      "branch_lineage_parents": [
+        "GBR-004744"
+      ],
+      "exact_graph": "BULLISH_RB_CONFIRMED -> BULLISH_RB_TAP -> BAD_BEARISH_DISPLACEMENT -> COMPRESSION -> SWING_HIGH_BREAK -> FORMATION_CLOSE_SHORT_TRIGGER",
+      "reduced_graph": "STRUCTURAL_ZONE_INTERACTION -> WEAK_DISPLACEMENT -> COMPRESSION -> LEVEL_BREAK -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0051805",
+        "EVT-0051835",
+        "EVT-0052588",
+        "EVT-0054279",
+        "EVT-0054295"
+      ],
+      "ordered_transition_ids": [
+        "H_rb_unresolved_fade:S0",
+        "H_rb_unresolved_fade:S1",
+        "H_rb_unresolved_fade:S2",
+        "H_rb_unresolved_fade:S3"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "TOUCHES_ZONE",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-07 16:08:00-04:00",
+      "direction": "short",
+      "entry_mode": "formation_close",
+      "trigger_family": "rb_failure_fade",
+      "continuation_or_fade": "fade",
+      "entry": 22857.5,
+      "stop": 22864.25,
+      "natural_target": 22857.0,
+      "natural_rr": 0.0741,
+      "executed_target": 22857.0,
+      "executed_rr": 0.0,
+      "stop_anchor": {
+        "type": "failure_region_boundary",
+        "object": "STRUCT-000013",
+        "price": 22864.25
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000425",
+        "price": 22857.0
+      },
+      "anchor_rule": "rb_failure_fade|stop=failure_region_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": null,
+      "qualification": "UNSCORED",
+      "outcome_shown_separately": "UNEVALUATED"
+    }
+  },
+  {
+    "category": "04_fvg_immediate_formation",
+    "chart": "charts/04_fvg_immediate_formation.png",
+    "example": {
+      "candidate_id": "GNC-000139",
+      "branch_id": "GBR-000178",
+      "episode_id": "GEP-000047",
+      "trigger_event_id": "EVT-0000487",
+      "branch_lineage_parents": [],
+      "exact_graph": "BEARISH_FVG_FORMED -> FORMATION_CLOSE_SHORT_TRIGGER",
+      "reduced_graph": "GAP_FORMATION -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000487"
+      ],
+      "ordered_transition_ids": [
+        "H_fvg_formation_close:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 18:54:00-04:00",
+      "direction": "short",
+      "entry_mode": "formation_close",
+      "trigger_family": "fvg_formation",
+      "continuation_or_fade": "continuation",
+      "entry": 22987.25,
+      "stop": 22989.25,
+      "natural_target": 22981.0,
+      "natural_rr": 3.125,
+      "executed_target": 22985.25,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "fvg_boundary",
+        "object": "FVG-000016",
+        "price": 22989.25
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000077",
+        "price": 22981.0
+      },
+      "anchor_rule": "fvg_formation|stop=fvg_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "LOSS"
+    }
+  },
+  {
+    "category": "05_fvg_continuation_without_fill",
+    "chart": "charts/05_fvg_continuation_without_fill.png",
+    "example": {
+      "candidate_id": "GNC-000139",
+      "branch_id": "GBR-000178",
+      "episode_id": "GEP-000047",
+      "trigger_event_id": "EVT-0000487",
+      "branch_lineage_parents": [],
+      "exact_graph": "BEARISH_FVG_FORMED -> FORMATION_CLOSE_SHORT_TRIGGER",
+      "reduced_graph": "GAP_FORMATION -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000487"
+      ],
+      "ordered_transition_ids": [
+        "H_fvg_formation_close:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 18:54:00-04:00",
+      "direction": "short",
+      "entry_mode": "formation_close",
+      "trigger_family": "fvg_formation",
+      "continuation_or_fade": "continuation",
+      "entry": 22987.25,
+      "stop": 22989.25,
+      "natural_target": 22981.0,
+      "natural_rr": 3.125,
+      "executed_target": 22985.25,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "fvg_boundary",
+        "object": "FVG-000016",
+        "price": 22989.25
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000077",
+        "price": 22981.0
+      },
+      "anchor_rule": "fvg_formation|stop=fvg_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "LOSS"
+    }
+  },
+  {
+    "category": "06_fvg_first_touch",
+    "chart": "charts/06_fvg_first_touch.png",
+    "example": {
+      "candidate_id": "GNC-000003",
+      "branch_id": "GBR-000014",
+      "episode_id": "GEP-000005",
+      "trigger_event_id": "EVT-0000035",
+      "branch_lineage_parents": [
+        "GBR-000013"
+      ],
+      "exact_graph": "BEARISH_FVG_FORMED -> BEARISH_FVG_FIRST_TOUCH -> FIRST_TOUCH_SHORT_TRIGGER",
+      "reduced_graph": "GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000031",
+        "EVT-0000035"
+      ],
+      "ordered_transition_ids": [
+        "H_fvg_first_touch:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP"
+      ],
+      "timestamp_et": "2025-07-06 18:13:00-04:00",
+      "direction": "short",
+      "entry_mode": "first_touch",
+      "trigger_family": "fvg_fill",
+      "continuation_or_fade": "continuation",
+      "entry": 22996.0,
+      "stop": 22998.5,
+      "natural_target": 22977.0,
+      "natural_rr": 7.6,
+      "executed_target": 22993.5,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "fvg_boundary",
+        "object": "FVG-000002",
+        "price": 22998.5
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000070",
+        "price": 22977.0
+      },
+      "anchor_rule": "fvg_fill|stop=fvg_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "WIN"
+    }
+  },
+  {
+    "category": "07_fvg_midpoint",
+    "chart": "charts/07_fvg_midpoint.png",
+    "example": {
+      "candidate_id": "GNC-000005",
+      "branch_id": "GBR-000016",
+      "episode_id": "GEP-000005",
+      "trigger_event_id": "EVT-0000037",
+      "branch_lineage_parents": [
+        "GBR-000013"
+      ],
+      "exact_graph": "BEARISH_FVG_FORMED -> BEARISH_FVG_MIDPOINT -> MIDPOINT_SHORT_TRIGGER",
+      "reduced_graph": "GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000031",
+        "EVT-0000037"
+      ],
+      "ordered_transition_ids": [
+        "H_fvg_midpoint:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP"
+      ],
+      "timestamp_et": "2025-07-06 18:13:00-04:00",
+      "direction": "short",
+      "entry_mode": "midpoint",
+      "trigger_family": "fvg_fill",
+      "continuation_or_fade": "continuation",
+      "entry": 22997.0,
+      "stop": 22998.5,
+      "natural_target": 22977.0,
+      "natural_rr": 13.3333,
+      "executed_target": 22995.5,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "fvg_boundary",
+        "object": "FVG-000002",
+        "price": 22998.5
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000070",
+        "price": 22977.0
+      },
+      "anchor_rule": "fvg_fill|stop=fvg_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "WIN"
+    }
+  },
+  {
+    "category": "08_fvg_failure_ifvg_immediate",
+    "chart": "charts/08_fvg_failure_ifvg_immediate.png",
+    "example": {
+      "candidate_id": "GNC-000011",
+      "branch_id": "GBR-000020",
+      "episode_id": "GEP-000007",
+      "trigger_event_id": "EVT-0000053",
+      "branch_lineage_parents": [
+        "GBR-000013"
+      ],
+      "exact_graph": "BEARISH_FVG_FORMED -> BEARISH_FVG_FAILURE -> BULLISH_IFVG_ACTIVATION -> FORMATION_CLOSE_LONG_TRIGGER",
+      "reduced_graph": "GAP_FORMATION -> GAP_FAILURE -> INVERSION_ACTIVATION -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000031",
+        "EVT-0000048",
+        "EVT-0000053"
+      ],
+      "ordered_transition_ids": [
+        "H_ifvg_immediate:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 18:15:00-04:00",
+      "direction": "long",
+      "entry_mode": "formation_close",
+      "trigger_family": "ifvg_activation",
+      "continuation_or_fade": "fade",
+      "entry": 23004.0,
+      "stop": 22995.5,
+      "natural_target": 23022.0,
+      "natural_rr": 2.1176,
+      "executed_target": 23012.5,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "ifvg_invalidation_boundary",
+        "object": "IFVG-000001",
+        "price": 22995.5
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000071",
+        "price": 23022.0
+      },
+      "anchor_rule": "ifvg_activation|stop=ifvg_invalidation_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": {
+        "parent_fvg": "FVG-000002",
+        "fvg_formation": "EVT-0000031",
+        "fvg_failure": "EVT-0000048",
+        "ifvg_confirmation": "EVT-0000053",
+        "retest": ""
+      },
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "LOSS"
+    }
+  },
+  {
+    "category": "09_fvg_failure_ifvg_retest",
+    "chart": "charts/09_fvg_failure_ifvg_retest.png",
+    "example": {
+      "candidate_id": "GNC-000018",
+      "branch_id": "GBR-000032",
+      "episode_id": "GEP-000010",
+      "trigger_event_id": "EVT-0000065",
+      "branch_lineage_parents": [
+        "GBR-000006"
+      ],
+      "exact_graph": "BEARISH_FVG_FORMED -> BEARISH_FVG_FAILURE -> BULLISH_IFVG_ACTIVATION -> BULLISH_IFVG_FIRST_TOUCH -> RETEST_LONG_TRIGGER",
+      "reduced_graph": "GAP_FORMATION -> GAP_FAILURE -> INVERSION_ACTIVATION -> INVERSION_INTERACTION -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000026",
+        "EVT-0000055",
+        "EVT-0000061",
+        "EVT-0000065"
+      ],
+      "ordered_transition_ids": [
+        "H_ifvg_retest:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 18:17:00-04:00",
+      "direction": "long",
+      "entry_mode": "retest",
+      "trigger_family": "ifvg_retest",
+      "continuation_or_fade": "fade",
+      "entry": 23005.75,
+      "stop": 23004.5,
+      "natural_target": 23022.0,
+      "natural_rr": 13.0,
+      "executed_target": 23007.0,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "ifvg_invalidation_boundary",
+        "object": "IFVG-000002",
+        "price": 23004.5
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000071",
+        "price": 23022.0
+      },
+      "anchor_rule": "ifvg_retest|stop=ifvg_invalidation_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": {
+        "parent_fvg": "FVG-000001",
+        "fvg_formation": "EVT-0000026",
+        "fvg_failure": "EVT-0000055",
+        "ifvg_confirmation": "EVT-0000061",
+        "retest": "EVT-0000065"
+      },
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "LOSS"
+    }
+  },
+  {
+    "category": "10_sweep_reclaim_fade",
+    "chart": "charts/10_sweep_reclaim_fade.png",
+    "example": {
+      "candidate_id": "GNC-000067",
+      "branch_id": "GBR-000089",
+      "episode_id": "GEP-000022",
+      "trigger_event_id": "EVT-0000182",
+      "branch_lineage_parents": [
+        "GBR-000075"
+      ],
+      "exact_graph": "SWING_LOW_SWEEP_BELOW -> SWING_LOW_RECLAIM -> FORMATION_CLOSE_LONG_TRIGGER",
+      "reduced_graph": "LIQUIDITY_SWEEP -> RECLAIM -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000167",
+        "EVT-0000182"
+      ],
+      "ordered_transition_ids": [
+        "H_liquidity_sweep_reclaim_fade:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "RECLAIMS_BOUNDARY",
+        "SAME_OBJECT",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 18:33:00-04:00",
+      "direction": "long",
+      "entry_mode": "formation_close",
+      "trigger_family": "sweep_reclaim_fade",
+      "continuation_or_fade": "fade",
+      "entry": 22979.75,
+      "stop": 22977.25,
+      "natural_target": 22981.0,
+      "natural_rr": 0.5,
+      "executed_target": 22981.0,
+      "executed_rr": 0.5,
+      "stop_anchor": {
+        "type": "swept_extreme",
+        "object": "LVL-000077",
+        "price": 22977.25
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000077",
+        "price": 22981.0
+      },
+      "anchor_rule": "sweep_reclaim_fade|stop=swept_extreme|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "WIN"
+    }
+  },
+  {
+    "category": "11_sweep_acceptance_continuation",
+    "chart": "charts/11_sweep_acceptance_continuation.png",
+    "example": {
+      "candidate_id": "GNC-000042",
+      "branch_id": "GBR-000060",
+      "episode_id": "GEP-000009",
+      "trigger_event_id": "EVT-0000127",
+      "branch_lineage_parents": [
+        "GBR-000028"
+      ],
+      "exact_graph": "SWING_LOW_SWEEP_BELOW -> SWING_LOW_ACCEPTANCE_BELOW -> FORMATION_CLOSE_SHORT_TRIGGER",
+      "reduced_graph": "LIQUIDITY_SWEEP -> ACCEPTANCE -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000112",
+        "EVT-0000127"
+      ],
+      "ordered_transition_ids": [
+        "H_liquidity_sweep_accept_continuation:S0"
+      ],
+      "relationship_evidence": [
+        "ACCEPTS_BEYOND_BOUNDARY",
+        "DIRECTIONALLY_SUPPORTS",
+        "SAME_OBJECT",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 18:27:00-04:00",
+      "direction": "short",
+      "entry_mode": "formation_close",
+      "trigger_family": "sweep_accept_cont",
+      "continuation_or_fade": "continuation",
+      "entry": 22982.25,
+      "stop": 22988.75,
+      "natural_target": 22977.0,
+      "natural_rr": 0.8077,
+      "executed_target": 22977.0,
+      "executed_rr": 0.8077,
+      "stop_anchor": {
+        "type": "structural_extreme_fallback",
+        "object": "LVL-000072",
+        "price": 22988.75
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000070",
+        "price": 22977.0
+      },
+      "anchor_rule": "sweep_accept_cont|stop=structural_extreme_fallback|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "LOSS"
+    }
+  },
+  {
+    "category": "12_time_anchor_reclaim_no_fvg",
+    "chart": "charts/12_time_anchor_reclaim_no_fvg.png",
+    "example": {
+      "candidate_id": "GNC-000354",
+      "branch_id": "GBR-000447",
+      "episode_id": "GEP-000105",
+      "trigger_event_id": "EVT-0001950",
+      "branch_lineage_parents": [
+        "GBR-000433"
+      ],
+      "exact_graph": "ANCHOR_ASIA_OPEN_RECLAIM -> FORMATION_CLOSE_LONG_TRIGGER",
+      "reduced_graph": "RECLAIM -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0001950"
+      ],
+      "ordered_transition_ids": [
+        "H_anchor_reclaim_continuation:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "RECLAIMS_BOUNDARY",
+        "SAME_OBJECT",
+        "TIME_ANCHOR_INTERACTION",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 20:02:00-04:00",
+      "direction": "long",
+      "entry_mode": "formation_close",
+      "trigger_family": "anchor_reclaim",
+      "continuation_or_fade": "continuation",
+      "entry": 22986.75,
+      "stop": 22983.25,
+      "natural_target": 22987.75,
+      "natural_rr": 0.2857,
+      "executed_target": 22987.75,
+      "executed_rr": 0.0,
+      "stop_anchor": {
+        "type": "anchor_boundary",
+        "object": "LVL-000001",
+        "price": 22983.25
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000106",
+        "price": 22987.75
+      },
+      "anchor_rule": "anchor_reclaim|stop=anchor_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": null,
+      "qualification": "UNSCORED",
+      "outcome_shown_separately": "UNEVALUATED"
+    }
+  },
+  {
+    "category": "13_time_anchor_rejection_fade",
+    "chart": "charts/13_time_anchor_rejection_fade.png",
+    "example": {
+      "candidate_id": "GNC-000352",
+      "branch_id": "GBR-000434",
+      "episode_id": "GEP-000105",
+      "trigger_event_id": "EVT-0001950",
+      "branch_lineage_parents": [
+        "GBR-000433"
+      ],
+      "exact_graph": "ANCHOR_ASIA_OPEN_SWEEP -> ANCHOR_ASIA_OPEN_RECLAIM -> FORMATION_CLOSE_SHORT_TRIGGER",
+      "reduced_graph": "LIQUIDITY_SWEEP -> RECLAIM -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0001917",
+        "EVT-0001950"
+      ],
+      "ordered_transition_ids": [
+        "H_time_anchor_sweep_reclaim_fade:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "RECLAIMS_BOUNDARY",
+        "SAME_OBJECT",
+        "TIME_ANCHOR_INTERACTION",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 20:02:00-04:00",
+      "direction": "short",
+      "entry_mode": "formation_close",
+      "trigger_family": "sweep_reclaim_fade",
+      "continuation_or_fade": "fade",
+      "entry": 22986.75,
+      "stop": 22988.25,
+      "natural_target": 22985.25,
+      "natural_rr": 1.0,
+      "executed_target": 22985.25,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "swept_extreme",
+        "object": "LVL-000001",
+        "price": 22988.25
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000091",
+        "price": 22985.25
+      },
+      "anchor_rule": "sweep_reclaim_fade|stop=swept_extreme|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "LOSS"
+    }
+  },
+  {
+    "category": "14_vwap_continuation",
+    "chart": "charts/14_vwap_continuation.png",
+    "example": {
+      "candidate_id": "GNC-000992",
+      "branch_id": "GBR-001265",
+      "episode_id": "GEP-000305",
+      "trigger_event_id": "EVT-0005943",
+      "branch_lineage_parents": [],
+      "exact_graph": "VWAP_VWAP_BOUNCE_UP -> FIRST_TOUCH_LONG_TRIGGER",
+      "reduced_graph": "VWAP_INTERACTION -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0005943"
+      ],
+      "ordered_transition_ids": [
+        "H_vwap_bounce_continuation:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "REJECTS_BOUNDARY",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-07 00:00:00-04:00",
+      "direction": "long",
+      "entry_mode": "first_touch",
+      "trigger_family": "vwap_bounce",
+      "continuation_or_fade": "continuation",
+      "entry": 22973.416666666668,
+      "stop": 22972.916666666668,
+      "natural_target": 22974.25,
+      "natural_rr": 1.6667,
+      "executed_target": 22973.916666666668,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "vwap",
+        "object": "VWAP-000002",
+        "price": 22972.916666666668
+      },
+      "target_anchor": {
+        "type": "opposing_time_anchor",
+        "object": "LVL-000002",
+        "price": 22974.25
+      },
+      "anchor_rule": "vwap_bounce|stop=vwap|target=opposing_time_anchor",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": -0.0694,
+        "reduced_estimate": -0.0694,
+        "exact_estimate": -0.0694,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "WIN"
+    }
+  },
+  {
+    "category": "15_vwap_fade",
+    "chart": "charts/15_vwap_fade.png",
+    "example": {
+      "candidate_id": "GNC-000001",
+      "branch_id": "GBR-000002",
+      "episode_id": "GEP-000001",
+      "trigger_event_id": "EVT-0000002",
+      "branch_lineage_parents": [
+        "GBR-000001"
+      ],
+      "exact_graph": "VWAP_BAND_REJECT_M1_618 -> FORMATION_CLOSE_LONG_TRIGGER",
+      "reduced_graph": "BAND_REJECTION -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000002"
+      ],
+      "ordered_transition_ids": [
+        "H_vwap_band_fade:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "REJECTS_BOUNDARY",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE"
+      ],
+      "timestamp_et": "2025-07-06 18:00:00-04:00",
+      "direction": "long",
+      "entry_mode": "formation_close",
+      "trigger_family": "vwap_band_fade",
+      "continuation_or_fade": "fade",
+      "entry": 22993.25,
+      "stop": 22981.5,
+      "natural_target": 22982.0,
+      "natural_rr": 0.9574,
+      "executed_target": 22982.0,
+      "executed_rr": 0.0,
+      "stop_anchor": {
+        "type": "vwap_band",
+        "object": "VWAP-000001",
+        "price": 22981.5
+      },
+      "target_anchor": {
+        "type": "vwap",
+        "object": "VWAP-000001",
+        "price": 22982.0
+      },
+      "anchor_rule": "vwap_band_fade|stop=vwap_band|target=vwap",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": null,
+      "qualification": "UNSCORED",
+      "outcome_shown_separately": "UNEVALUATED"
+    }
+  },
+  {
+    "category": "16_compression_expansion",
+    "chart": "charts/16_compression_expansion.png",
+    "example": {
+      "candidate_id": "GNC-000013",
+      "branch_id": "GBR-000018",
+      "episode_id": "GEP-000006",
+      "trigger_event_id": "EVT-0000058",
+      "branch_lineage_parents": [],
+      "exact_graph": "COMPRESSION -> STRUCT_BREAK -> NEXT_BAR_LONG_TRIGGER",
+      "reduced_graph": "COMPRESSION -> LEVEL_BREAK -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000041",
+        "EVT-0000058"
+      ],
+      "ordered_transition_ids": [
+        "H_compression_expansion:S0"
+      ],
+      "relationship_evidence": [
+        "BREAKS_BOUNDARY",
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "EXPANSION_LEAVES_COMPRESSION",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 18:17:00-04:00",
+      "direction": "long",
+      "entry_mode": "next_bar",
+      "trigger_family": "compression_expansion",
+      "continuation_or_fade": "continuation",
+      "entry": 23005.0,
+      "stop": 22987.75,
+      "natural_target": 23022.0,
+      "natural_rr": 0.9855,
+      "executed_target": 23022.0,
+      "executed_rr": 0.9855,
+      "stop_anchor": {
+        "type": "compression_region",
+        "object": "STRUCT-000001",
+        "price": 22987.75
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000071",
+        "price": 23022.0
+      },
+      "anchor_rule": "compression_expansion|stop=compression_region|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "LOSS"
+    }
+  },
+  {
+    "category": "17_false_expansion_fade",
+    "chart": "charts/17_false_expansion_fade.png",
+    "example": {
+      "candidate_id": "GNC-000016",
+      "branch_id": "GBR-000019",
+      "episode_id": "GEP-000006",
+      "trigger_event_id": "EVT-0000062",
+      "branch_lineage_parents": [
+        "GBR-000018"
+      ],
+      "exact_graph": "COMPRESSION -> STRUCT_FAILED_CONTINUATION -> FORMATION_CLOSE_SHORT_TRIGGER",
+      "reduced_graph": "COMPRESSION -> STRUCTURAL_EVENT -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000041",
+        "EVT-0000062"
+      ],
+      "ordered_transition_ids": [
+        "H_compression_false_expansion_fade:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FAILED_EXPANSION_RETURNS_TO_REGION",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 18:17:00-04:00",
+      "direction": "short",
+      "entry_mode": "formation_close",
+      "trigger_family": "compression_false_expansion",
+      "continuation_or_fade": "fade",
+      "entry": 23002.0,
+      "stop": 23005.75,
+      "natural_target": 22988.25,
+      "natural_rr": 3.6667,
+      "executed_target": 22998.25,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "compression_region",
+        "object": "STRUCT-000001",
+        "price": 23005.75
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000072",
+        "price": 22988.25
+      },
+      "anchor_rule": "compression_false_expansion|stop=compression_region|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "LOSS"
+    }
+  },
+  {
+    "category": "18_one_event_advances_multiple_branches",
+    "chart": "charts/18_one_event_advances_multiple_branches.png",
+    "example": {
+      "event_id": "EVT-0000048",
+      "advanced_branch_ids": [
+        "GBR-000020",
+        "GBR-000021",
+        "GBR-000022"
+      ],
+      "note": "one event advanced multiple compatible branches"
+    }
+  },
+  {
+    "category": "19_unrelated_event_rejected",
+    "chart": "charts/19_unrelated_event_rejected.png",
+    "example": {
+      "rb_branch_id": "GBR-000734",
+      "rb_object": "RB-000025",
+      "rejected_event_id": "EVT-0003405",
+      "rejected_event_subtype": "VWAP_BAND_REJECT_M2_618",
+      "relationships_satisfied": [
+        "DIRECTIONALLY_SUPPORTS",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "reason": "within ATR proximity but no structural edge -> rejected (price proximity alone is not a causal edge)"
+    }
+  },
+  {
+    "category": "20_graph_native_not_in_static",
+    "chart": "charts/20_graph_native_not_in_static.png",
+    "example": {
+      "candidate_id": "GNC-000920",
+      "branch_id": "GBR-001126",
+      "episode_id": "GEP-000269",
+      "trigger_event_id": "EVT-0005294",
+      "branch_lineage_parents": [],
+      "exact_graph": "BEARISH_RB_CONFIRMED -> BEARISH_RB_TAP -> GOOD_BEARISH_DISPLACEMENT -> FORMATION_CLOSE_SHORT_TRIGGER",
+      "reduced_graph": "STRUCTURAL_ZONE_INTERACTION -> STRONG_DISPLACEMENT -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0005033",
+        "EVT-0005183",
+        "EVT-0005294"
+      ],
+      "ordered_transition_ids": [
+        "H_rb_reaction_continuation:S0",
+        "H_rb_reaction_continuation:S1"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "DISPLACEMENT_ORIGINATES_AT_OBJECT",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 23:30:00-04:00",
+      "direction": "short",
+      "entry_mode": "formation_close",
+      "trigger_family": "rb_reaction",
+      "continuation_or_fade": "continuation",
+      "entry": 22951.5,
+      "stop": 22955.75,
+      "natural_target": 22950.0,
+      "natural_rr": 0.3529,
+      "executed_target": 22950.0,
+      "executed_rr": 0.0,
+      "stop_anchor": {
+        "type": "rb_invalidation_boundary",
+        "object": "RB-000041",
+        "price": 22955.75
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000137",
+        "price": 22950.0
+      },
+      "anchor_rule": "rb_reaction|stop=rb_invalidation_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": null,
+      "qualification": "UNSCORED",
+      "outcome_shown_separately": "UNEVALUATED"
+    }
+  },
+  {
+    "category": "21_rejected_below_half_R",
+    "chart": "charts/21_rejected_below_half_R.png",
+    "example": {
+      "candidate_id": "GNC-000001",
+      "branch_id": "GBR-000002",
+      "episode_id": "GEP-000001",
+      "trigger_event_id": "EVT-0000002",
+      "branch_lineage_parents": [
+        "GBR-000001"
+      ],
+      "exact_graph": "VWAP_BAND_REJECT_M1_618 -> FORMATION_CLOSE_LONG_TRIGGER",
+      "reduced_graph": "BAND_REJECTION -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000002"
+      ],
+      "ordered_transition_ids": [
+        "H_vwap_band_fade:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "REJECTS_BOUNDARY",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE"
+      ],
+      "timestamp_et": "2025-07-06 18:00:00-04:00",
+      "direction": "long",
+      "entry_mode": "formation_close",
+      "trigger_family": "vwap_band_fade",
+      "continuation_or_fade": "fade",
+      "entry": 22993.25,
+      "stop": 22981.5,
+      "natural_target": 22982.0,
+      "natural_rr": 0.9574,
+      "executed_target": 22982.0,
+      "executed_rr": 0.0,
+      "stop_anchor": {
+        "type": "vwap_band",
+        "object": "VWAP-000001",
+        "price": 22981.5
+      },
+      "target_anchor": {
+        "type": "vwap",
+        "object": "VWAP-000001",
+        "price": 22982.0
+      },
+      "anchor_rule": "vwap_band_fade|stop=vwap_band|target=vwap",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": null,
+      "qualification": "UNSCORED",
+      "outcome_shown_separately": "UNEVALUATED"
+    }
+  },
+  {
+    "category": "22_natural_half_to_1R",
+    "chart": "charts/22_natural_half_to_1R.png",
+    "example": {
+      "candidate_id": "GNC-000013",
+      "branch_id": "GBR-000018",
+      "episode_id": "GEP-000006",
+      "trigger_event_id": "EVT-0000058",
+      "branch_lineage_parents": [],
+      "exact_graph": "COMPRESSION -> STRUCT_BREAK -> NEXT_BAR_LONG_TRIGGER",
+      "reduced_graph": "COMPRESSION -> LEVEL_BREAK -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000041",
+        "EVT-0000058"
+      ],
+      "ordered_transition_ids": [
+        "H_compression_expansion:S0"
+      ],
+      "relationship_evidence": [
+        "BREAKS_BOUNDARY",
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "EXPANSION_LEAVES_COMPRESSION",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-06 18:17:00-04:00",
+      "direction": "long",
+      "entry_mode": "next_bar",
+      "trigger_family": "compression_expansion",
+      "continuation_or_fade": "continuation",
+      "entry": 23005.0,
+      "stop": 22987.75,
+      "natural_target": 23022.0,
+      "natural_rr": 0.9855,
+      "executed_target": 23022.0,
+      "executed_rr": 0.9855,
+      "stop_anchor": {
+        "type": "compression_region",
+        "object": "STRUCT-000001",
+        "price": 22987.75
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000071",
+        "price": 23022.0
+      },
+      "anchor_rule": "compression_expansion|stop=compression_region|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "LOSS"
+    }
+  },
+  {
+    "category": "23_capped_1R",
+    "chart": "charts/23_capped_1R.png",
+    "example": {
+      "candidate_id": "GNC-000003",
+      "branch_id": "GBR-000014",
+      "episode_id": "GEP-000005",
+      "trigger_event_id": "EVT-0000035",
+      "branch_lineage_parents": [
+        "GBR-000013"
+      ],
+      "exact_graph": "BEARISH_FVG_FORMED -> BEARISH_FVG_FIRST_TOUCH -> FIRST_TOUCH_SHORT_TRIGGER",
+      "reduced_graph": "GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000031",
+        "EVT-0000035"
+      ],
+      "ordered_transition_ids": [
+        "H_fvg_first_touch:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP"
+      ],
+      "timestamp_et": "2025-07-06 18:13:00-04:00",
+      "direction": "short",
+      "entry_mode": "first_touch",
+      "trigger_family": "fvg_fill",
+      "continuation_or_fade": "continuation",
+      "entry": 22996.0,
+      "stop": 22998.5,
+      "natural_target": 22977.0,
+      "natural_rr": 7.6,
+      "executed_target": 22993.5,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "fvg_boundary",
+        "object": "FVG-000002",
+        "price": 22998.5
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000070",
+        "price": 22977.0
+      },
+      "anchor_rule": "fvg_fill|stop=fvg_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "WIN"
+    }
+  },
+  {
+    "category": "24_sufficient_prior_evidence",
+    "chart": "charts/24_sufficient_prior_evidence.png",
+    "example": {
+      "candidate_id": "GNC-008599",
+      "branch_id": "GBR-010489",
+      "episode_id": "GEP-002358",
+      "trigger_event_id": "EVT-0157628",
+      "branch_lineage_parents": [
+        "GBR-010487"
+      ],
+      "exact_graph": "BEARISH_FVG_FORMED -> BEARISH_FVG_FIRST_FILL -> FIRST_FILL_SHORT_TRIGGER",
+      "reduced_graph": "GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0157595",
+        "EVT-0157628"
+      ],
+      "ordered_transition_ids": [
+        "H_fvg_first_fill:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP",
+        "WITHIN_SUPPORTING_ATR_PROXIMITY"
+      ],
+      "timestamp_et": "2025-07-08 18:10:00-04:00",
+      "direction": "short",
+      "entry_mode": "first_fill",
+      "trigger_family": "fvg_fill",
+      "continuation_or_fade": "continuation",
+      "entry": 22915.625,
+      "stop": 22916.25,
+      "natural_target": 22915.25,
+      "natural_rr": 0.6,
+      "executed_target": 22915.25,
+      "executed_rr": 0.6,
+      "stop_anchor": {
+        "type": "fvg_boundary",
+        "object": "FVG-000612",
+        "price": 22916.25
+      },
+      "target_anchor": {
+        "type": "opposing_time_anchor",
+        "object": "LVL-000015",
+        "price": 22915.25
+      },
+      "anchor_rule": "fvg_fill|stop=fvg_boundary|target=opposing_time_anchor",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 4,
+        "unique_sessions": 4,
+        "shrunk_expected_R": 0.0734,
+        "reduced_estimate": 0.0415,
+        "exact_estimate": 0.0734,
+        "uncertainty": 0.4373,
+        "recency_ok": true
+      },
+      "qualification": "QUALIFIED_PENDING_TRIGGER",
+      "outcome_shown_separately": "AMBIGUOUS"
+    }
+  },
+  {
+    "category": "25_recorded_not_activated",
+    "chart": "charts/25_recorded_not_activated.png",
+    "example": {
+      "candidate_id": "GNC-000003",
+      "branch_id": "GBR-000014",
+      "episode_id": "GEP-000005",
+      "trigger_event_id": "EVT-0000035",
+      "branch_lineage_parents": [
+        "GBR-000013"
+      ],
+      "exact_graph": "BEARISH_FVG_FORMED -> BEARISH_FVG_FIRST_TOUCH -> FIRST_TOUCH_SHORT_TRIGGER",
+      "reduced_graph": "GAP_FORMATION -> GAP_FILL -> ENTRY_TRIGGER",
+      "ordered_event_ids": [
+        "EVT-0000031",
+        "EVT-0000035"
+      ],
+      "ordered_transition_ids": [
+        "H_fvg_first_touch:S0"
+      ],
+      "relationship_evidence": [
+        "DIRECTIONALLY_SUPPORTS",
+        "ENTERS_ZONE",
+        "FILLS_ZONE",
+        "SAME_OBJECT",
+        "TOUCHES_ZONE",
+        "WITHIN_FROZEN_TIME_GAP"
+      ],
+      "timestamp_et": "2025-07-06 18:13:00-04:00",
+      "direction": "short",
+      "entry_mode": "first_touch",
+      "trigger_family": "fvg_fill",
+      "continuation_or_fade": "continuation",
+      "entry": 22996.0,
+      "stop": 22998.5,
+      "natural_target": 22977.0,
+      "natural_rr": 7.6,
+      "executed_target": 22993.5,
+      "executed_rr": 1.0,
+      "stop_anchor": {
+        "type": "fvg_boundary",
+        "object": "FVG-000002",
+        "price": 22998.5
+      },
+      "target_anchor": {
+        "type": "opposing_liquidity",
+        "object": "LVL-000070",
+        "price": 22977.0
+      },
+      "anchor_rule": "fvg_fill|stop=fvg_boundary|target=opposing_liquidity",
+      "parent_fvg_lineage": null,
+      "expiry_rule": "120_bars_or_segment_end",
+      "evidence_summary": {
+        "effective_sample": 0,
+        "unique_sessions": 0,
+        "shrunk_expected_R": 0.0,
+        "reduced_estimate": 0.0,
+        "exact_estimate": 0.0,
+        "uncertainty": 1.0,
+        "recency_ok": false
+      },
+      "qualification": "RECORDED_NOT_ACTIVATED",
+      "outcome_shown_separately": "WIN"
+    }
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "n_variants": 138662,
+  "violations": {
+    "interaction_after_trigger": 0,
+    "entry_before_trigger": 0,
+    "target_after_entry": 0,
+    "historical_outcome_resolved_after_app_start": 0,
+    "application_variant_has_outcome": 0
+  },
+  "total_violations": 0,
+  "application_outcomes_computed": false,
+  "outcome_fields_in_fingerprints": false
+}

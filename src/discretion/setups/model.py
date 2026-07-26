@@ -80,6 +80,15 @@ def apply_rr_policy(s: Setup) -> Setup:
     natural_rr = abs(s.structural_target - s.entry_price) / risk
     s.natural_rr = natural_rr
 
+    # frozen geometry: long stop<entry<target; short target<entry<stop.
+    # stop must sit on the opposite side of entry from the target.
+    stop_side = 1.0 if s.structural_stop > s.entry_price else -1.0
+    if s.structural_stop != s.entry_price and stop_side == dir_sign:
+        s.rejected = True
+        s.eligible = False
+        s.rejection_reason = "STOP_WRONG_SIDE"
+        return s
+
     # target must be on the correct side of entry for the direction
     target_side = 1.0 if s.structural_target > s.entry_price else -1.0
     if s.structural_target != s.entry_price and target_side != dir_sign:

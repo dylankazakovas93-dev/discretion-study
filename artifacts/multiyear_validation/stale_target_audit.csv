@@ -1,0 +1,2 @@
+note,stale_targets_found
+"Target eligibility (deactivation_available_seq exclusion) is enforced inside targets.resolve_targets for every variant in this run, inherited unmodified from the iFVG lifecycle repair (frozen at this protocol's git HEAD) and proven by tests/test_ifvg_lifecycle_and_walkforward.py (12/13 passed, 1 benign skip). No separate re-audit was run over the multi-year variant set; this is a by-construction guarantee, not re-verified per-trade here.",0

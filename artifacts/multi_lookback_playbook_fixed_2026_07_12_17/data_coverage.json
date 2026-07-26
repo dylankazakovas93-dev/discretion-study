@@ -1,0 +1,26 @@
+{
+  "symbol": "NQU6",
+  "contracts_present": [
+    "NQU6"
+  ],
+  "roll_handling": "single front-month contract NQU6 only; no roll stitching",
+  "first_bar_et": "2026-06-01 00:01:00-04:00",
+  "last_bar_et": "2026-07-17 16:59:00-04:00",
+  "n_bars": 42627,
+  "n_sessions_total": 35,
+  "n_complete_pre_application_sessions": 30,
+  "application_sessions": [
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14",
+    "2026-07-15",
+    "2026-07-16"
+  ],
+  "target_search_window_bars": 600,
+  "ifvg_lifecycle_repair": {
+    "total_ifvgs": 4252,
+    "deactivated_with_causal_timing": 4252,
+    "still_persistent_active": 0
+  },
+  "INSUFFICIENT_HISTORY_FOR_20_SESSION_LOOKBACK": false
+}
