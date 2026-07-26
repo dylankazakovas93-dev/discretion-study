@@ -56,3 +56,4 @@ artifacts/review_week_atlas_2025_07_14_18_repaired/_stage_a_handoff.pkl.tmp
 artifacts/review_week_atlas_2025_07_14_18_repaired/_stage_a.log
 artifacts/review_week_atlas_2025_07_14_18_repaired/_stage_b.log
 artifacts/multiyear_validation_v2/checkpoints/
+artifacts/multiyear_validation_v2/run_logs/
