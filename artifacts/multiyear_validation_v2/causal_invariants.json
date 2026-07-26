@@ -1,0 +1,11 @@
+{
+  "n_sessions": 2176,
+  "n_validation_sessions": 2064,
+  "n_executable_variants": 389042,
+  "causal_violation_self_or_future_source": 0,
+  "validation_years": [
+    2018,
+    2025
+  ],
+  "note": "playbook pool for session d uses only sessions strictly before d, and only outcomes whose exit session resolved strictly before d."
+}

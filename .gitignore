@@ -58,3 +58,4 @@ artifacts/review_week_atlas_2025_07_14_18_repaired/_stage_b.log
 artifacts/multiyear_validation_v2/checkpoints/
 artifacts/multiyear_validation_v2/run_logs/
 artifacts/multiyear_validation_v2/segcache/
+artifacts/multiyear_validation_v2/all_hypothesis_variants.csv
