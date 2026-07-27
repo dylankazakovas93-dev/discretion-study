@@ -1,0 +1,33 @@
+segments in memory: 33
+  anchor GLOBEX_1800 done, configs=54
+  anchor MIDNIGHT_0000 done, configs=108
+  anchor LONDON_0300 done, configs=162
+  anchor CASH_0930 done, configs=216
+  anchor TEN_1000 done, configs=270
+  anchor NYPM_1330 done, configs=324
+total native configs: 432
+evaluated: 432
+
+config  desc                                                                           n   /wk     PF1     PF2  py1
+A00241  VWAP(TEN_1000) 2SD ext->revert(<=5b)->EMA5m cross -> next bar, tgt=vwap     3673   8.8  1.0144  0.9156   4/8
+A00319  VWAP(NYPM_1330) 3SD ext->revert(<=15b)->EMA1m cross -> next bar, tgt=vwap   1784   4.3  1.0130  0.9212   3/8
+A00045  VWAP(GLOBEX_1800) 3SD ext->revert(<=5b)->EMA5m cross -> next bar, tgt=2R    1598   3.8  1.0089  0.8961   5/8
+A00054  VWAP(GLOBEX_1800) 3SD ext->revert(<=15b)->EMA5m cross -> next bar, tgt=2R   1599   3.8  1.0079  0.8952   5/8
+A00250  VWAP(TEN_1000) 2SD ext->revert(<=15b)->EMA5m cross -> next bar, tgt=vwap    4412  10.6  1.0049  0.9092   3/8
+A00036  VWAP(GLOBEX_1800) 2SD ext->revert(<=15b)->EMA5m cross -> next bar, tgt=2R   4423  10.6  0.9924  0.8873   4/8
+A00252  VWAP(TEN_1000) 2SD ext->revert(<=15b)->EMA5m cross -> next bar, tgt=2R      7602  18.2  0.9894  0.8967   4/8
+A00243  VWAP(TEN_1000) 2SD ext->revert(<=5b)->EMA5m cross -> next bar, tgt=2R       6813  16.3  0.9889  0.8960   4/8
+A00211  VWAP(CASH_0930) 3SD ext->revert(<=15b)->EMA1m cross -> next bar, tgt=vwap   1342   3.2  0.9795  0.8937   6/8
+A00027  VWAP(GLOBEX_1800) 2SD ext->revert(<=5b)->EMA5m cross -> next bar, tgt=2R    4203  10.1  0.9793  0.8750   3/8
+A00144  VWAP(LONDON_0300) 2SD ext->revert(<=15b)->EMA5m cross -> next bar, tgt=2R   5729  13.7  0.9736  0.8744   2/8
+A00153  VWAP(LONDON_0300) 3SD ext->revert(<=5b)->EMA5m cross -> next bar, tgt=2R    1975   4.7  0.9720  0.8687   3/8
+A00162  VWAP(LONDON_0300) 3SD ext->revert(<=15b)->EMA5m cross -> next bar, tgt=2R   2000   4.8  0.9716  0.8683   2/8
+A00135  VWAP(LONDON_0300) 2SD ext->revert(<=5b)->EMA5m cross -> next bar, tgt=2R    5370  12.9  0.9706  0.8714   1/8
+A00099  VWAP(MIDNIGHT_0000) 3SD ext->revert(<=5b)->EMA5m cross -> next bar, tgt=2   1984   4.8  0.9692  0.8604   3/8
+A00108  VWAP(MIDNIGHT_0000) 3SD ext->revert(<=15b)->EMA5m cross -> next bar, tgt=   1996   4.8  0.9680  0.8594   3/8
+A00090  VWAP(MIDNIGHT_0000) 2SD ext->revert(<=15b)->EMA5m cross -> next bar, tgt=   5841  14.0  0.9626  0.8598   2/8
+C00360  px >2.0ATR from EMA21(15m) -> close back through (<=15b) -> next bar, tgt  18276  43.8  0.9611  0.8787   0/8
+C00396  px >2.0ATR from EMA21(15m) -> close back through (<=15b) -> next bar, tgt  18276  43.8  0.9611  0.8787   0/8
+C00432  px >2.0ATR from EMA21(15m) -> close back through (<=15b) -> next bar, tgt  18276  43.8  0.9611  0.8787   0/8
+
+NATIVE 8/8 SURVIVORS (PF@1>=1.15, >=500 trades, >=1.5/wk): 0
