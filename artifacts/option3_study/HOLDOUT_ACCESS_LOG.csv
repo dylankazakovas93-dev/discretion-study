@@ -1,0 +1,7 @@
+timestamp_utc,actor,action,scope,rows_2026_loaded,status,note
+2026-07-26T21:05:00Z,stage_a_module,ingest_boundary_enforced,checkpoints 2018-2025,0,CLEAN,"19037 non-development rows refused at load before any feature or metric computed"
+2026-07-26T21:05:00Z,stage_a_module,baseline_reproduction,2018-2025,0,CLEAN,"no 2026 row loaded scored or summarised"
+2026-07-26T21:10:00Z,stage_a_module,A1_variant_ablation,2018-2025,0,CLEAN,"development years only"
+2026-07-26T21:10:00Z,stage_a_module,A2_session_ablation,2018-2025,0,CLEAN,"development years only"
+2026-07-26T20:30:00Z,prior_conversation_turn,PRIOR_UNSEAL,2026-01-01..2026-06-04,641,CONTAMINATED,"BEFORE this brief was issued the operator directed a full Option 3 evaluation on Jan-Jun 2026. Result was computed and disclosed: PF@1pt 1.0636, net +24.6R, Jan-Feb +44.9R, Mar-Jun -20.3R. This knowledge exists in the assistant context and CANNOT be un-known. Stage A diagnosis is unaffected. CHALLENGER SELECTION IS CONTAMINATED for the Jan-Jun 2026 window."
+2026-07-26T20:30:00Z,prior_conversation_turn,STILL_SEALED,2026-06-08..2026-07-17,0,CLEAN,"uploaded file dc21205c never ingested scored or inspected. Available as an uncontaminated holdout."
