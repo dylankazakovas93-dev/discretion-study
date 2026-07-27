@@ -59,3 +59,7 @@ artifacts/multiyear_validation_v2/checkpoints/
 artifacts/multiyear_validation_v2/run_logs/
 artifacts/multiyear_validation_v2/segcache/
 artifacts/multiyear_validation_v2/all_hypothesis_variants.csv
+
+# broad_discovery: regenerable intermediates (large)
+artifacts/broad_discovery/candidates_with_features.pkl
+artifacts/broad_discovery/feat_*.pkl

@@ -1,0 +1,30 @@
+stream (risk>=12): 167,741
+Family G configs: 1377
+total configs: 2817
+evaluated (>=200 trades): 1406
+8/8 survivors (PF@1>1.10, >=1.5/wk, >=500 trades): 27
+  H01499 NY_AM | VWAP(MIDNIGHT_0000) inside_1sd | px vs EMA21(1m)           n= 1190 /wk=  2.9 PF1=1.7096 PF2=1.5566 py2=7/8
+  H01579 NY_AM | VWAP(LONDON_0300) inside_1sd | px vs EMA21(1m)             n= 1197 /wk=  2.9 PF1=1.6633 PF2=1.5138 py2=8/8
+  H01667 NY_AM | VWAP(CASH_0930) inside_1sd | ADX(1m) adx_ge35              n=  626 /wk=  1.5 PF1=1.6527 PF2=1.5018 py2=6/8
+  H01751 NY_AM | VWAP(TEN_1000) inside_1sd | ADX(5m) adx_25_35              n= 1140 /wk=  2.7 PF1=1.6082 PF2=1.4697 py2=7/8
+  H01419 NY_AM | VWAP(GLOBEX_1800) inside_1sd | px vs EMA21(1m)             n= 1281 /wk=  3.1 PF1=1.5867 PF2=1.4430 py2=8/8
+  H01671 NY_AM | VWAP(CASH_0930) inside_1sd | ADX(5m) adx_25_35             n= 1033 /wk=  2.5 PF1=1.4906 PF2=1.3548 py2=7/8
+  H01536 NY_AM | VWAP(MIDNIGHT_0000) reverting_1sd | ADX(15m) adx_25_35     n= 1085 /wk=  2.6 PF1=1.4273 PF2=1.2941 py2=5/8
+  H01672 NY_AM | VWAP(CASH_0930) inside_1sd | ADX(5m) adx_ge35              n=  755 /wk=  1.8 PF1=1.4164 PF2=1.2886 py2=7/8
+  H01771 NY_AM | VWAP(TEN_1000) reverting_1sd | ADX(5m) adx_25_35           n=  997 /wk=  2.4 PF1=1.4136 PF2=1.2883 py2=8/8
+  H01659 NY_AM | VWAP(CASH_0930) inside_1sd | px vs EMA21(1m)               n= 1331 /wk=  3.2 PF1=1.4128 PF2=1.2924 py2=8/8
+  H01851 NY_AM | VWAP(NYPM_1330) reverting_1sd | ADX(5m) adx_25_35          n= 1002 /wk=  2.4 PF1=1.4100 PF2=1.2823 py2=7/8
+  H01451 NY_AM | VWAP(GLOBEX_1800) reverting_1sd | ADX(5m) adx_25_35        n= 1050 /wk=  2.5 PF1=1.3961 PF2=1.2665 py2=8/8
+  H01796 NY_AM | VWAP(NYPM_1330) beyond_1sd | ADX(15m) adx_25_35            n= 1004 /wk=  2.4 PF1=1.3928 PF2=1.2641 py2=7/8
+  H01691 NY_AM | VWAP(CASH_0930) reverting_1sd | ADX(5m) adx_25_35          n= 1098 /wk=  2.6 PF1=1.3860 PF2=1.2590 py2=8/8
+  H01616 NY_AM | VWAP(LONDON_0300) reverting_1sd | ADX(15m) adx_25_35       n= 1105 /wk=  2.7 PF1=1.3709 PF2=1.2428 py2=5/8
+  H01845 NY_AM | VWAP(NYPM_1330) reverting_1sd | ADX(1m) adx_20_25          n=  691 /wk=  1.7 PF1=1.3679 PF2=1.2379 py2=7/8
+  H01658 NY_AM | VWAP(CASH_0930) inside_1sd | any structure                 n= 3036 /wk=  7.3 PF1=1.3620 PF2=1.2369 py2=8/8
+  H01418 NY_AM | VWAP(GLOBEX_1800) inside_1sd | any structure               n= 3096 /wk=  7.4 PF1=1.3560 PF2=1.2305 py2=7/8
+  G00098 NY_AM | ENTRY_ON_FIRST_CLOSE_OUTSIDE | ADX(15m) adx_15_20          n=  871 /wk=  2.1 PF1=1.3511 PF2=1.2564 py2=7/8
+  H01476 NY_AM | VWAP(MIDNIGHT_0000) beyond_1sd | ADX(15m) adx_25_35        n= 1012 /wk=  2.4 PF1=1.3457 PF2=1.2233 py2=6/8
+  H01661 NY_AM | VWAP(CASH_0930) inside_1sd | px vs EMA21(5m)               n= 1274 /wk=  3.1 PF1=1.3415 PF2=1.2283 py2=7/8
+  H01505 NY_AM | VWAP(MIDNIGHT_0000) inside_1sd | ADX(1m) adx_20_25         n=  843 /wk=  2.0 PF1=1.3383 PF2=1.2170 py2=7/8
+  H01696 NY_AM | VWAP(CASH_0930) reverting_1sd | ADX(15m) adx_25_35         n= 1015 /wk=  2.4 PF1=1.3295 PF2=1.2083 py2=6/8
+  G00092 NY_AM | ENTRY_ON_FIRST_CLOSE_OUTSIDE | ADX(5m) adx_15_20           n=  706 /wk=  1.7 PF1=1.3156 PF2=1.2216 py2=7/8
+  H01660 NY_AM | VWAP(CASH_0930) inside_1sd | px vs EMA21(3m)               n= 1259 /wk=  3.0 PF1=1.3028 PF2=1.1929 py2=5/8
