@@ -117,3 +117,26 @@ configs) are therefore heavily overlapping and are NOT distinct AMD events.
 This does not bias the RB pairing, because overlapping distribution windows
 merge into the same eligibility mask, but the instance counts must not be read
 as event frequency.
+
+---
+
+# Full combination search — final answer
+
+660 combinations of AMD state x TPO state x VWAP/EMA state, applied to the
+NY-morning 1m/3m/5m rejection-block candidate stream, each with a full
+occupancy rerun. 258 reached the 400-trade minimum.
+
+**Configurations positive in ALL EIGHT years at BOTH 1pt and 2pt cost, with
+at least 2.5 trades/week: 2.**
+
+| AMD | TPO | VWAP | n | /wk | PF@1 | PF@2 | Net@2 | MDD@2 |
+|---|---|---|---|---|---|---|---|---|
+| none | none | 09:30 VWAP <1sd | 2150 | 5.16 | 1.3515 | 1.2296 | +239.6 | -26.1 |
+| none | >1 ATR from prior POC | 09:30 VWAP <1sd | 1744 | 4.19 | 1.3384 | 1.2180 | +190.5 | -24.5 |
+
+The winner is RB-K1 unchanged. Adding AMD, TPO, EMA or any combination either
+breaks a year or cuts frequency below the threshold. Nothing improves it.
+
+RB-K1 year by year, net R after 2pt cost:
+2018 +5, 2019 +14, 2020 +8, 2021 +40, 2022 +58, 2023 +33, 2024 +30, 2025 +53.
+Best year is 22% of total. No negative year at either cost level.
