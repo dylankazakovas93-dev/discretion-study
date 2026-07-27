@@ -64,3 +64,4 @@ artifacts/multiyear_validation_v2/all_hypothesis_variants.csv
 artifacts/broad_discovery/candidates_with_features.pkl
 artifacts/broad_discovery/feat_*.pkl
 artifacts/rb_refinement/tpo_store.pkl
+artifacts/rb_refinement/amd_store.pkl

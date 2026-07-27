@@ -38,3 +38,36 @@ Every TPO state cuts frequency while leaving PF within ~0.02 of the benchmark
 and surrendering 15-45% of net R. TPO location relative to POC or value area
 carries no information about RB trade quality that the VWAP state does not
 already capture.
+
+---
+
+# AMD addendum (run 2)
+
+**1. Was the AMD detector fully implemented?  YES.** Causal state machine:
+accumulation range unknown until its final bar closes (activation), manipulation
+must follow activation, re-entry must follow manipulation, distribution
+confirmation must follow re-entry. 288 configurations across timeframes
+(1/3/5m), lengths (12/18/24), range widths (<=1.0/1.5 ATR), excursions
+(any/0.25 ATR), manipulation windows (6/12), distribution confirmations
+(midpoint/opposite side) and RB windows (6/12). 259,490 AMD instances detected.
+
+**3. Did AMD improve RB-K1 or RB-K3?  CANNOT BE ANSWERED — sample too small.**
+
+576 AMD+RB configurations were run. **Zero reached the 300-trade minimum.**
+
+    matched RB trades per AMD config: max 36, median 0, over eight years
+    configs producing any matched trade at all: 284 of 576
+    AMD instances per config: median 155 over eight years (~19/year)
+
+The binding constraint is the specified accumulation test: range width divided
+by completed Wilder ATR(24). A 12-24 bar range is compared against a ONE-bar
+ATR, and under normal price behaviour a multi-bar range is several times a
+single-bar ATR. Requiring <=1.0-1.5x therefore selects only extremely coiled
+conditions, which are rare. That is what the specification asks for, and it was
+implemented as written; the consequence is that AMD-confirmed rejection-block
+trades occur at most 36 times in eight years (~0.09/week).
+
+AMD as specified is not falsified. It is untestable at the required sample size
+because the events almost never coincide with an eligible RB trigger.
+
+**Verdict unchanged: RB-K1 remains the best manually definable rule.**
