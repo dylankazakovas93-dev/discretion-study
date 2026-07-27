@@ -65,3 +65,5 @@ artifacts/broad_discovery/candidates_with_features.pkl
 artifacts/broad_discovery/feat_*.pkl
 artifacts/rb_refinement/tpo_store.pkl
 artifacts/rb_refinement/amd_store.pkl
+artifacts/rb_refinement/amd_v2_parts/
+artifacts/rb_refinement/amd_v2.pkl
