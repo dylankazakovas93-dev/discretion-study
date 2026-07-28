@@ -68,3 +68,4 @@ artifacts/rb_refinement/amd_store.pkl
 artifacts/rb_refinement/amd_v2_parts/
 artifacts/rb_refinement/amd_v2.pkl
 artifacts/rb_refinement/*.log
+artifacts/rb_refinement/formula_exit.pkl
