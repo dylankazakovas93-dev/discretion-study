@@ -62,7 +62,8 @@ for sid,sb in sorted(segs.items()):
         if j<1: continue
         px=float(F["close"][j-1]); vw=float(F["vwap_CASH_0930"][j-1])
         sd=max(float(F["vwsd_CASH_0930"][j-1]),1e-9)
-        allc.append({"sd":v.session_date_et,"e":v.entry_ts,"x":o.exit_ts,"fk":(v.lane,v.direction,
+        ex_ts=local[o.exit_seq].ts_et if 0<=o.exit_seq<len(local) else v.entry_ts
+        allc.append({"sd":v.session_date_et,"e":v.entry_ts,"x":ex_ts,"fk":(v.lane,v.direction,
                      v.context_family,v.session,v.entry_variant,v.reaction_state),
                      "pts":o.points,"risk":risk,"sess":v.session,"cf":v.context_family,
                      "ctf":v.context_tf,"z":(px-vw)/sd})
