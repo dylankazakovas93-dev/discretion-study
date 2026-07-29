@@ -1,13 +1,1 @@
 Loading 2013-2015 data...
-Front-month rows: 953,581  2013-01-02 → 2015-12-31
-Bars: 953,581  segments: 13
-/home/user/discretion-study/scripts/feature_engine.py:89: RuntimeWarning: invalid value encountered in divide
-  atr = rma(tr); pdi = np.where(atr > 0, 100 * rma(pdm) / atr, 0.0)
-/home/user/discretion-study/scripts/feature_engine.py:90: RuntimeWarning: invalid value encountered in divide
-  ndi = np.where(atr > 0, 100 * rma(ndm) / atr, 0.0)
-/home/user/discretion-study/scripts/feature_engine.py:91: RuntimeWarning: invalid value encountered in divide
-  dx = np.where((pdi + ndi) > 0, 100 * np.abs(pdi - ndi) / (pdi + ndi), 0.0)
-  seg00  2013-01-02 → 2013-03-07  bars= 55,488  cands= 286  total_sim=  286
-  seg01  2013-03-08 → 2013-06-13  bars= 84,169  cands= 355  total_sim=  641
-  seg02  2013-06-14 → 2013-09-12  bars= 78,803  cands= 347  total_sim=  988
-  seg03  2013-09-13 → 2013-12-12  bars= 80,188  cands= 384  total_sim= 1372

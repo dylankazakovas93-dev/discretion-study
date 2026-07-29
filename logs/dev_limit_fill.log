@@ -1,1 +1,9 @@
 seg00  2018-01-01 → 2018-03-08  bars=65,257
+/home/user/discretion-study/scripts/feature_engine.py:89: RuntimeWarning: invalid value encountered in divide
+  atr = rma(tr); pdi = np.where(atr > 0, 100 * rma(pdm) / atr, 0.0)
+/home/user/discretion-study/scripts/feature_engine.py:90: RuntimeWarning: invalid value encountered in divide
+  ndi = np.where(atr > 0, 100 * rma(ndm) / atr, 0.0)
+/home/user/discretion-study/scripts/feature_engine.py:91: RuntimeWarning: invalid value encountered in divide
+  dx = np.where((pdi + ndi) > 0, 100 * np.abs(pdi - ndi) / (pdi + ndi), 0.0)
+  → 196 cands  total_sim=196
+seg01  2018-03-09 → 2018-06-07  bars=86,892
