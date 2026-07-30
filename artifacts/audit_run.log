@@ -1,0 +1,5 @@
+======================================================================
+STEP 9: Candidate reconciliation (old segcache vs new engine)
+======================================================================
+Loading old variants from all_hypothesis_variants.csv ...
+Old variant count: 389,042
