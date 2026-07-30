@@ -176,13 +176,23 @@ contracts = manifest["contracts"]
 print("Loading old variants from all_hypothesis_variants.csv ...", flush=True)
 old_df = pd.read_csv("artifacts/multiyear_validation_v2/all_hypothesis_variants.csv",
                      low_memory=False)
-# Build old variant set keyed by (entry_ts, direction, entry_variant, context_family)
-# Note: old CSV doesn't have context_id, so we use this coarser key
+
+# Normalise timestamps to UTC int64 (nanoseconds) for format-agnostic matching.
+# Old CSV has "2018-01-01 21:13:00-05:00"; new variants produce Timestamps
+# with tz America/New_York. Both represent the same instant → match in UTC ns.
+old_df["_entry_ts_utc_ns"] = pd.to_datetime(old_df["entry_ts"], utc=True).astype("int64")
 old_key_set = set()
 for _, row in old_df.iterrows():
-    k = (str(row["entry_ts"]), int(row["direction"]), str(row["entry_variant"]))
+    k = (int(row["_entry_ts_utc_ns"]), int(row["direction"]), str(row["entry_variant"]))
     old_key_set.add(k)
 print(f"Old variant count: {len(old_df):,}", flush=True)
+
+
+def _ts_key(ts):
+    """Convert entry_ts (Timestamp or str) to UTC ns for matching."""
+    if hasattr(ts, "value"):
+        return int(ts.tz_convert("UTC").value)
+    return int(pd.Timestamp(ts).tz_convert("UTC").value)
 
 recon_rows = []
 new_total_new_engine = 0
