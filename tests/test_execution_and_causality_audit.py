@@ -14,6 +14,10 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from helpers import make_bars
+from discretion.execution.simulator import (
+    limit_fill_long, limit_fill_short, simulate_trade,
+    occupancy_filter, matched_fill_comparison,
+)
 
 ET = "America/New_York"
 
@@ -43,20 +47,9 @@ class TestLimitFillValidity:
         open[i] >= zone_lo                       →  fill at open[i]  (GAP_THROUGH_OPEN)
     """
 
-    def _limit_fill_long(self, o, h, l, zone_hi):
-        """Return (fill_price, fill_mode) or None if unfilled."""
-        if o <= zone_hi:
-            return (o, "GAP_THROUGH_OPEN")
-        if l <= zone_hi:
-            return (zone_hi, "INTRABAR_TOUCH")
-        return None
-
-    def _limit_fill_short(self, o, h, l, zone_lo):
-        if o >= zone_lo:
-            return (o, "GAP_THROUGH_OPEN")
-        if h >= zone_lo:
-            return (zone_lo, "INTRABAR_TOUCH")
-        return None
+    # Production functions — imported at module level.
+    _limit_fill_long = staticmethod(limit_fill_long)
+    _limit_fill_short = staticmethod(limit_fill_short)
 
     # --- Long ---
 
@@ -232,41 +225,9 @@ class TestIntrabarkExecutionOrder:
     """
 
     def _simulate_conservative(self, bars, ep, direction, tp, sl, be_bar=30):
-        """
-        Simulate with next-bar-start rule for intrabar fills.
-        fill_bar_idx: index of bar where limit was filled intrabar.
-        Returns (exit_type, exit_bar, exit_price, r).
-        """
-        risk = abs(ep - sl)
-        n = len(bars)
-        tgt = ep + direction * tp
-        stp = sl
-        be_triggered = False
-
-        for idx, b in enumerate(bars):
-            if idx == 0:
-                # fill bar: do NOT evaluate TP/SL (conservative rule)
-                continue
-            offset = idx  # bars[0] is the fill bar; offset counts from fill
-            if not be_triggered and offset >= be_bar:
-                cur = b.high if direction > 0 else b.low
-                if (cur > ep) if direction > 0 else (cur < ep):
-                    stp = ep
-                    be_triggered = True
-            if direction > 0:
-                hs = b.low <= stp
-                ht = b.high >= tgt
-            else:
-                hs = b.high >= stp
-                ht = b.low <= tgt
-            if hs and ht:
-                return ("STOP", idx, stp, -abs(ep - stp) / risk)
-            if hs:
-                return ("STOP", idx, stp, -abs(ep - stp) / risk)
-            if ht:
-                return ("TARGET", idx, tgt, tp / risk)
-        last = len(bars) - 1
-        return ("TIME", last, bars[last].close, (bars[last].close - ep) * direction / risk)
+        """Delegates to production simulate_trade with skip_first_bar=True."""
+        return simulate_trade(bars, ep=ep, direction=direction, tp_pts=tp,
+                              sl_orig=sl, be_bar=be_bar, skip_first_bar=True)
 
     def test_target_on_fill_bar_not_credited(self):
         """
@@ -324,47 +285,9 @@ class TestBreakevenActivationOrdering:
     """
 
     def _simulate_correct_be(self, bars, ep, direction, tp_pts, sl_orig, be_bar=30):
-        """
-        Correct BE simulation:
-        - BE eligibility checked using completed bars (offset >= be_bar means
-          bar with offset == be_bar is the FIRST bar where BE CAN activate)
-        - Stop modification takes effect starting on the FOLLOWING bar
-        - Current bar always evaluated against stop active at its OPEN
-        """
-        risk = abs(ep - sl_orig)
-        n = len(bars)
-        tgt = ep + direction * tp_pts
-        stp_at_open = sl_orig    # stop active at open of each bar
-        stp_next = sl_orig       # stop that will be active at next bar's open
-        be_triggered = False
-
-        for idx, b in enumerate(bars):
-            stp_at_open = stp_next   # commit the stop decided at end of previous bar
-
-            # Evaluate stop and target using stop active at THIS bar's open
-            if direction > 0:
-                hs = b.low <= stp_at_open
-                ht = b.high >= tgt
-            else:
-                hs = b.high >= stp_at_open
-                ht = b.low <= tgt
-
-            if hs and ht:
-                return ("STOP", idx, stp_at_open, -abs(ep - stp_at_open) / risk)
-            if hs:
-                return ("STOP", idx, stp_at_open, -abs(ep - stp_at_open) / risk)
-            if ht:
-                return ("TARGET", idx, tgt, tp_pts / risk)
-
-            # After evaluating this bar, decide what stop the NEXT bar opens with
-            if not be_triggered and idx >= be_bar:
-                cur = b.high if direction > 0 else b.low
-                if (cur > ep) if direction > 0 else (cur < ep):
-                    stp_next = ep    # BE activates — next bar opens with BE stop
-                    be_triggered = True
-
-        last = n - 1
-        return ("TIME", last, bars[last].close, (bars[last].close - ep) * direction / risk)
+        """Delegates to production simulate_trade."""
+        return simulate_trade(bars, ep=ep, direction=direction, tp_pts=tp_pts,
+                              sl_orig=sl_orig, be_bar=be_bar)
 
     def test_be_bar_low_below_original_stop_is_a_loss(self):
         """
@@ -500,23 +423,10 @@ class TestTimeoutExitPrice:
     """
 
     def _simulate_with_close_exit(self, bars, ep, direction, tp_pts, sl, max_bars=480):
-        """Correct implementation: timeout exits at close[end]."""
-        tgt = ep + direction * tp_pts
-        stp = sl
-        n = len(bars)
-        end = min(n - 1, len(bars) - 1) if max_bars >= n else min(n - 1, max_bars)
-        for idx in range(min(len(bars), max_bars + 1)):
-            b = bars[idx]
-            if direction > 0:
-                hs, ht = b.low <= stp, b.high >= tgt
-            else:
-                hs, ht = b.high >= stp, b.low <= tgt
-            if hs:
-                return ("STOP", idx, stp)
-            if ht:
-                return ("TARGET", idx, tgt)
-        end_bar = bars[min(len(bars) - 1, max_bars)]
-        return ("TIME", min(len(bars) - 1, max_bars), end_bar.close)
+        """Delegates to production simulate_trade; returns only (exit_type, idx, price)."""
+        xt, idx, price, _ = simulate_trade(bars, ep=ep, direction=direction, tp_pts=tp_pts,
+                                           sl_orig=sl, max_hold=max_bars)
+        return (xt, idx, price)
 
     def _simulate_with_open_exit(self, bars, ep, direction, tp_pts, sl, max_bars=480):
         """Broken implementation: timeout exits at open[end] (impossible chronology)."""
@@ -618,12 +528,13 @@ class TestExpiredContextCannotInteract:
         bars = [dataclasses.replace(b, seq=i, segment_id=0) for i, b in enumerate(bars)]
 
         _ep, variants, _diag = observe(bars, target_window=600)
+        # Entry would be at avail(1, s, 481) = 482; check for any entry after expiry (>480)
         rb_variants_at_late_tap = [
             v for v in variants
-            if v.context_family == "rb" and v.entry_seq == 481
+            if v.context_family == "rb" and v.entry_seq > 480
         ]
         assert len(rb_variants_at_late_tap) == 0, \
-            f"Expected no RB episode at bar 481 (after 8h expiry), got {len(rb_variants_at_late_tap)}"
+            f"Expected no RB episode after 8h expiry (entry_seq>480), got {len(rb_variants_at_late_tap)}"
 
     def test_rb_tap_within_8h_can_produce_episode(self):
         """Sanity: a tap within the 8h window can produce an episode."""
@@ -685,9 +596,11 @@ class TestInteractionCandleInvalidation:
             bars.append(make_bar(i, o=105, h=106, l=104, c=105))
         # Interaction candle: enters zone (low=95) but closes below distal (close=88)
         bars.append(make_bar(30, o=104, h=104, l=88, c=88))   # DEACTIVATED_CLOSE_THROUGH
-        # Next bar: potential entry bar
+        # Next bars: open=95, above stop=90 (valid_stop would be True without lifecycle fix)
+        # This ensures the test is non-vacuous: the stop price check alone does NOT block entry;
+        # only the lifecycle enforcement (invalid_from_seq=31, entry_seq=31) blocks it.
         for i in range(31, 100):
-            bars.append(make_bar(i, o=88, h=95, l=87, c=92))
+            bars.append(make_bar(i, o=95, h=96, l=94, c=95))
 
         bars = [dataclasses.replace(b, seq=i, segment_id=0) for i, b in enumerate(bars)]
         _ep, variants, _diag = observe(bars, target_window=600)
@@ -733,13 +646,13 @@ class TestOneMLifecycleAvailability:
         from discretion.primitive_reset.registry import ResetRegistry
         import dataclasses
 
-        base_ts = pd.Timestamp("2025-07-07 09:30", tz=ET)
-        bars = make_bars(
-            [(100, 106, 90, 105)] +   # bar 0: RB source (bullish, lower wick = 10, body = 5)
-            [(105, 106, 104, 105)] * 50,
-            start="2025-07-07 09:30"
-        )
+        # Wilder ATR(24) needs 24 warm-up bars before the source candle produces a non-None ATR.
+        # Use 24 quiet bars then the RB source at bar 24.
+        n_warmup = 24
+        rows = [(105, 106, 104, 105)] * n_warmup + [(100, 106, 90, 105)] + [(105, 106, 104, 105)] * 30
+        bars = make_bars(rows, start="2025-07-07 09:30")
         bars = [dataclasses.replace(b, seq=i, segment_id=0) for i, b in enumerate(bars)]
+        rb_source_seq = n_warmup   # bar 24
 
         from discretion.primitive_reset.timeframes import TIMEFRAMES
         from discretion.setup_observer.common import _avail
@@ -749,10 +662,11 @@ class TestOneMLifecycleAvailability:
         a1 = atr_series(s1)
         rbs = detect_rejection_blocks(bars, 1, s1, a1, reg)
 
-        # Find the RB sourced at bar 0
-        rb_src0 = [rb for rb in rbs if rb.source_seq == 0]
-        assert len(rb_src0) >= 1, "Expected an RB from bar 0"
-        rb = rb_src0[0]
+        # Find the RB sourced at bar rb_source_seq
+        rb_found = [rb for rb in rbs if rb.source_seq == rb_source_seq]
+        assert len(rb_found) >= 1, \
+            f"Expected an RB from bar {rb_source_seq} (ATR warm-up complete by then)"
+        rb = rb_found[0]
         avail = _avail(1, s1, rb.source_seq)
         assert avail == rb.source_seq + 1, \
             f"1m RB from bar {rb.source_seq} must be available at {rb.source_seq+1}, got {avail}"

@@ -102,27 +102,45 @@ def _all_structures_ext(fvgs, ifvgs, rbs, series, ts_index, ts_to_seq):
                         "invalid_from": iv.deactivation_available_seq})
         for rb in rbs[tf]:
             r = ts_to_seq(rb.deactivation_ts)
+            # Deactivation happens during bar r; the structure is invalid for targets
+            # starting at bar r+1.  An entry at bar r's open must still see the target.
             out.append({"id": rb.id, "family": "rb", "tf": tf, "sdir": _dir(rb.direction),
                         "lo": rb.zone_lo, "hi": rb.zone_hi, "avail": _avail(tf, s, rb.source_seq),
-                        "invalid_from": r})
+                        "invalid_from": (r + 1 if r is not None else None)})
     return out
 
 
-def _contexts(fvgs, ifvgs, rbs, series, ts_index):
-    """Setup context structures (RB / FVG / iFVG) with causal availability."""
+def _contexts(fvgs, ifvgs, rbs, series, ts_index, ts_to_seq):
+    """Setup context structures (RB / FVG / iFVG) with causal availability.
+
+    Each context dict carries ``invalid_from_seq``: the earliest 1m bar seq at
+    which the context is no longer live.  Interaction scans stop before this
+    bound, and any entry whose entry_seq >= invalid_from_seq is discarded.
+    """
     ctxs = []
     for tf in TIMEFRAMES:
         s = series[tf]
         for rb in rbs[tf]:
+            r = ts_to_seq(rb.deactivation_ts)
+            # Deactivation happens during bar r; context is invalid from r+1.
+            inv = (r + 1) if r is not None else None
             ctxs.append({"context_id": rb.id, "context_family": "rb", "context_tf": tf,
                          "direction": _dir(rb.direction), "context_zone": (rb.zone_lo, rb.zone_hi),
                          "avail_ctx": _avail(tf, s, rb.source_seq), "context_formation_ts": rb.source_ts,
-                         "rb": rb, "is_ifvg": False, "lane": "A"})
+                         "rb": rb, "is_ifvg": False, "lane": "A", "invalid_from_seq": inv})
         for f in fvgs[tf]:
+            cand = []
+            if f.inversion_seq is not None:
+                cand.append(_avail(tf, s, f.inversion_seq))
+            for t in (f.full_fill_ts, f.expiry_ts):
+                r = ts_to_seq(t)
+                if r is not None:
+                    cand.append(r + 1)
+            inv = min(cand) if cand else None
             ctxs.append({"context_id": f.id, "context_family": "fvg", "context_tf": tf,
                          "direction": _dir(f.direction), "context_zone": (f.lo, f.hi),
                          "avail_ctx": _avail(tf, s, f.c_seq), "context_formation_ts": f.formation_ts,
-                         "rb": None, "is_ifvg": False, "lane": "B"})
+                         "rb": None, "is_ifvg": False, "lane": "B", "invalid_from_seq": inv})
         for iv in ifvgs[tf]:
             idx = ts_index[tf].get(iv.activation_ts)
             if idx is None:
@@ -130,7 +148,8 @@ def _contexts(fvgs, ifvgs, rbs, series, ts_index):
             ctxs.append({"context_id": iv.id, "context_family": "ifvg", "context_tf": tf,
                          "direction": _dir(iv.child_direction), "context_zone": (iv.lo, iv.hi),
                          "avail_ctx": _avail(tf, s, idx), "context_formation_ts": iv.activation_ts,
-                         "rb": None, "is_ifvg": True, "lane": "C"})
+                         "rb": None, "is_ifvg": True, "lane": "C",
+                         "invalid_from_seq": iv.deactivation_available_seq})
     return ctxs
 
 
@@ -146,14 +165,20 @@ def _form_by_dir(fvgs, ifvgs, ts_index, tf):
     return fv, ifv
 
 
-def _mtf_interaction(s, tf, avail_ctx, zone, start_arr):
+def _mtf_interaction(s, tf, avail_ctx, zone, start_arr, invalid_from_seq=None):
     """First ``tf`` candle whose bar-time is at/after the context became known
     and whose range enters the zone. ``start_arr`` is the tf's per-candle global
     start-seq array (ascending), used to skip straight to the first eligible
-    candle."""
+    candle.
+
+    ``invalid_from_seq``: 1m seq from which the context is no longer live.
+    Candles starting at or after this bound are not scanned.
+    """
     lo, hi = zone
     i0 = bisect.bisect_left(start_arr, avail_ctx)
     for i in range(i0, len(s)):
+        if invalid_from_seq is not None and start_arr[i] >= invalid_from_seq:
+            break
         c = s[i]
         if c.low <= hi and c.high >= lo:
             return i
@@ -187,7 +212,7 @@ def observe(bars, target_window=None):
     form_by_tf = {tf: _form_by_dir(fvgs, ifvgs, ts_index, tf) for tf in TIMEFRAMES}
     start_by_tf = {tf: [_tf_start_seq(tf, series[tf], i) for i in range(len(series[tf]))]
                    for tf in TIMEFRAMES}
-    contexts = _contexts(fvgs, ifvgs, rbs, series, ts_index)
+    contexts = _contexts(fvgs, ifvgs, rbs, series, ts_index, ts_to_seq)
 
     # causal ATR(24) references for the absolute-volatility floors
     atrf = {"a1": wilder_atr(bars, 24),
@@ -207,10 +232,17 @@ def observe(bars, target_window=None):
         ctf = ctx["context_tf"]
         lo, hi = ctx["context_zone"]
         direction = ctx["direction"]
+        inv_seq = ctx.get("invalid_from_seq")
         for ttf in sorted({ctf, 1}):
             s = series[ttf]
-            i_idx = _mtf_interaction(s, ttf, ctx["avail_ctx"], ctx["context_zone"], start_by_tf[ttf])
+            i_idx = _mtf_interaction(s, ttf, ctx["avail_ctx"], ctx["context_zone"],
+                                     start_by_tf[ttf], inv_seq)
             if i_idx is None or i_idx + 1 >= len(s):
+                continue
+            # Discard if the entry (first bar after interaction) falls at or after context expiry.
+            # This handles both lifetime expiry and interaction-candle deactivation (close-through).
+            entry_seq_ttf = _avail(ttf, s, i_idx)
+            if inv_seq is not None and entry_seq_ttf >= inv_seq:
                 continue
             fv, ifv = form_by_tf[ttf]
             fvg_form = {j for j in fv[direction] if j > i_idx}
