@@ -121,26 +121,15 @@ def _contexts(fvgs, ifvgs, rbs, series, ts_index, ts_to_seq):
     for tf in TIMEFRAMES:
         s = series[tf]
         for rb in rbs[tf]:
-            r = ts_to_seq(rb.deactivation_ts)
-            # Deactivation happens during bar r; context is invalid from r+1.
-            inv = (r + 1) if r is not None else None
             ctxs.append({"context_id": rb.id, "context_family": "rb", "context_tf": tf,
                          "direction": _dir(rb.direction), "context_zone": (rb.zone_lo, rb.zone_hi),
                          "avail_ctx": _avail(tf, s, rb.source_seq), "context_formation_ts": rb.source_ts,
-                         "rb": rb, "is_ifvg": False, "lane": "A", "invalid_from_seq": inv})
+                         "rb": rb, "is_ifvg": False, "lane": "A", "invalid_from_seq": None})
         for f in fvgs[tf]:
-            cand = []
-            if f.inversion_seq is not None:
-                cand.append(_avail(tf, s, f.inversion_seq))
-            for t in (f.full_fill_ts, f.expiry_ts):
-                r = ts_to_seq(t)
-                if r is not None:
-                    cand.append(r + 1)
-            inv = min(cand) if cand else None
             ctxs.append({"context_id": f.id, "context_family": "fvg", "context_tf": tf,
                          "direction": _dir(f.direction), "context_zone": (f.lo, f.hi),
                          "avail_ctx": _avail(tf, s, f.c_seq), "context_formation_ts": f.formation_ts,
-                         "rb": None, "is_ifvg": False, "lane": "B", "invalid_from_seq": inv})
+                         "rb": None, "is_ifvg": False, "lane": "B", "invalid_from_seq": None})
         for iv in ifvgs[tf]:
             idx = ts_index[tf].get(iv.activation_ts)
             if idx is None:
@@ -148,8 +137,7 @@ def _contexts(fvgs, ifvgs, rbs, series, ts_index, ts_to_seq):
             ctxs.append({"context_id": iv.id, "context_family": "ifvg", "context_tf": tf,
                          "direction": _dir(iv.child_direction), "context_zone": (iv.lo, iv.hi),
                          "avail_ctx": _avail(tf, s, idx), "context_formation_ts": iv.activation_ts,
-                         "rb": None, "is_ifvg": True, "lane": "C",
-                         "invalid_from_seq": iv.deactivation_available_seq})
+                         "rb": None, "is_ifvg": True, "lane": "C", "invalid_from_seq": None})
     return ctxs
 
 
