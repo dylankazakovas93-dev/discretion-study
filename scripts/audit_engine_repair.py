@@ -177,22 +177,23 @@ print("Loading old variants from all_hypothesis_variants.csv ...", flush=True)
 old_df = pd.read_csv("artifacts/multiyear_validation_v2/all_hypothesis_variants.csv",
                      low_memory=False)
 
-# Normalise timestamps to UTC int64 (nanoseconds) for format-agnostic matching.
-# Old CSV has "2018-01-01 21:13:00-05:00"; new variants produce Timestamps
-# with tz America/New_York. Both represent the same instant → match in UTC ns.
-old_df["_entry_ts_utc_ns"] = pd.to_datetime(old_df["entry_ts"], utc=True).astype("int64")
+# Normalise timestamps to integer UTC seconds for format-agnostic matching.
+# Bar timestamps are whole minutes so second-precision is lossless.
+# astype("int64") returns microseconds on pandas 2.x tz-aware Series; using
+# round(timestamp()) sidesteps the unit ambiguity entirely.
+def _ts_key(ts):
+    """Return integer UTC seconds for a Timestamp or timestamp-like."""
+    if hasattr(ts, "timestamp"):
+        return round(ts.timestamp())
+    return round(pd.Timestamp(ts).timestamp())
+
+old_df["_entry_ts_utc_s"] = pd.to_datetime(old_df["entry_ts"], utc=True).apply(
+    lambda x: round(x.timestamp()))
 old_key_set = set()
 for _, row in old_df.iterrows():
-    k = (int(row["_entry_ts_utc_ns"]), int(row["direction"]), str(row["entry_variant"]))
+    k = (int(row["_entry_ts_utc_s"]), int(row["direction"]), str(row["entry_variant"]))
     old_key_set.add(k)
 print(f"Old variant count: {len(old_df):,}", flush=True)
-
-
-def _ts_key(ts):
-    """Convert entry_ts (Timestamp or str) to UTC ns for matching."""
-    if hasattr(ts, "value"):
-        return int(ts.tz_convert("UTC").value)
-    return int(pd.Timestamp(ts).tz_convert("UTC").value)
 
 recon_rows = []
 new_total_new_engine = 0
@@ -239,7 +240,7 @@ new_key_set = {(_ts_key(r["entry_ts"]), int(r["direction"]), str(r["entry_varian
                for r in recon_rows}
 n_old_only = 0
 for _, row in old_df.iterrows():
-    k = (int(row["_entry_ts_utc_ns"]), int(row["direction"]), str(row["entry_variant"]))
+    k = (int(row["_entry_ts_utc_s"]), int(row["direction"]), str(row["entry_variant"]))
     if k not in new_key_set:
         n_old_only += 1
         recon_rows.append({
