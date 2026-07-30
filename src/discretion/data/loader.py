@@ -14,8 +14,10 @@ segment_id on each bar enforces that.
 
 from __future__ import annotations
 
+import calendar as _cal
 import io
 from dataclasses import dataclass
+from datetime import timedelta
 
 import pandas as pd
 import zstandard
@@ -66,6 +68,80 @@ def read_raw_csv(zst_path: str, start=None, end=None) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
+_ROLL_MONTHS = (3, 6, 9, 12)
+_MONTH_CODE = {3: "H", 6: "M", 9: "U", 12: "Z"}
+
+
+def _third_friday(year: int, month: int):
+    """Return the date of the 3rd Friday of the given month."""
+    rows = _cal.monthcalendar(year, month)
+    fridays = [w[4] for w in rows if w[4] > 0]
+    return pd.Timestamp(year=year, month=month, day=fridays[2]).date()
+
+
+def _cme_roll_events(min_year: int, max_year: int):
+    """Sorted list of (roll_date, incoming_contract) for NQ quarterly rolls.
+
+    Roll date = Thursday 8 calendar days before the 3rd Friday of each
+    quarterly expiry month.  From roll_date onwards, the NEXT quarterly
+    contract is the front month (the currently-expiring contract rolls off).
+
+    E.g., on 2018-03-08 (Thursday before Mar-2018 expiry), NQM8 (Jun-2018)
+    becomes front.
+    """
+    # Build all quarters in chronological order for the relevant range
+    quarters = sorted(
+        (y, m)
+        for y in range(min_year - 1, max_year + 2)
+        for m in _ROLL_MONTHS
+    )
+    events = []
+    for idx, (year, month) in enumerate(quarters[:-1]):
+        tf = _third_friday(year, month)
+        roll_date = tf - timedelta(days=8)    # Thursday before 3rd Friday
+        # Incoming (new front) contract is the NEXT quarter
+        ny, nm = quarters[idx + 1]
+        mc = _MONTH_CODE[nm]
+        yr1 = str(ny)[-1]
+        events.append((roll_date, f"NQ{mc}{yr1}"))
+    return events
+
+
+def _front_month_by_day_cme(dates) -> dict:
+    """Map each ET session date to its CME-calendar front-month symbol.
+
+    A fixed pre-announced CME roll schedule: the near quarterly contract is
+    front until roll_date (Thursday 8 days before 3rd-Friday expiry), after
+    which the next quarterly becomes front.  This is not look-ahead into price.
+    """
+    if not len(dates):
+        return {}
+    min_year = min(d.year for d in dates)
+    max_year = max(d.year for d in dates)
+
+    # Build quarters list to derive the initial front (the contract expiring
+    # at the first quarterly roll in our range).
+    quarters = sorted(
+        (y, m)
+        for y in range(min_year - 1, max_year + 2)
+        for m in _ROLL_MONTHS
+    )
+    events = _cme_roll_events(min_year, max_year)
+
+    # Initial front = the contract whose expiry is the first roll in our list
+    iy, im = quarters[0]
+    current = f"NQ{_MONTH_CODE[im]}{str(iy)[-1]}"
+
+    result = {}
+    ei = 0
+    for date in sorted(dates):
+        while ei < len(events) and events[ei][0] <= date:
+            current = events[ei][1]
+            ei += 1
+        result[date] = current
+    return result
+
+
 def _front_month_by_day(df: pd.DataFrame) -> pd.Series:
     """Map each ET session date to its dominant (highest-volume) contract.
 
@@ -79,21 +155,33 @@ def _front_month_by_day(df: pd.DataFrame) -> pd.Series:
     return front
 
 
-def load_front_month(zst_path: str, start=None, end=None) -> list[Bar]:
+def load_front_month(zst_path: str, start=None, end=None,
+                     method: str = "cme_calendar") -> list[Bar]:
     """Load a front-month, roll-segmented, chronologically ordered bar list.
 
     A new ``segment_id`` starts whenever the front contract changes. Within a
     segment, ``seq`` is a 0-based counter. Duplicate (ts, contract) rows are
     collapsed keeping the last.
+
+    ``method``:
+      "cme_calendar"    — fixed CME quarterly roll schedule (default, causal,
+                          no same-day volume look-ahead)
+      "full_day_volume" — original: dominant contract by full-day ET volume
+                          (documents prior behaviour; kept for reconciliation)
     """
     df = read_raw_csv(zst_path, start=start, end=end)
     if df.empty:
         return []
 
-    front = _front_month_by_day(df)
     et = df["ts_utc"].dt.tz_convert(ET)
     df = df.assign(_et_date=et.dt.date)
-    df["_front"] = df["_et_date"].map(front)
+    if method == "cme_calendar":
+        dates = df["_et_date"].unique()
+        cme_map = _front_month_by_day_cme(dates)
+        df["_front"] = df["_et_date"].map(cme_map)
+    else:
+        front = _front_month_by_day(df)
+        df["_front"] = df["_et_date"].map(front)
     # Keep only rows belonging to the front contract for their session.
     df = df[df["symbol"] == df["_front"]].copy()
     df = df.sort_values("ts_utc").drop_duplicates(subset=["ts_utc"], keep="last")
