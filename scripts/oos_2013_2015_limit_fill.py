@@ -19,6 +19,9 @@ sys.path.insert(0, "src")
 from discretion.data.bars import Bar
 from discretion.data.loader import ET
 from discretion.setup_observer.observer import observe
+from discretion.execution.simulator import (
+    simulate_trade, limit_fill_long, limit_fill_short, occupancy_filter,
+)
 
 fe_spec = importlib.util.spec_from_file_location("feature_engine", "scripts/feature_engine.py")
 FE = importlib.util.module_from_spec(fe_spec)
@@ -113,41 +116,37 @@ for sid, sbars in sorted(segs.items()):
 
         d = v.direction
         zone_lo, zone_hi = v.context_zone
+        tp_pts = TP_K * risk
 
-        # ── Fill prices ───────────────────────────────────────────────
+        # ── SIM fill: always at bar open ──────────────────────────────
         ep_sim = float(o_[i])
+        sl_sim = ep_sim - d * SL_K * risk
+        xt_s, off_s, _, r_s = simulate_trade(
+            local[i:], ep=ep_sim, direction=d, tp_pts=tp_pts, sl_orig=sl_sim,
+            be_bar=30, max_hold=MAXH, skip_first_bar=False)
+        xts_sim = ts_[min(i + off_s, n - 1)]
+        pts_sim = r_s * risk
+
+        # ── LIMIT fill: zone boundary; skip if bar never touched limit ─
         if d > 0:
-            # long: limit at zone_hi; gap-down fills at open
-            ep_lim = float(min(o_[i], zone_hi))
+            res_lim = limit_fill_long(float(o_[i]), float(h_[i]), float(l_[i]), zone_hi)
         else:
-            # short: limit at zone_lo; gap-up fills at open
-            ep_lim = float(max(o_[i], zone_lo))
-
-        # ── Simulate both, with BE30 ──────────────────────────────────
-        def simulate_be30(ep):
-            tp_pts = TP_K * risk; sl_pts = SL_K * risk
-            tgt = ep + d * tp_pts; stp = ep - d * sl_pts
-            be_triggered = False; end = min(n-1, i+MAXH); xt = None
-            for bar in range(i, end+1):
-                offset = bar - i
-                if not be_triggered and offset >= 30:
-                    cur = h_[bar] if d > 0 else l_[bar]
-                    if (cur > ep) if d > 0 else (cur < ep):
-                        stp = ep; be_triggered = True
-                hs = (l_[bar] <= stp) if d > 0 else (h_[bar] >= stp)
-                ht = (h_[bar] >= tgt) if d > 0 else (l_[bar] <= tgt)
-                if hs and ht: return ("STOP", -abs(ep-stp), ts_[bar])
-                if hs:        return ("STOP", -abs(ep-stp), ts_[bar])
-                if ht:        return ("TARGET", tp_pts, ts_[bar])
-            return ("TIME", (o_[end]-ep)*d, ts_[end])
-
-        xt_sim = simulate_be30(ep_sim)
-        xt_lim = simulate_be30(ep_lim)
+            res_lim = limit_fill_short(float(o_[i]), float(h_[i]), float(l_[i]), zone_lo)
+        if res_lim is None:
+            continue
+        ep_lim, fill_mode = res_lim
+        sl_lim = ep_lim - d * SL_K * risk
+        skip_first = (fill_mode == "INTRABAR_TOUCH")
+        xt_l, off_l, _, r_l = simulate_trade(
+            local[i:], ep=ep_lim, direction=d, tp_pts=tp_pts, sl_orig=sl_lim,
+            be_bar=30, max_hold=MAXH, skip_first_bar=skip_first)
+        xts_lim = ts_[min(i + off_l, n - 1)]
+        pts_lim = r_l * risk
 
         base = {"sd": v.session_date_et, "e": v.entry_ts, "risk": risk}
-        all_sim.append({**base, "xts": xt_sim[2], "pts": xt_sim[1], "xt": xt_sim[0],
+        all_sim.append({**base, "xts": xts_sim, "pts": pts_sim, "xt": xt_s,
                         "ep": ep_sim, "fill_diff": ep_lim - ep_sim})
-        all_lim.append({**base, "xts": xt_lim[2], "pts": xt_lim[1], "xt": xt_lim[0],
+        all_lim.append({**base, "xts": xts_lim, "pts": pts_lim, "xt": xt_l,
                         "ep": ep_lim, "fill_diff": ep_lim - ep_sim})
         seg_n += 1
 
@@ -155,15 +154,6 @@ for sid, sbars in sorted(segs.items()):
           f"  bars={n:>7,}  cands={seg_n:>4}  total_sim={len(all_sim):>5}", flush=True)
 
 print(f"\nRaw trades (pre-occupancy): {len(all_sim):,}", flush=True)
-
-
-def occupancy_filter(trades):
-    tr = sorted(trades, key=lambda z: z["e"])
-    ch = []; until = None
-    for t in tr:
-        if until and t["e"] < until: continue
-        ch.append(t); until = t["xts"]
-    return ch
 
 
 ch_sim = occupancy_filter(all_sim)

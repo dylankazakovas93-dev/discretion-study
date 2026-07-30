@@ -195,8 +195,37 @@ for _, row in old_df.iterrows():
     old_key_set.add(k)
 print(f"Old variant count: {len(old_df):,}", flush=True)
 
-recon_rows = []
+# Memory-safe reconciliation: only keep filtered candidates in-memory.
+# Filtered = executable + NY_AM + rb + ctf{1,3,5}.  New-engine unfiltered
+# variants number ~7.6M/segment and cannot be accumulated in recon_rows;
+# instead we track only their key tuples in a set (~300KB for filtered set).
+#
+# The recon CSV is written from the old_df filtered rows only (~70K rows),
+# annotated with new_present.  The count comparison is what Step 10 needs.
+
+# Filter old_df to the comparable subset (session=NY_AM, context_tf in {1,3,5})
+old_df_filtered = old_df[
+    (old_df["session"] == SIM_FILTER_SESSION) &
+    (old_df["context_tf"].astype(str).isin([str(t) for t in SIM_FILTER_CTF]))
+].copy()
+print(f"Old filtered (NY_AM + ctf{{1,3,5}}): {len(old_df_filtered):,}", flush=True)
+
+old_filtered_keys = set()
+for _, row in old_df_filtered.iterrows():
+    k = (int(row["_entry_ts_utc_s"]), int(row["direction"]), str(row["entry_variant"]))
+    old_filtered_keys.add(k)
+
+# new_filtered_keys: set of key tuples for filtered new-engine candidates only.
+# Stays small (~200K tuples max, ~20MB) even for 7.6M total variants.
+new_filtered_keys = set()
 new_total_new_engine = 0
+new_total_filtered = 0
+
+recon_path = os.path.join(OUT_DIR, "AUDIT_CANDIDATE_RECONCILIATION.csv")
+recon_fields = ["candidate_id", "year", "entry_ts", "direction", "context_id",
+                "context_family", "context_tf", "trigger_tf", "entry_variant",
+                "old_present", "new_present", "removal_reason",
+                "context_zone_lo", "context_zone_hi", "contract_old", "contract_new"]
 
 for seg_idx in range(n_segs):
     contract = contracts[seg_idx]
@@ -208,75 +237,65 @@ for seg_idx in range(n_segs):
     elapsed = round(time.time() - t0, 1)
 
     new_total_new_engine += len(variants)
-    year = sbars[0].ts_et.year if sbars else 0
+    seg_filtered = 0
 
-    # For each new-engine variant, check if it was in old set
     for v in variants:
-        k = (_ts_key(v.entry_ts), int(v.direction), str(v.entry_variant))
-        old_present = k in old_key_set
-        recon_rows.append({
-            "candidate_id": v.variant_id,
-            "year": v.entry_ts.year if hasattr(v.entry_ts, "year") else year,
-            "entry_ts": v.entry_ts,
-            "direction": v.direction,
-            "context_id": getattr(v, "context_id", ""),
-            "context_family": getattr(v, "context_family", ""),
-            "context_tf": getattr(v, "context_tf", ""),
-            "trigger_tf": getattr(v, "trigger_tf", ""),
-            "entry_variant": v.entry_variant,
-            "old_present": old_present,
-            "new_present": True,
-            "removal_reason": "",
-            "context_zone_lo": v.context_zone[0] if v.context_zone else None,
-            "context_zone_hi": v.context_zone[1] if v.context_zone else None,
-            "contract_old": contract,
-            "contract_new": contract,  # same bars; contract unchanged
-        })
+        # Collect keys only for the filtered subset to avoid OOM
+        if (v.executable and
+                getattr(v, "session", None) == SIM_FILTER_SESSION and
+                getattr(v, "context_family", None) == SIM_FILTER_FAMILY and
+                getattr(v, "context_tf", None) in SIM_FILTER_CTF):
+            k = (_ts_key(v.entry_ts), int(v.direction), str(v.entry_variant))
+            new_filtered_keys.add(k)
+            new_total_filtered += 1
+            seg_filtered += 1
 
-    print(f"  seg{seg_idx:03d} {contract}: {len(variants):,} variants  [{elapsed}s]", flush=True)
+    print(f"  seg{seg_idx:03d} {contract}: {len(variants):,} variants  "
+          f"filtered={seg_filtered}  [{elapsed}s]", flush=True)
 
-# Also mark old variants that are NOT present in new engine (removed by lifecycle fix)
-new_key_set = {(_ts_key(r["entry_ts"]), int(r["direction"]), str(r["entry_variant"]))
-               for r in recon_rows}
+# Write recon CSV from old filtered rows only — annotated with new_present.
+# Rows where new_present=False are candidates removed by the lifecycle fix
+# (or architecture differences between v1 and v2 engines).
+n_old_present_in_new = 0
 n_old_only = 0
-for _, row in old_df.iterrows():
-    k = (int(row["_entry_ts_utc_s"]), int(row["direction"]), str(row["entry_variant"]))
-    if k not in new_key_set:
-        n_old_only += 1
-        recon_rows.append({
+with open(recon_path, "w", newline="") as f:
+    w = csv.DictWriter(f, fieldnames=recon_fields)
+    w.writeheader()
+    for _, row in old_df_filtered.iterrows():
+        k = (int(row["_entry_ts_utc_s"]), int(row["direction"]), str(row["entry_variant"]))
+        new_present = k in new_filtered_keys
+        if new_present:
+            n_old_present_in_new += 1
+        else:
+            n_old_only += 1
+        w.writerow({
             "candidate_id": str(row.get("gvid", "")),
             "year": int(row.get("year", 0)),
             "entry_ts": row["entry_ts"],
             "direction": int(row["direction"]),
             "context_id": "",
-            "context_family": str(row.get("context_family", row.get("reaction_state", ""))),
+            "context_family": str(row.get("reaction_state", "")),
             "context_tf": str(row.get("context_tf", "")),
             "trigger_tf": str(row.get("trigger_tf", "")),
             "entry_variant": str(row["entry_variant"]),
             "old_present": True,
-            "new_present": False,
-            "removal_reason": "LIFECYCLE_FIX_REMOVED",
+            "new_present": new_present,
+            "removal_reason": "" if new_present else "NOT_IN_NEW_FILTERED",
             "context_zone_lo": None,
             "context_zone_hi": None,
             "contract_old": "",
             "contract_new": "",
         })
 
-recon_path = os.path.join(OUT_DIR, "AUDIT_CANDIDATE_RECONCILIATION.csv")
-recon_fields = ["candidate_id", "year", "entry_ts", "direction", "context_id",
-                "context_family", "context_tf", "trigger_tf", "entry_variant",
-                "old_present", "new_present", "removal_reason",
-                "context_zone_lo", "context_zone_hi", "contract_old", "contract_new"]
-with open(recon_path, "w", newline="") as f:
-    w = csv.DictWriter(f, fieldnames=recon_fields)
-    w.writeheader()
-    w.writerows(recon_rows)
+new_only = new_total_filtered - n_old_present_in_new
 
 print(f"\nOld total: {len(old_df):,}", flush=True)
-print(f"New total (new engine on old bars): {new_total_new_engine:,}", flush=True)
-print(f"Old-only (removed by lifecycle fix): {n_old_only:,}", flush=True)
-new_only = sum(1 for r in recon_rows if not r["old_present"] and r["new_present"])
-print(f"New-only (added by engine — unexpected): {new_only:,}", flush=True)
+print(f"Old filtered (NY_AM + ctf{{1,3,5}}): {len(old_df_filtered):,}", flush=True)
+print(f"New total (unfiltered, new engine): {new_total_new_engine:,}", flush=True)
+print(f"New filtered (exec+NY_AM+rb+ctf{{1,3,5}}): {new_total_filtered:,}", flush=True)
+print(f"Old filtered present in new filtered: {n_old_present_in_new:,}", flush=True)
+print(f"Old filtered absent from new filtered: {n_old_only:,}", flush=True)
+print(f"New filtered absent from old filtered: {new_only:,}", flush=True)
 print(f"Reconciliation CSV: {recon_path}", flush=True)
 
 

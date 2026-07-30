@@ -18,6 +18,9 @@ sys.path.insert(0, "src")
 from discretion.data.bars import Bar
 from discretion.data.loader import ET
 from discretion.setup_observer.observer import observe
+from discretion.execution.simulator import (
+    simulate_trade, limit_fill_long, limit_fill_short, occupancy_filter,
+)
 
 fe_spec = importlib.util.spec_from_file_location("feature_engine", "scripts/feature_engine.py")
 FE = importlib.util.module_from_spec(fe_spec)
@@ -112,48 +115,39 @@ for sid, sbars in sorted(segs.items()):
 
         d = v.direction
         zone_lo, zone_hi = v.context_zone
+        tp_pts = TP_K * risk
+
+        # SIM fill: bar open
         ep_sim = float(o_[i])
-        ep_lim = float(min(o_[i], zone_hi)) if d > 0 else float(max(o_[i], zone_lo))
+        sl_sim = ep_sim - d * SL_K * risk
+        xt_s, off_s, _, r_s = simulate_trade(
+            local[i:], ep=ep_sim, direction=d, tp_pts=tp_pts, sl_orig=sl_sim,
+            be_bar=30, max_hold=MAXH, skip_first_bar=False)
+        xts_sim = ts_[min(i + off_s, n - 1)]
 
-        def simulate_be30(ep):
-            tp_pts = TP_K * risk; sl_pts = SL_K * risk
-            tgt = ep + d * tp_pts; stp = ep - d * sl_pts
-            be_triggered = False; end = min(n-1, i+MAXH); xt = None
-            for bar in range(i, end+1):
-                offset = bar - i
-                if not be_triggered and offset >= 30:
-                    cur = h_[bar] if d > 0 else l_[bar]
-                    if (cur > ep) if d > 0 else (cur < ep):
-                        stp = ep; be_triggered = True
-                hs = (l_[bar] <= stp) if d > 0 else (h_[bar] >= stp)
-                ht = (h_[bar] >= tgt) if d > 0 else (l_[bar] <= tgt)
-                if hs and ht: return ("STOP", -abs(ep-stp), ts_[bar])
-                if hs:        return ("STOP", -abs(ep-stp), ts_[bar])
-                if ht:        return ("TARGET", tp_pts, ts_[bar])
-            return ("TIME", (o_[end]-ep)*d, ts_[end])
+        # LIMIT fill: zone boundary; skip if no fill
+        if d > 0:
+            res_lim = limit_fill_long(float(o_[i]), float(h_[i]), float(l_[i]), zone_hi)
+        else:
+            res_lim = limit_fill_short(float(o_[i]), float(h_[i]), float(l_[i]), zone_lo)
+        if res_lim is None:
+            continue
+        ep_lim, fill_mode = res_lim
+        sl_lim = ep_lim - d * SL_K * risk
+        xt_l, off_l, _, r_l = simulate_trade(
+            local[i:], ep=ep_lim, direction=d, tp_pts=tp_pts, sl_orig=sl_lim,
+            be_bar=30, max_hold=MAXH, skip_first_bar=(fill_mode == "INTRABAR_TOUCH"))
+        xts_lim = ts_[min(i + off_l, n - 1)]
 
-        xt_sim = simulate_be30(ep_sim)
-        xt_lim = simulate_be30(ep_lim)
-
-        base = {"sd": v.session_date_et, "e": v.entry_ts, "risk": risk, "xt": xt_sim[0]}
-        all_sim.append({**base, "xts": xt_sim[2], "pts": xt_sim[1], "ep": ep_sim})
-        all_lim.append({**base, "xts": xt_lim[2], "pts": xt_lim[1], "ep": ep_lim,
-                        "xt": xt_lim[0]})
+        base = {"sd": v.session_date_et, "e": v.entry_ts, "risk": risk}
+        all_sim.append({**base, "xts": xts_sim, "pts": r_s * risk, "xt": xt_s, "ep": ep_sim})
+        all_lim.append({**base, "xts": xts_lim, "pts": r_l * risk, "xt": xt_l, "ep": ep_lim})
         seg_n += 1
 
     print(f"  seg{sid:02d}  {local[0].ts_et.date()} → {local[-1].ts_et.date()}"
           f"  bars={n:>7,}  cands={seg_n:>4}  total={len(all_sim):>5}", flush=True)
 
 print(f"\nRaw trades (pre-occupancy): {len(all_sim):,}", flush=True)
-
-
-def occupancy_filter(trades):
-    tr = sorted(trades, key=lambda z: z["e"])
-    ch = []; until = None
-    for t in tr:
-        if until and t["e"] < until: continue
-        ch.append(t); until = t["xts"]
-    return ch
 
 
 ch_sim = occupancy_filter(all_sim)

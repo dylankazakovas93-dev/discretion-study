@@ -945,3 +945,167 @@ class TestTickPointUnits:
         risk = 5.0; gross_pts = 7.5; cost_rt = 1.0
         net_r = (gross_pts - cost_rt) / risk
         assert abs(net_r - 1.3) < 1e-9
+
+
+# ============================================================================
+# SECTION 15 — CME quarterly calendar correctness (Issue 15)
+# ============================================================================
+
+class TestCMECalendarAudit:
+    """
+    The CME roll schedule is a fixed pre-announced convention, not a look-ahead
+    into price.  Roll date = Thursday 8 calendar days before the 3rd Friday of
+    the expiry month; from that date the NEXT quarterly contract is front.
+
+    These tests pin known roll dates to detect regressions in _cme_roll_events
+    and _front_month_by_day_cme.
+    """
+
+    def test_third_friday_2018_march(self):
+        """3rd Friday of March 2018 is the 16th."""
+        import datetime
+        from discretion.data.loader import _third_friday
+        assert _third_friday(2018, 3) == datetime.date(2018, 3, 16)
+
+    def test_third_friday_2020_june(self):
+        """3rd Friday of June 2020 is the 19th."""
+        import datetime
+        from discretion.data.loader import _third_friday
+        assert _third_friday(2020, 6) == datetime.date(2020, 6, 19)
+
+    def test_roll_date_and_incoming_contract_2018_march(self):
+        """2018 Q1 expiry: roll = 2018-03-08, incoming = NQM8 (June 2018)."""
+        import datetime
+        from discretion.data.loader import _cme_roll_events
+        events = {e[0]: e[1] for e in _cme_roll_events(2018, 2018)}
+        assert datetime.date(2018, 3, 8) in events, \
+            f"2018-03-08 missing from events"
+        assert events[datetime.date(2018, 3, 8)] == "NQM8", \
+            f"Expected NQM8, got {events.get(datetime.date(2018, 3, 8))}"
+
+    def test_roll_date_and_incoming_contract_2018_june(self):
+        """2018 Q2 expiry: 3rd Fri of June = 2018-06-15, roll = 2018-06-07, incoming = NQU8."""
+        import datetime
+        from discretion.data.loader import _cme_roll_events
+        events = {e[0]: e[1] for e in _cme_roll_events(2018, 2018)}
+        assert datetime.date(2018, 6, 7) in events
+        assert events[datetime.date(2018, 6, 7)] == "NQU8"
+
+    def test_front_month_transitions_across_2018_march_roll(self):
+        """Day before 2018-03-08: NQH8 front. On 2018-03-08: NQM8 front."""
+        import datetime
+        from discretion.data.loader import _front_month_by_day_cme
+        dates = [datetime.date(2018, 3, 7), datetime.date(2018, 3, 8),
+                 datetime.date(2018, 3, 9)]
+        result = _front_month_by_day_cme(dates)
+        assert result[datetime.date(2018, 3, 7)] == "NQH8", \
+            f"Expected NQH8, got {result[datetime.date(2018, 3, 7)]}"
+        assert result[datetime.date(2018, 3, 8)] == "NQM8", \
+            f"Expected NQM8, got {result[datetime.date(2018, 3, 8)]}"
+        assert result[datetime.date(2018, 3, 9)] == "NQM8"
+
+    def test_incoming_contract_is_next_quarter_not_expiring(self):
+        """
+        Confirm the roll brings in the NEXT quarter, not the expiring one.
+        On 2018-03-08 (when H8=Mar expires), incoming must be M8=Jun, not H8.
+        """
+        import datetime
+        from discretion.data.loader import _cme_roll_events
+        events = {e[0]: e[1] for e in _cme_roll_events(2018, 2018)}
+        incoming = events.get(datetime.date(2018, 3, 8))
+        assert incoming != "NQH8", \
+            "Incoming contract must not be the expiring H8; got the expiring contract"
+        assert incoming == "NQM8"
+
+
+# ============================================================================
+# SECTION 16 — Target lifecycle boundary (Issue 16)
+# ============================================================================
+
+class TestTargetLifecycleBoundary:
+    """
+    resolve_targets excludes a structure if invalid_from <= entry_seq.
+    With invalid_from = r + 1 (where r is the deactivation bar):
+      - entry at bar r   → valid   (r < r+1)
+      - entry at bar r+1 → excluded (r+1 >= r+1)
+
+    These tests verify the exact boundary without running the full observer.
+    """
+
+    def _make_table(self, invalid_from, sdir, lo, hi):
+        from discretion.setup_observer.targets import StructTable
+        structs = [{
+            "avail": 0,
+            "id": "S1",
+            "family": "rb",
+            "tf": 1,
+            "sdir": sdir,
+            "lo": lo,
+            "hi": hi,
+            "invalid_from": invalid_from,
+        }]
+        return StructTable(structs)
+
+    def test_target_valid_at_deactivation_bar(self):
+        """
+        Target deactivated at bar 10 → invalid_from = 11.
+        Entry at bar 10: 10 < 11 → target is eligible (not excluded).
+        """
+        from discretion.setup_observer.targets import resolve_targets
+        # Long entry at 100; target structure is bearish (opposing) at 120
+        table = self._make_table(invalid_from=11, sdir=-1, lo=115, hi=120)
+        selected, considered, excl_counts = resolve_targets(
+            table, entry_seq=10, direction=1,
+            entry_price=100.0, stop_price=95.0,
+            context_tf=1, context_family="rb", exclude_ids=set()
+        )
+        assert "NEAREST_OPPOSING_VALID_STRUCTURE" in selected, \
+            f"Expected target valid at entry bar 10 (invalid_from=11), excl={excl_counts}"
+
+    def test_target_excluded_at_bar_after_deactivation(self):
+        """
+        Target deactivated at bar 10 → invalid_from = 11.
+        Entry at bar 11: 11 >= 11 → target is excluded (inactive_or_traversed).
+        """
+        from discretion.setup_observer.targets import resolve_targets
+        table = self._make_table(invalid_from=11, sdir=-1, lo=115, hi=120)
+        selected, considered, excl_counts = resolve_targets(
+            table, entry_seq=11, direction=1,
+            entry_price=100.0, stop_price=95.0,
+            context_tf=1, context_family="rb", exclude_ids=set()
+        )
+        assert "NEAREST_OPPOSING_VALID_STRUCTURE" not in selected, \
+            "Target must be excluded when entry_seq >= invalid_from"
+        assert excl_counts.get("inactive_or_traversed", 0) >= 1, \
+            f"Expected inactive_or_traversed exclusion, got {excl_counts}"
+
+    def test_target_with_no_expiry_never_excluded_by_time(self):
+        """
+        A target with invalid_from=None is never excluded by the time check.
+        Entry at any seq still sees it as active.
+        """
+        from discretion.setup_observer.targets import resolve_targets
+        table = self._make_table(invalid_from=None, sdir=-1, lo=115, hi=120)
+        for entry_seq in [0, 100, 1000]:
+            selected, _, _ = resolve_targets(
+                table, entry_seq=entry_seq, direction=1,
+                entry_price=100.0, stop_price=95.0,
+                context_tf=1, context_family="rb", exclude_ids=set()
+            )
+            assert "NEAREST_OPPOSING_VALID_STRUCTURE" in selected, \
+                f"Target with no expiry must remain valid at entry_seq={entry_seq}"
+
+    def test_invalid_from_eq_avail_still_excluded(self):
+        """
+        Edge: invalid_from == avail (structure invalidated immediately after birth).
+        At entry_seq >= invalid_from, must be excluded.
+        """
+        from discretion.setup_observer.targets import resolve_targets
+        table = self._make_table(invalid_from=0, sdir=-1, lo=115, hi=120)
+        selected, _, excl = resolve_targets(
+            table, entry_seq=0, direction=1,
+            entry_price=100.0, stop_price=95.0,
+            context_tf=1, context_family="rb", exclude_ids=set()
+        )
+        assert "NEAREST_OPPOSING_VALID_STRUCTURE" not in selected
+        assert excl.get("inactive_or_traversed", 0) >= 1
