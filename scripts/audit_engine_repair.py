@@ -211,7 +211,7 @@ for seg_idx in range(n_segs):
 
     # For each new-engine variant, check if it was in old set
     for v in variants:
-        k = (str(v.entry_ts), int(v.direction), str(v.entry_variant))
+        k = (_ts_key(v.entry_ts), int(v.direction), str(v.entry_variant))
         old_present = k in old_key_set
         recon_rows.append({
             "candidate_id": v.variant_id,
@@ -235,11 +235,11 @@ for seg_idx in range(n_segs):
     print(f"  seg{seg_idx:03d} {contract}: {len(variants):,} variants  [{elapsed}s]", flush=True)
 
 # Also mark old variants that are NOT present in new engine (removed by lifecycle fix)
-new_key_set = {(str(r["entry_ts"]), int(r["direction"]), str(r["entry_variant"]))
+new_key_set = {(_ts_key(r["entry_ts"]), int(r["direction"]), str(r["entry_variant"]))
                for r in recon_rows}
 n_old_only = 0
 for _, row in old_df.iterrows():
-    k = (str(row["entry_ts"]), int(row["direction"]), str(row["entry_variant"]))
+    k = (int(row["_entry_ts_utc_ns"]), int(row["direction"]), str(row["entry_variant"]))
     if k not in new_key_set:
         n_old_only += 1
         recon_rows.append({
