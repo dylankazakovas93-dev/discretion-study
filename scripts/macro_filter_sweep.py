@@ -1,6 +1,9 @@
 """
-Macro filter sweep: given AUDIT_SIM_RESULTS.csv, simulate a weekly directional
-bias overlay at success rates of 20/40/60/80%.
+Macro filter sweep: given AUDIT_SIM_RESULTS.csv, re-simulate at 0.7RR_BE30
+then apply a weekly directional bias overlay at success rates of 20/40/60/80%.
+
+Re-simulates each base candidate at TP=1.5R, SL=1.5/0.7R, BE=30 (best config
+from fast RR sweep) so the underlying R values match the best param set.
 
 Model:
   - Each ISO week (Mon-Fri) has an actual direction: sign(last_close - first_open)
@@ -14,7 +17,7 @@ Model:
   - Expected R at accuracy A (deterministic expectation over weeks):
       E[R] = sum_W [ A * R_aligned(W) + (1-A) * R_misaligned(W) ]
   - This is exact given that occupancy within one week doesn't affect another
-    (max_hold=480 bars ≈ 8h; each session ≈ 150 bars; trades rarely span days).
+    (max_hold=480 bars ~8h; each session ~150 bars; trades rarely span days).
 """
 from __future__ import annotations
 
@@ -30,12 +33,17 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, "src")
-from discretion.execution.simulator import occupancy_filter
+from discretion.execution.simulator import simulate_trade, occupancy_filter
 
 SEG_DIR = "artifacts/multiyear_validation_v2/segcache"
 SIM_CSV = "artifacts/AUDIT_SIM_RESULTS.csv"
 OUT_DIR = "artifacts"
 ACCURACY_LEVELS = [0.20, 0.40, 0.60, 0.80]
+MAXH = 480
+# 0.7RR_BE30 — best config from fast RR sweep
+TP_K = 1.5
+SL_K = 1.5 / 0.7
+BE_BAR = 30
 
 
 def iso_week_key(ts):
@@ -105,10 +113,17 @@ for contract, group in df.groupby("contract"):
             continue
 
         d = int(trade["direction"])
-        r = float(trade["r"])
-        xts = pd.Timestamp(trade["exit_ts"]).tz_convert(tz) if trade["exit_ts"] else ets
-        xt = trade["exit_type"]
+        ep = float(trade["ep"])
+        risk = float(trade["risk"])
         ep_id = str(trade.get("episode_id", ""))
+
+        # Re-simulate at 0.7RR_BE30 (best config)
+        sl = ep - d * SL_K * risk
+        tp_pts = TP_K * risk
+        xt, bar_off, xp, r = simulate_trade(
+            local[i:], ep=ep, direction=d, tp_pts=tp_pts,
+            sl_orig=sl, be_bar=BE_BAR, max_hold=MAXH)
+        xts = ts_[min(i + bar_off, n - 1)]
 
         row = {"e": ets, "xts": xts, "r": r, "xt": xt,
                "sd": ets.date(), "episode_id": ep_id}
