@@ -13,6 +13,7 @@ Locked choices. Each entry records what was decided, by whom, and the consequenc
 | 7 | Horizon is a parameter (1/2/3 sessions), not fixed 1 day. | Dylan | Catalysts land while market is closed; repricing may span sessions. |
 | 8 | Macro consensus: proceed on actual-vs-previous as the floor test. | Dylan | A NULL result is uninformative about Dylan's consensus-aware read. Only a POSITIVE result is interpretable. Consensus collected anyway where free. |
 | 9 | Event set: CPI, Core CPI, PPI, PCE, Core PCE, Mag 7 EPS, plus <=1 discrete shock per 2 months. | Dylan | ~310 events expected across dev years. |
+| 11 | Macro event study window starts **2020-06-10** (first available CPI row). 2018, 2019 and 2020-01-01..2020-06-09 are excluded from the event study and reserved for engine development / fixtures only. Dev years otherwise unchanged. | Dylan | Dev CPI events drop to 36 (25 with non-zero surprise). See KNOWN_LIMITATIONS #11. 2019 is a reserved holdout year now being used for engineering; low contamination risk since it contains no events in scope, but it is a partition change and is recorded as such. |
 | 10 | Release timestamp = release date + 08:30 ET (BLS/BEA convention). | Claude, stated | Time is NOT in the source table. Shutdown/holiday exceptions must be verified per-year, not assumed. |
 
 ## UNRESOLVED

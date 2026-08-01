@@ -25,6 +25,15 @@
    economists. More reproducible, but not the number the market was positioned against.
 8. **Release times are a convention, not observed data.** 08:30 ET attached from BLS/BEA practice.
 
+11. **The event study is power-starved on any single series.** Under the alternating-year split with
+    the 2020-06-10 start, usable CPI releases are: DEV 36 (2020:7, 2022:12, 2024:12, 2026:5), of which
+    25 carry a non-zero surprise; HOLDOUT 34 (2021:12, 2023:12, 2025:10), 21 non-zero. Thirty-six
+    events cannot resolve anything but a very large effect. No single series will be sufficient --
+    the design has to pool CPI/PPI/PCE/earnings into one event panel with surprises standardized
+    across series so they are commensurable.
+12. **2019 reassigned from holdout to engineering use** (decision 11). It contains no in-scope events,
+    so confirmatory contamination risk is low, but it is no longer untouched price data.
+
 ## Statistical
 
 9. **~45 exploratory bucket tests were run before RUN_REGISTRY.csv existed.** They are recorded
