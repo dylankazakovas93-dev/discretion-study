@@ -21,7 +21,11 @@ MACRO_FLOOR_PP = 0.1     # percentage points
 EPS_FLOOR_REL  = 1.0     # percent of consensus
 WIN            = 12      # trailing window for sigma (months / quarters)
 
-INFLATION = {"US_CPI_MOM", "US_CORE_CPI_MOM", "US_PPI_MOM", "US_CORE_PPI_MOM", "US_CORE_PCE_MOM"}
+LABOUR_FLOOR = {"US_NFP": 25.0, "US_UNEMP_RATE": 0.1}   # 25k jobs, 0.1pp on the rate
+# Rates channel, consistent with the inflation prior: strong labour -> hawkish -> bearish equities.
+# NOTE this is contested. A growth channel argues the opposite (strong labour -> better earnings).
+# Labour "against the print" is therefore a weaker construct than inflation "against the print".
+LABOUR_SIGN = {"US_NFP": -1, "US_UNEMP_RATE": +1}
 
 def build():
     m = pd.read_csv("data/macro/events.csv")
@@ -29,9 +33,12 @@ def build():
     e = e[e.series != "MSFT_EPS"]                       # timestamp unresolved
 
     m = m[m.surprise_abs.notna()].copy()
-    m["family"] = "inflation"
-    m["deadband_pass"] = m.surprise_abs.abs() >= MACRO_FLOOR_PP
-    m["prior_sign"] = -1                                # hot print -> bearish equities
+    lab = m.series.isin(LABOUR_FLOOR)
+    m["family"] = np.where(lab, "labour", "inflation")
+    m["deadband_pass"] = np.where(
+        lab, m.surprise_abs.abs() >= m.series.map(LABOUR_FLOOR).fillna(np.inf),
+        m.surprise_abs.abs() >= MACRO_FLOOR_PP)
+    m["prior_sign"] = np.where(lab, m.series.map(LABOUR_SIGN).fillna(-1), -1)
 
     e = e[e.surprise_abs.notna() & e.consensus.notna() & (e.consensus != 0)].copy()
     e["family"] = "eps"

@@ -15,8 +15,9 @@ from datetime import datetime, date
 from zoneinfo import ZoneInfo
 
 ET, UTC = ZoneInfo("America/New_York"), ZoneInfo("UTC")
+UNIT = {"US_NFP": "thousands_jobs", "US_UNEMP_RATE": "pct_level"}
 DATE = re.compile(r"([A-Z][a-z]{2} \d{1,2}, \d{4})")
-PCT  = re.compile(r"(-?\d+\.\d+)%")
+NUM  = re.compile(r"(-?\d+(?:\.\d+)?)\s*(%|[Kk])")
 
 def parse_raw(path):
     """Token-scan the paste into (date, [values...]) records."""
@@ -26,7 +27,7 @@ def parse_raw(path):
     for i, (s, e, d) in enumerate(marks):
         chunk = text[e: marks[i + 1][0] if i + 1 < len(marks) else len(text)]
         recs.append((datetime.strptime(d, "%b %d, %Y").date(),
-                     [float(v) for v in PCT.findall(chunk)]))
+                     [float(v) for v, _ in NUM.findall(chunk)]))
     return recs
 
 def build(path, series, event_type, release_time=(8, 30)):
@@ -60,7 +61,7 @@ def build(path, series, event_type, release_time=(8, 30)):
             release_date_et=r["date"].isoformat(),
             release_ts_et=ts.isoformat(), release_ts_utc=ts.astimezone(UTC).isoformat(),
             ts_source="BLS/BEA 08:30 ET release convention (time NOT from source table)",
-            unit="pct_mom", actual=r["actual"],
+            unit=UNIT.get(series, "pct_mom"), actual=r["actual"],
             consensus="" if r["consensus"] is None else r["consensus"],
             previous="" if r["previous"] is None else r["previous"],
             surprise_abs="" if surp is None else surp,
@@ -71,6 +72,8 @@ def build(path, series, event_type, release_time=(8, 30)):
     return out, dict(breaks=breaks, dupes=dupes, gaps=gaps, warn=warn)
 
 SERIES = [("data/macro/raw/cpi_mm_forexfactory.txt",      "US_CPI_MOM"),
+          ("data/macro/raw/nfp_forexfactory.txt",               "US_NFP"),
+          ("data/macro/raw/unemployment_rate_forexfactory.txt", "US_UNEMP_RATE"),
           ("data/macro/raw/core_cpi_mm_forexfactory.txt", "US_CORE_CPI_MOM"),
           ("data/macro/raw/ppi_mm_forexfactory.txt",      "US_PPI_MOM"),
           ("data/macro/raw/core_ppi_mm_forexfactory.txt", "US_CORE_PPI_MOM"),
