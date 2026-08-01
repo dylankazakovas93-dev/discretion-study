@@ -1,0 +1,5 @@
+run_id,timestamp_utc,stage,description,n_trials,status,primary_result,selected,notes
+EXP-0001,2026-08-01,stage0,"Descriptive: daily |RTH move| bucket counts, all years",0,complete,"0-1%:1434 1-2.5%:560 2.5%+:97 over 2095 sessions",no,"Touched reserved years. See KNOWN_LIMITATIONS #2"
+EXP-0002,2026-08-01,stage0,"Gap decomposition prior-close->Globex->cash-open->close, dev years",0,complete,"median 29-36% of repricing gone by 09:30; RTH leg retains ~2.29% on 2.5%+ days",no,"Bucketed on realised move = oracle-conditional, not a signal"
+EXP-0003,2026-08-01,stage0,"Causal overnight features vs RTH continuation, dev years n=1089",45,complete,"baseline +0.0516%/day t=1.29; OR-breakout confirmation +0.081..+0.089% t=2.08..2.29 across K=5/15/30/60; low overnight volume tercile +0.359% t=3.03",no,"NOT significant after ~45 looks. Candidates only. Regime attribution on volume effect not yet run"
+ING-0001,2026-08-01,stage0,"Ingest US CPI m/m from Forex Factory paste",0,complete,"72 rows 2020-06-10..2026-07-14; chain breaks 0; vs BLS CUSR0000SA0 median|diff| 0.05pp max 0.19pp",n/a,"Core CPI paste was a duplicate of CPI - not ingested"
