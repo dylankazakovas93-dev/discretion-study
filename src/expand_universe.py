@@ -16,8 +16,8 @@ KEY = os.environ["ALPHAVANTAGE_KEY"]
 UA = {"User-Agent": "discretion-study research contact dylankazakovas93@gmail.com"}
 ET, UTC = ZoneInfo("America/New_York"), ZoneInfo("UTC")
 START, END = date(2020, 6, 10), date(2026, 6, 7)
-EXTRA = {"NFLX":1065280, "CSCO":858877, "INTC":50863, "QCOM":804328, "AMD":2488,
-         "TXN":97476, "AVGO":1730168, "ADBE":796343, "MU":723125, "AMAT":6951}
+EXTRA = {"PEP":77476, "COST":909832, "SBUX":829224, "GILD":882095,
+         "AMGN":318154, "BKNG":1075531, "ISRG":1035267, "LRCX":707549}
 
 def edgar(cik):
     url = f"https://data.sec.gov/submissions/CIK{cik:010d}.json"
