@@ -66,6 +66,15 @@
     half are pre-market vehicle production/delivery reports, which are genuine repricing events but
     are not EPS; **MSFT 24, all classified intraday** (acceptance ~12:00 ET), which contradicts
     MSFT's known post-close reporting.
+18b. **The MSFT timestamp anomaly is NOT unique to MSFT.** With the universe at 23 names, the
+    ~12:00 ET acceptance cluster also appears for **LRCX (24 of 24 filings), PEP (22 of 24) and
+    SBUX (22 of 24)**. All three are known pre- or post-market reporters, so a midday disclosure
+    is implausible for any of them. This strengthens explanation (a): the trailing "Z" is
+    unreliable for a subset of filers, likely tied to the submission agent. Practical effects:
+    (i) LRCX sits in the tech/semi CORE cohort but contributed ZERO events, since every filing was
+    classified intraday and dropped by the post-market filter; (ii) the observed dilution from the
+    8-name expansion is therefore driven by roughly five names (COST, GILD, AMGN, BKNG, ISRG),
+    not eight. Overall mix across all 23 names: 465 post-market, 71 intraday, 9 pre-market.
 18. **MSFT timestamps remain UNRESOLVED and are excluded by default (24 of 168 rows).** Alpha Vantage
     confirms these are the correct earnings dates, so the dates are right; only the time is in doubt.
     EDGAR `acceptanceDateTime` for MSFT clusters at ~16:04 **UTC** (= ~12:04 ET), e.g. 2026-07-29
