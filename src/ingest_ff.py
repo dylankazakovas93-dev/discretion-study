@@ -71,6 +71,7 @@ def build(path, series, event_type, release_time=(8, 30)):
     return out, dict(breaks=breaks, dupes=dupes, gaps=gaps, warn=warn)
 
 SERIES = [("data/macro/raw/cpi_mm_forexfactory.txt",      "US_CPI_MOM"),
+          ("data/macro/raw/core_cpi_mm_forexfactory.txt", "US_CORE_CPI_MOM"),
           ("data/macro/raw/ppi_mm_forexfactory.txt",      "US_PPI_MOM"),
           ("data/macro/raw/core_ppi_mm_forexfactory.txt", "US_CORE_PPI_MOM"),
           ("data/macro/raw/core_pce_mm_forexfactory.txt", "US_CORE_PCE_MOM")]

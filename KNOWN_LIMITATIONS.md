@@ -44,9 +44,10 @@
     and BEA revises PCE monthly, whereas CPI seasonal factors are revised only annually -- which is
     exactly the observed pattern. CONSEQUENCE: actual-minus-previous for PPI/PCE conflates the true
     m/m change with the revision to the prior month. Use actual-minus-consensus for these series.
-14. **Core CPI and headline PCE were never supplied.** Core CPI paste was a duplicate of CPI.
-    For event-DAY purposes this costs nothing (Core CPI prints the same minute as CPI, headline PCE
-    the same minute as Core PCE), but the surprise magnitudes for those two series are unavailable.
+14. **Headline PCE unavailable** (Dylan could not retrieve it). Core CPI has since been supplied and
+    ingested with 0 chain breaks, matching CPI and confirming the annual-vs-monthly revision pattern
+    in limitation 13. Headline PCE prints the same minute as Core PCE, so no event day is lost; only
+    that series' surprise magnitude is missing.
 15. **No free consensus source exists for PPI.** The FF paste is the only estimate we will get.
 16. **Shutdown gaps:** CPI 2025-10-24 -> 2026-01-13; PPI 2025-09-10 -> 2025-11-25 -> 2026-01-14;
     Core PCE 2025-09-26 -> 2025-12-05 -> 2026-01-22. Catch-up releases put two reference months on
@@ -55,14 +56,25 @@
 
 ### Earnings
 
-17. **194 Item-2.02 8-Ks collected, but not all are earnings.** Per-symbol: AAPL 24, AMZN 24,
+17. **RESOLVED by AV/EDGAR merge.** Matching Alpha Vantage `reportedDate` against Item-2.02 8-Ks
+    separates earnings from non-earnings disclosures cleanly: every Mag 7 name matched 24/24 quarters,
+    leaving TSLA's 24 vehicle delivery reports and one stray filing each for GOOGL and NVDA as
+    unmatched non-earnings 8-Ks. Final panel: **168 earnings rows, all with consensus and an exact
+    disclosure timestamp.** Superseded note follows.
+17b. *(superseded)* **194 Item-2.02 8-Ks collected, but not all are earnings.** Per-symbol: AAPL 24, AMZN 24,
     META 24 (all post-market, clean); GOOGL 25 and NVDA 25 (one extra each); **TSLA 48** -- roughly
     half are pre-market vehicle production/delivery reports, which are genuine repricing events but
     are not EPS; **MSFT 24, all classified intraday** (acceptance ~12:00 ET), which contradicts
-    MSFT's known post-close reporting. The MSFT timestamps are ANOMALOUS AND UNRESOLVED and must not
-    be used until explained. De-duplication requires cross-referencing Alpha Vantage `reportedDate`.
-18. **EPS actual and consensus are absent.** Alpha Vantage rejects the demo key for all Mag 7
-    symbols; a free API key is required.
+    MSFT's known post-close reporting.
+18. **MSFT timestamps remain UNRESOLVED and are excluded by default (24 of 168 rows).** Alpha Vantage
+    confirms these are the correct earnings dates, so the dates are right; only the time is in doubt.
+    EDGAR `acceptanceDateTime` for MSFT clusters at ~16:04 **UTC** (= ~12:04 ET), e.g. 2026-07-29
+    accepted 16:04:53Z, whereas AAPL/AMZN/META/GOOGL/NVDA cluster at 20:00-22:55Z (= 16:00-18:55 ET),
+    which is correct for post-close releases. Two competing explanations, neither verified:
+    (a) the trailing "Z" is spurious for some filers and the value is already Eastern, which would put
+    MSFT at 16:04 ET -- exactly right -- but would push AAPL to 20:30 ET, which is wrong; or
+    (b) MSFT submits to EDGAR hours before its press release. Until one is established, MSFT is out.
+    Excluding it costs 24 of 168 earnings rows and leaves 144 with timestamps consistent across filers.
 
 ### Discrete events
 
