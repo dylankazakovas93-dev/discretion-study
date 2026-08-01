@@ -36,7 +36,7 @@ bars = {s: g.set_index("ts").sort_index() for s,g in px.groupby("symbol",observe
 
 # earnings with BOTH the dollar surprise and the percentage surprise
 E = pd.read_csv("data/macro/earnings.csv")
-E = E[(E.series != "MSFT_EPS") & E.surprise_abs.notna() & E.surprise_pct.notna()].copy()
+E = E[E.surprise_abs.notna() & E.surprise_pct.notna()].copy()
 E["ts"] = pd.to_datetime(E.release_ts_utc, utc=True, format="ISO8601")
 E["etloc"] = E.ts.dt.tz_convert("America/New_York")
 E = E[(E.etloc.dt.hour >= 16) & (E.etloc.dt.year.isin(DEV))]

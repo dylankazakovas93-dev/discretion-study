@@ -30,7 +30,7 @@ LABOUR_SIGN = {"US_NFP": -1, "US_UNEMP_RATE": +1}
 def build():
     m = pd.read_csv("data/macro/events.csv")
     e = pd.read_csv("data/macro/earnings.csv")
-    e = e[e.series != "MSFT_EPS"]                       # timestamp unresolved
+    # MSFT restored: timestamp corrected and verified against the tape (see fix_timestamps.py)
 
     m = m[m.surprise_abs.notna()].copy()
     lab = m.series.isin(LABOUR_FLOOR)

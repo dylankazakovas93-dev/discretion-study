@@ -66,7 +66,18 @@
     half are pre-market vehicle production/delivery reports, which are genuine repricing events but
     are not EPS; **MSFT 24, all classified intraday** (acceptance ~12:00 ET), which contradicts
     MSFT's known post-close reporting.
-18b. **The MSFT timestamp anomaly is NOT unique to MSFT.** With the universe at 23 names, the
+18a. **RESOLVED.** EDGAR's filing index page `Accepted` field is Eastern and authoritative;
+    data.sec.gov's `acceptanceDateTime` appends "Z" but for a subset of filers the digits are
+    already Eastern. Confirmed against the tape: MSFT earnings 8-K dates show 1.72x NQ volume at
+    16:04 ET versus 1.05x at 12:04 ET (control 13:30 ET = 0.84x); LRCX agrees more weakly
+    (1.23x vs 1.08x, control 0.71x) as expected for a smaller index weight. Per-filer detection
+    across 3 sampled filings each returned unanimous verdicts: **LRCX, MSFT, PEP and SBUX are
+    Eastern-mislabelled; the other 20 filers are true UTC.** 96 rows corrected. Post-market count
+    rose 465 -> 557, intraday collapsed 71 -> 3. MSFT and LRCX are restored to the panel.
+    Residual doubt: only MSFT has strong independent tape confirmation. PEP and SBUX are corrected
+    on the index-page test alone, and both are pre-market reporters whose corrected times land
+    post-market the prior evening, which is not obviously right. Both sit outside the core cohort.
+18b. *(superseded)* **The MSFT timestamp anomaly is NOT unique to MSFT.** With the universe at 23 names, the
     ~12:00 ET acceptance cluster also appears for **LRCX (24 of 24 filings), PEP (22 of 24) and
     SBUX (22 of 24)**. All three are known pre- or post-market reporters, so a midday disclosure
     is implausible for any of them. This strengthens explanation (a): the trailing "Z" is
