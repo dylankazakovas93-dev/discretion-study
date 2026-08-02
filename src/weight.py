@@ -10,8 +10,9 @@ a hypothesis to test on held-out data, not a result.
 """
 import pandas as pd, numpy as np, glob, zstandard, io, os
 DEV = {2020, 2022, 2024, 2026}; ROOT = os.environ["NQ_DATA_ROOT"]
-CORE = {"AAPL","AMZN","GOOGL","META","NVDA","TSLA","AVGO","AMD","INTC","MU",
-        "QCOM","TXN","AMAT","LRCX","ADBE","NFLX","CSCO"}          # tech / semis
+CORE = {"AAPL","AMZN","GOOGL","META","NVDA","TSLA","MSFT","AVGO","AMD","INTC","MU",
+        "QCOM","TXN","AMAT","LRCX","ADBE","NFLX","CSCO","MRVL","KLAC","NXPI","ADI",
+        "ON","CDNS","SNPS","PANW","CRWD","INTU","SMCI"}            # tech / semis
 fr=[]
 for p in sorted(glob.glob(f"{ROOT}/ext/*/*.zst")):
     d=zstandard.ZstdDecompressor()
