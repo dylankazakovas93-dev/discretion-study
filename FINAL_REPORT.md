@@ -1,4 +1,46 @@
-# FINAL REPORT — NQ post-market mega-cap earnings reaction
+# FINAL REPORT — two research generations, both failed confirmation
+
+## GENERATION 2 — macro-surprise reaction (SPEC_LOCKED_MACRO.md)
+
+```
+IMPLEMENTATION_VALID   = YES
+STATISTICALLY_CREDIBLE = NO — confirmatory holdout FAILED
+ECONOMICALLY_CREDIBLE  = UNCERTAIN
+DEPLOYMENT_READY       = NO
+```
+
+Rule: CPI/NFP/PPI release days, |z| >= 0.75, enter on the 1-minute close after 08:30 ET in
+that bar's direction, stop at 1.5x the 30-minute ATR, no target, hard exit at +30 minutes.
+
+| | development (2021/22/24/26) | **holdout (2023/25)** |
+|---|---|---|
+| trades | 80 | 43 |
+| mean | +0.1253% | **-0.0482%** |
+| win rate | 59% | **46.5%** (W20/L23) |
+| profit factor | 2.57 | **0.67** |
+| RR | 1.80 | **0.77** |
+| t | +2.91 | **-1.01** |
+
+Criteria: mean > 0 **FAIL** · t > 1.5 **FAIL** · win >= 55% **FAIL** → **VERDICT: FAIL**
+
+Holdout by year: 2023 +0.018% (56% win, PF 1.16) · 2025 **-0.096%** (40% win, PF 0.43).
+By day type, all three negative: CPI -0.071% (33% win) · NFP -0.043% · PPI -0.036%.
+
+**This failure is more informative than generation 1's.** Only ~53 trials were spent here
+against ~285 there, so the development result cannot be dismissed as pure search noise --
+the rule simply did not generalise. Every development year was positive and the sign
+flipped cleanly in the reserved years.
+
+One factual observation, offered as description rather than rescue: the development set
+contained 2022, the peak inflation-surprise regime, while the holdout is 2023 (disinflation)
+and 2025. Whether that is regime dependence or absence of edge cannot be settled without
+data that does not exist yet.
+
+Both holdouts are now spent. Nothing in this repository has a validated forward edge.
+
+---
+
+# GENERATION 1 — NQ post-market mega-cap earnings reaction
 
 ## VERDICT
 
