@@ -15,10 +15,8 @@ from zoneinfo import ZoneInfo
 KEY = os.environ["ALPHAVANTAGE_KEY"]
 UA = {"User-Agent": "discretion-study research contact dylankazakovas93@gmail.com"}
 ET, UTC = ZoneInfo("America/New_York"), ZoneInfo("UTC")
-START, END = date(2020, 6, 10), date(2026, 6, 7)
-EXTRA = {"MRVL":1835632, "KLAC":319201, "NXPI":1413447, "ADI":6281, "ON":1097864,
-         "CDNS":813672, "SNPS":883241, "PANW":1327567, "CRWD":1535527, "INTU":896878,
-         "SMCI":1375365}
+START, END = date(2018, 1, 1), date(2026, 6, 7)
+EXTRA = {"AMD":2488, "PYPL":1633917}
 
 def edgar(cik):
     url = f"https://data.sec.gov/submissions/CIK{cik:010d}.json"
